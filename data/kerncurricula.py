@@ -396,7 +396,12 @@ AK = [
 ]
 
 HIN = [
-    ("Bildungsgang", "Pilot umfasst nur die Fassung Gymnasium (Übergang Sek II). Für die JCS als IGS kommen die Fassungen Hauptschule und Realschule hinzu."),
+    ("Bildungsgang", "Inhaltsfelder sind für 17 Fächer in allen drei KC-Fassungen erfasst (Hauptschule, Realschule, Gymnasium). Schwerpunkte, Kompetenzbereiche und Querbezüge gibt es bisher nur für die fünf Pilotfächer in der Gymnasialfassung."),
+    ("Fächerauswahl", "Aufgenommen sind die Fächer einer IGS 5 bis 10. Latein, Griechisch, Chinesisch, Arabisch sowie alevitische, jüdische und islamische Religion fehlen noch. Informatik gibt es nur als KC für den Wahlunterricht am Gymnasium."),
+    ("Moderne Fremdsprachen", "Ein gemeinsames KC für alle modernen Fremdsprachen. Die Inhaltsfelder sind drei Lebenswelten."),
+    ("Kunst", "Die Zuordnung der neun Inhaltsfelder zu den drei Kernbereichen steht nur in Abb. 2 (Kap. 5)."),
+    ("Religion", "Evangelische und Katholische Religion liegen in der neuen KC-Fassung von 2026 vor."),
+    ("BNE", "BNE ist nach § 6 Abs. 4 HSchG ein Aufgabengebiet. Die KC von 2011 nennen BNE nicht ausdrücklich. Als Beleg zählt nur, wo das KC selbst Nachhaltigkeit nennt (Blatt 'BNE Belege'). Die SDG-Zuordnung ist ein Vorschlag."),
     ("Stufung", "Die Stufen sind nicht einheitlich: Biologie 'bis Ende 5/6', Chemie '1. Lernjahr', Physik 'nach ca. der Hälfte des Stundenkontingents', jeweils plus 'bis Ende 9/10'. Erdkunde und Politik und Wirtschaft haben im Gymnasium-KC keine Stufung. Die Zuordnung zu Jahrgängen hängt an der Stundentafel bzw. am Schulcurriculum."),
     ("Jahrgang 8", "Biologie, Chemie, Physik, Erdkunde und PoWi weisen für das Gymnasium ausdrücklich keine Kompetenzerwartungen für Jahrgang 6/8 bzw. 8 aus (jeweils Kap. 7)."),
     ("Erdkunde, PoWi", "Die Einträge im Blatt 'Schwerpunkte' sind Stichworte aus den Inhaltsfeldbeschreibungen (Kap. 6), da es keine Schwerpunkt-Tabelle gibt."),

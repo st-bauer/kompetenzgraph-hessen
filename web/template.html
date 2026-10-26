@@ -17,7 +17,7 @@
   --mint: #5fe0b0;
   --mint-ink: #08261d;
   --amber: #f2c46d;
-  --bio: #4fd1a5; --che: #38c6d9; --phy: #7aa7ff; --erd: #d8b98a; --pow: #ee8f9a;
+  --bne: #8fe388;
   --font: "Manrope", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: dark;
@@ -130,6 +130,14 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 .lk.beleg { stroke: var(--mint); stroke-opacity: .5; stroke-width: 2.6; }
 .lk.hot { stroke: var(--mint); stroke-opacity: .95; stroke-width: 1.4; }
 .lk.vorschlag.hot { stroke: var(--amber); stroke-width: 1.8; }
+.lk.sdg { stroke-opacity: .55; stroke-dasharray: 2 3; stroke-width: 1; }
+.lk.sdg.hot { stroke-opacity: 1; stroke-width: 1.8; }
+.lk.bne { stroke: var(--bne); stroke-opacity: .55; stroke-width: 1.6; }
+.lk.bne.hot { stroke-opacity: 1; stroke-width: 2.4; }
+.lbl.sdg { font-size: 10px; font-weight: 700; }
+.lbl.bne { font-size: 12px; font-weight: 800; fill: var(--bne); }
+.nd text.nr { font: 800 8px var(--font); fill: #fff; text-anchor: middle; pointer-events: none; }
+.tiles.sf .tile small { font-size: .58rem; }
 .nd { cursor: pointer; }
 .nd .core { fill-opacity: .9; }
 .nd.t-sp .core { fill-opacity: .7; }
@@ -165,11 +173,11 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
   <div class="top">
     <div class="brand">
       <div class="logo"><i></i></div>
-      <div><b>KERNCURRICULUM <span>/ GRAPH</span></b><small>Hessen · Sekundarstufe I · Gymnasium</small></div>
+      <div><b>KERNCURRICULUM <span>/ GRAPH</span></b><small>Hessen · Sekundarstufe I · Haupt-, Real- und Gymnasialfassung</small></div>
     </div>
     <div class="pills">
-      <span class="pill"><span class="on"></span>Pilot</span>
-      <span class="pill hide-m">5 Fächer · Stand 26.10.2026</span>
+      <span class="pill"><span class="on"></span>IGS 5–10</span>
+      <span class="pill hide-m" id="pill-stand"></span>
       <button class="btn" id="reset">↗ Ansicht zurücksetzen</button>
     </div>
   </div>
@@ -185,6 +193,16 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
       <div class="search">
         <div class="field-label">Begriff suchen</div>
         <input id="q" type="search" placeholder="z. B. Energie, Klima, Wasser" aria-label="Begriff suchen">
+      </div>
+
+      <div class="box">
+        <div class="field-label">KC-Fassung</div>
+        <div class="tiles sf" id="schulformen">
+          <button class="tile" data-sf="hs" aria-pressed="true">Haupt<small>schule</small></button>
+          <button class="tile" data-sf="rs" aria-pressed="true">Real<small>schule</small></button>
+          <button class="tile" data-sf="gy" aria-pressed="true">Gym<small>nasium</small></button>
+        </div>
+        <p class="note">Die IGS arbeitet mit allen drei Fassungen. Schwerpunkte sind bisher nur für die Pilotfächer in der Gymnasialfassung erfasst.</p>
       </div>
 
       <div class="box">
@@ -207,24 +225,23 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
         <div class="chips">
           <button class="chip" id="tg-sp" aria-pressed="true"><span class="d" style="--c: #9fb3c6"></span>Schwerpunkte</button>
           <button class="chip" id="tg-th" aria-pressed="true"><span class="d" style="--c: var(--amber)"></span>Themenvorschläge</button>
+          <button class="chip" id="tg-bne" aria-pressed="false"><span class="d" style="--c: var(--bne)"></span>BNE und SDGs</button>
         </div>
       </div>
 
       <div>
         <div class="eyebrow" style="margin-bottom:8px">Legende</div>
         <div class="legend">
-          <span><span class="d" style="--c: var(--bio)"></span>Biologie</span>
-          <span><span class="d" style="--c: var(--che)"></span>Chemie</span>
-          <span><span class="d" style="--c: var(--phy)"></span>Physik</span>
-          <span><span class="d" style="--c: var(--erd)"></span>Erdkunde</span>
-          <span><span class="d" style="--c: var(--pow)"></span>PoWi</span>
           <span><span class="d" style="--c: var(--amber)"></span>Thema</span>
+          <span><span class="d" style="--c: var(--bne)"></span>BNE</span>
           <span><span class="ln" style="--c: var(--mint)"></span>Im KC belegt</span>
           <span><span class="ln dash" style="--c: var(--amber)"></span>Vorschlag</span>
+          <span><span class="ln" style="--c: var(--bne)"></span>KC nennt Nachhaltigkeit</span>
+          <span><span class="ln dash" style="--c: #26bde2"></span>SDG-Vorschlag</span>
         </div>
       </div>
 
-      <div class="hinweis">Themenvorschläge stehen so nicht im Kerncurriculum und sind fachlich zu prüfen. Verbindlich ist der Wortlaut im Original.</div>
+      <div class="hinweis">Themenvorschläge und SDG-Zuordnungen stehen so nicht im Kerncurriculum und sind fachlich zu prüfen. Verbindlich ist der Wortlaut im Original.</div>
     </aside>
 
     <section class="stage" id="stage">
@@ -274,9 +291,13 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 const DATA = /*__DATA__*/null;
-const FACH = { bio: "Biologie", che: "Chemie", phy: "Physik", erd: "Erdkunde", pow: "Politik und Wirtschaft" };
-const KIND = { fach: "Fach", if: "Inhaltsfeld", sp: "Schwerpunkt", thema: "Themenvorschlag" };
-const col = f => f === "thema" ? "var(--amber)" : `var(--${f})`;
+const FACH = Object.fromEntries(DATA.faecher.map(f => [f.k, f.label]));
+const KURZ = Object.fromEntries(DATA.faecher.map(f => [f.k, f.kurz]));
+const SF = DATA.schulformen;
+DATA.faecher.forEach(f => document.documentElement.style.setProperty("--" + f.k, f.farbe));
+const KIND = { fach: "Fach", if: "Inhaltsfeld", sp: "Schwerpunkt", thema: "Themenvorschlag", sdg: "Nachhaltigkeitsziel", bne: "Aufgabengebiet" };
+const col = n => n.t === "sdg" ? n.farbe : n.f === "thema" ? "var(--amber)" : `var(--${n.f})`;
+document.getElementById("pill-stand").textContent = `${DATA.faecher.length} Fächer · Stand ${DATA.stand}`;
 
 const nodes = DATA.nodes.map(d => ({ ...d }));
 const byId = new Map(nodes.map(n => [n.id, n]));
@@ -284,29 +305,37 @@ const links = DATA.links.map(l => ({ ...l, source: l.s, target: l.t }));
 const nb = new Map(nodes.map(n => [n.id, []]));
 links.forEach(l => { nb.get(l.s).push({ id: l.t, l }); nb.get(l.t).push({ id: l.s, l }); });
 
-const state = { faecher: new Set(Object.keys(FACH)), st: "alle", sp: true, th: true, q: "", sel: null };
-try { const s = JSON.parse(localStorage.getItem("kg-state") || "null"); if (s) { state.sp = s.sp ?? true; state.th = s.th ?? true; } } catch (e) {}
+const alleF = () => new Set(Object.keys(FACH));
+const state = { faecher: alleF(), sf: new Set(Object.keys(SF)), st: "alle", sp: true, th: true, bne: false, q: "", sel: null };
+try { const s = JSON.parse(localStorage.getItem("kg-state") || "null"); if (s) { state.sp = s.sp ?? true; state.th = s.th ?? true; state.bne = s.bne ?? false; } } catch (e) {}
 
 // --- Layout einmal berechnen ---
-const W = 1200, H = 900, R = 300;
+const W = 1400, H = 1050, RX = 470, RY = 380;
 const anchor = {};
-Object.keys(FACH).forEach((k, i) => {
-  const a = -Math.PI / 2 + i * 2 * Math.PI / 5;
-  anchor[k] = { x: W / 2 + R * Math.cos(a), y: H / 2 + R * Math.sin(a) };
+DATA.faecher.forEach((f, i) => {
+  const a = -Math.PI / 2 + i * 2 * Math.PI / DATA.faecher.length;
+  anchor[f.k] = { x: W / 2 + RX * Math.cos(a), y: H / 2 + RY * Math.sin(a) };
 });
-anchor.thema = { x: W / 2, y: H / 2 };
+anchor.thema = anchor.bne = anchor.sdg = { x: W / 2, y: H / 2 };
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 nodes.forEach(n => { const a = anchor[n.f]; n.x = a.x + (rnd() - 0.5) * 60; n.y = a.y + (rnd() - 0.5) * 60; });
-const radius = n => n.t === "fach" ? 13 : n.t === "if" ? 6.5 : n.t === "thema" ? 6.5 : 3.4;
+// SDGs als fester innerer Ring, BNE in der Mitte
+nodes.filter(n => n.t === "sdg").forEach(n => {
+  const a = -Math.PI / 2 + (n.nr - 1) * 2 * Math.PI / 17;
+  n.fx = n.x = W / 2 + 175 * Math.cos(a); n.fy = n.y = H / 2 + 150 * Math.sin(a);
+});
+const hub = byId.get("BNE"); hub.fx = hub.x = W / 2; hub.fy = hub.y = H / 2;
+const radius = n => n.t === "fach" ? 13 : n.t === "bne" ? 12 : n.t === "sdg" ? 8 : n.t === "if" ? 6 : n.t === "thema" ? 6.5 : 3.4;
+const weak = { beleg: [420, 0.02], vorschlag: [160, 0.05], sdg: [260, 0.01], bne: [300, 0.01] };
 
 const sim = d3.forceSimulation(nodes)
   .force("link", d3.forceLink(links).id(d => d.id)
-    .distance(l => l.k === "beleg" ? 380 : l.k === "vorschlag" ? 150 : (l.target.t === "sp" ? 22 : 60))
-    .strength(l => l.k === "beleg" ? 0.02 : l.k === "vorschlag" ? 0.06 : 0.9))
-  .force("charge", d3.forceManyBody().strength(n => n.t === "fach" ? -400 : n.t === "if" ? -90 : n.t === "thema" ? -160 : -14))
+    .distance(l => weak[l.k] ? weak[l.k][0] : (l.target.t === "sp" ? 22 : 55))
+    .strength(l => weak[l.k] ? weak[l.k][1] : 0.9))
+  .force("charge", d3.forceManyBody().strength(n => n.t === "fach" ? -400 : n.t === "if" ? -80 : n.t === "thema" ? -160 : -14))
   .force("collide", d3.forceCollide(n => radius(n) + (n.t === "sp" ? 1.8 : 4)))
-  .force("x", d3.forceX(n => anchor[n.f].x).strength(n => n.t === "fach" ? 0.5 : n.t === "thema" ? 0.08 : 0.06))
-  .force("y", d3.forceY(n => anchor[n.f].y).strength(n => n.t === "fach" ? 0.5 : n.t === "thema" ? 0.08 : 0.06))
+  .force("x", d3.forceX(n => anchor[n.f].x).strength(n => n.t === "fach" ? 0.6 : n.t === "thema" ? 0.08 : 0.07))
+  .force("y", d3.forceY(n => anchor[n.f].y).strength(n => n.t === "fach" ? 0.6 : n.t === "thema" ? 0.08 : 0.07))
   .randomSource(rnd)
   .stop();
 for (let i = 0; i < 400; i++) sim.tick();
@@ -316,12 +345,13 @@ const svg = d3.select("#svg");
 const g = svg.append("g");
 // Sternenstaub im Hintergrund
 const dust = g.append("g").attr("pointer-events", "none");
-for (let i = 0; i < 260; i++) dust.append("circle").attr("cx", -200 + rnd() * (W + 400)).attr("cy", -150 + rnd() * (H + 300))
+for (let i = 0; i < 320; i++) dust.append("circle").attr("cx", -200 + rnd() * (W + 400)).attr("cy", -150 + rnd() * (H + 300))
   .attr("r", rnd() * 1.1 + 0.2).attr("fill", "#8fb3cc").attr("opacity", rnd() * 0.35 + 0.05);
 
-const order = { beleg: 0, hat: 1, vorschlag: 2 };
+const order = { beleg: 0, bne: 1, hat: 2, vorschlag: 3, sdg: 4 };
 const lk = g.append("g").selectAll("line").data(links.slice().sort((a, b) => order[a.k] - order[b.k])).join("line")
   .attr("class", l => "lk " + l.k)
+  .attr("stroke", l => l.k === "sdg" ? l.source.farbe : null)
   .attr("x1", l => l.source.x).attr("y1", l => l.source.y).attr("x2", l => l.target.x).attr("y2", l => l.target.y);
 
 const nd = g.append("g").selectAll("g").data(nodes.slice().sort((a, b) => (a.t === "sp") - (b.t === "sp")).reverse()).join("g")
@@ -329,20 +359,23 @@ const nd = g.append("g").selectAll("g").data(nodes.slice().sort((a, b) => (a.t =
   .attr("tabindex", n => n.t === "sp" ? -1 : 0).attr("role", "button").attr("aria-label", n => n.label)
   .on("click", (e, n) => { e.stopPropagation(); select(n.id); })
   .on("keydown", (e, n) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(n.id); } });
-nd.filter(n => n.t !== "thema").append("circle").attr("class", "core").attr("r", radius).attr("fill", n => col(n.f))
-  .attr("filter", n => n.t === "fach" ? "url(#glowbig)" : n.t === "if" ? "url(#glow)" : null);
+nd.filter(n => n.t !== "thema").append("circle").attr("class", "core").attr("r", radius).attr("fill", n => n.t === "bne" ? "var(--bne)" : col(n))
+  .attr("filter", n => n.t === "fach" || n.t === "bne" ? "url(#glowbig)" : n.t === "if" || n.t === "sdg" ? "url(#glow)" : null);
 nd.filter(n => n.t === "thema").append("rect").attr("class", "core").attr("x", -5.5).attr("y", -5.5).attr("width", 11).attr("height", 11)
   .attr("transform", "rotate(45)").attr("fill", "var(--amber)").attr("filter", "url(#glow)");
+nd.filter(n => n.t === "sdg").append("text").attr("class", "nr").attr("y", 3).text(n => n.nr);
 nd.append("circle").attr("class", "ring").attr("r", n => radius(n) + 5).attr("fill", "none");
-nd.append("title").text(n => n.label);
+nd.append("title").text(n => n.t === "sdg" ? `SDG ${n.nr}: ${n.label}` : n.label);
 
 const lb = g.append("g").selectAll("text").data(nodes).join("text")
   .attr("class", n => "lbl " + n.t).attr("x", n => n.x + radius(n) + 4).attr("y", n => n.y + 3)
-  .text(n => n.t === "if" ? short(n.label, 34) : n.t === "sp" ? short(n.label, 40) : n.label);
-lb.filter(n => n.t === "fach").attr("x", n => n.x).attr("y", n => n.y - 22).attr("text-anchor", "middle");
+  .attr("fill", n => n.t === "sdg" ? n.farbe : null)
+  .text(n => n.t === "if" ? short(n.label, 34) : n.t === "sp" ? short(n.label, 40) : n.t === "sdg" ? short(n.label, 26) : n.t === "fach" ? n.kurz : n.label);
+lb.filter(n => n.t === "fach" || n.t === "bne").attr("x", n => n.x).attr("y", n => n.y - 20).attr("text-anchor", "middle");
+lb.filter(n => n.t === "bne").text("BNE");
 function short(s, m) { const t = s.split(" – ")[0]; return t.length > m ? t.slice(0, m - 1) + "…" : t; }
 
-const zoom = d3.zoom().scaleExtent([0.3, 6]).on("zoom", e => g.attr("transform", e.transform));
+const zoom = d3.zoom().scaleExtent([0.25, 6]).on("zoom", e => g.attr("transform", e.transform));
 svg.call(zoom).on("click", () => select(null));
 function fit() {
   const el = document.getElementById("stage"); const w = el.clientWidth, h = el.clientHeight;
@@ -357,9 +390,11 @@ document.getElementById("zfit").onclick = fit;
 window.addEventListener("resize", fit);
 
 // --- Sichtbarkeit ---
+const inSf = n => !n.sf || n.sf.some(s => state.sf.has(s));
 function visible(n) {
   if (n.t === "thema") return state.th;
-  if (!state.faecher.has(n.f)) return false;
+  if (n.t === "sdg" || n.t === "bne") return state.bne;
+  if (!state.faecher.has(n.f) || !inSf(n)) return false;
   if (n.t === "sp") {
     if (!state.sp) return false;
     if (state.st === "frueh" && n.st !== "frueh") return false;
@@ -370,7 +405,7 @@ function visible(n) {
 function match(n) {
   if (!state.q) return true;
   const q = state.q.toLowerCase();
-  return n.label.toLowerCase().includes(q) || (n.t === "if" && links.some(l => l.k === "vorschlag" && l.t === n.id && l.stich.toLowerCase().includes(q)));
+  return n.label.toLowerCase().includes(q) || (n.t === "if" && nb.get(n.id).some(x => x.l.stich && x.l.stich.toLowerCase().includes(q)));
 }
 function render() {
   const vis = new Set(nodes.filter(visible).map(n => n.id));
@@ -397,62 +432,94 @@ function render() {
   document.getElementById("s-l").textContent = links.filter(lvis).length.toLocaleString("de-DE");
   document.getElementById("s-k").textContent = s ? nb.get(s.id).filter(x => vis.has(x.id)).length : "–";
   const fs = [...state.faecher];
-  document.getElementById("crumb").textContent = s ? `${KIND[s.t]} · ${s.t === "thema" ? "fächerübergreifend" : FACH[s.f]}` : (fs.length === 5 ? "Übersicht · alle Fächer" : "Auswahl · " + fs.map(k => k === "pow" ? "PoWi" : FACH[k]).join(", "));
-  detail();
-  try { localStorage.setItem("kg-state", JSON.stringify({ sp: state.sp, th: state.th })); } catch (e) {}
+  const sfTxt = state.sf.size === 3 ? "" : " · " + [...state.sf].map(k => SF[k]).join(", ");
+  document.getElementById("crumb").textContent = s
+    ? `${KIND[s.t]} · ${["thema", "sdg", "bne"].includes(s.t) ? "fächerübergreifend" : FACH[s.f]}`
+    : (fs.length === DATA.faecher.length ? "Übersicht · alle Fächer" : fs.length > 4 ? `Auswahl · ${fs.length} Fächer` : "Auswahl · " + fs.map(k => KURZ[k]).join(", ")) + sfTxt;
+  detail(vis);
+  try { localStorage.setItem("kg-state", JSON.stringify({ sp: state.sp, th: state.th, bne: state.bne })); } catch (e) {}
 }
 function select(id) { state.sel = id; render(); }
 
 // --- Inspektor ---
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const relBtn = (id, extra) => { const n = byId.get(id); return `<li><button data-go="${id}"><span class="dot" style="--c:${col(n.f)}"></span>${esc(n.label)}${extra ? `<small>${extra}</small>` : ""}</button></li>`; };
+const relBtn = (id, extra) => { const n = byId.get(id); return `<li><button data-go="${id}"><span class="dot" style="--c:${col(n)}"></span>${esc(n.t === "sdg" ? `SDG ${n.nr} · ${n.label}` : n.label)}${extra ? `<small>${extra}</small>` : ""}</button></li>`; };
 const fachOf = n => byId.get("F-" + n.f);
-function detail() {
+const seitenTxt = seiten => Object.entries(seiten).map(([k, v]) => `${SF[k]} ${v}`).join(" · ");
+const pdfBtns = url => Object.entries(url || {}).map(([k, u]) => `<a class="btn${k === "gy" || Object.keys(url).length === 1 ? " primary" : ""}" href="${u}" target="_blank" rel="noopener">PDF ${SF[k]}</a>`).join("");
+function detail(vis) {
   const el = document.getElementById("detail"), foot = document.getElementById("foot");
   const n = state.sel && byId.get(state.sel);
   foot.innerHTML = "";
+  foot.style.display = "";
   if (!n) {
     el.innerHTML = `<div class="empty"><div class="star">✦</div><h4>Jede Verbindung<br>hat eine Fundstelle.</h4>
       <p>Wählen Sie ein Fach, ein Inhaltsfeld oder ein Thema, um Quelle und Verbindungen zu sehen.</p>
-      <p class="ref">TIPP · Suche nach „Klima“</p></div>
+      <p class="ref">TIPP · „BNE und SDGs“ einschalten</p></div>
       <div class="sec"><div class="eyebrow">Im KC belegte Querbezüge</div>
       <ul class="rel">${DATA.querbezuege.filter(q => q[0] !== "alle fünf").map(q => `<li><button tabindex="-1" style="cursor:default">${esc(q[0])} → ${esc(q[1])}<small>${esc(q[2])} · ${esc(q[3])}</small></button></li>`).join("")}</ul></div>`;
+    foot.style.display = "none";
     return;
   }
-  const openBtn = url => `<a class="btn primary" href="${url}" target="_blank" rel="noopener">+ Original öffnen (PDF)</a>`;
+  const grid = h => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px">${h}</div>`;
   if (n.t === "fach") {
-    const ifs = nb.get(n.id).filter(x => byId.get(x.id).t === "if").map(x => x.id);
+    const ifs = nb.get(n.id).filter(x => byId.get(x.id).t === "if").map(x => byId.get(x.id));
     const bel = nb.get(n.id).filter(x => x.l.k === "beleg");
-    const spc = ifs.reduce((a, id) => a + nb.get(id).filter(x => byId.get(x.id).t === "sp").length, 0);
+    const bne = nb.get(n.id).filter(x => x.l.k === "bne");
+    const spc = ifs.reduce((a, i) => a + nb.get(i.id).filter(x => byId.get(x.id).t === "sp").length, 0);
     el.innerHTML = `<div class="tags"><span class="tag">Fach</span><span class="tag ok">✓ Kerncurriculum Hessen</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
-      <div class="meta"><span>Sek I</span><span>Gymnasium</span><span>${ifs.length} Inhaltsfelder</span><span>${spc} Schwerpunkte</span></div>
+      <div class="meta"><span>Sek I</span>${n.sf.map(k => `<span>${SF[k]}</span>`).join("")}<span>${ifs.length} Inhaltsfelder</span><span>${spc} Schwerpunkte</span></div>
       ${bel.length ? `<div class="sec"><div class="eyebrow">Belegte Querbezüge</div><ul class="rel">${bel.map(x => relBtn(x.id, `${esc(x.l.stich)} · ${esc(x.l.fund)}`)).join("")}</ul></div>` : ""}
-      <div class="sec"><div class="eyebrow">Inhaltsfelder</div><ul class="rel">${ifs.map(id => relBtn(id, `Kap. 6, ${esc(byId.get(id).seite)}`)).join("")}</ul></div>`;
-    foot.innerHTML = openBtn(n.url);
+      ${bne.length ? `<div class="sec"><div class="eyebrow">KC nennt Nachhaltigkeit</div>${bne.map(x => `<div class="card">${esc(x.l.stich)}<div class="ref">${esc(seitenTxt(x.l.seiten))}</div></div>`).join("")}</div>` : ""}
+      <div class="sec"><div class="eyebrow">Inhaltsfelder</div><ul class="rel">${ifs.map(i => relBtn(i.id, esc(seitenTxt(i.seiten)))).join("")}</ul></div>`;
+    foot.innerHTML = grid(pdfBtns(n.url));
   } else if (n.t === "if") {
     const f = fachOf(n);
     const sps = nb.get(n.id).filter(x => byId.get(x.id).t === "sp").map(x => byId.get(x.id));
     const th = nb.get(n.id).filter(x => x.l.k === "vorschlag");
-    el.innerHTML = `<div class="tags"><span class="tag">Inhaltsfeld</span><span class="tag ok">✓ Fundstelle Kap. 6, ${esc(n.seite)}</span></div>
+    const sdg = nb.get(n.id).filter(x => x.l.k === "sdg");
+    const bne = nb.get(n.id).filter(x => x.l.k === "bne");
+    el.innerHTML = `<div class="tags"><span class="tag">Inhaltsfeld</span><span class="tag ok">✓ Fundstelle Kap. 6</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="meta"><span>${esc(f.label)}</span><span>Sek I</span><span>${sps.length} Schwerpunkte</span></div>
-      <div class="sec"><div class="eyebrow">Basiskonzept</div><div class="card">${esc(n.bk)}</div></div>
+      <div class="sec"><div class="eyebrow">Fundstellen je KC-Fassung</div><div class="card">${Object.entries(n.seiten).map(([k, v]) => `${SF[k]}: <b>${esc(v)}</b>`).join("<br>")}</div></div>
+      ${n.bk ? `<div class="sec"><div class="eyebrow">Einordnung im KC</div><div class="card">${esc(n.bk)}</div></div>` : ""}
       ${n.hin ? `<div class="sec"><div class="eyebrow">Hinweis</div><p>${esc(n.hin)}</p></div>` : ""}
+      ${bne.length ? `<div class="sec"><div class="eyebrow">KC nennt Nachhaltigkeit</div>${bne.map(x => `<div class="card">${esc(x.l.stich)}<div class="ref">${esc(seitenTxt(x.l.seiten))}</div></div>`).join("")}</div>` : ""}
       ${th.length ? `<div class="sec"><div class="eyebrow">In Themenvorschlägen</div><ul class="rel">${th.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
-      <div class="sec"><div class="eyebrow">Schwerpunkte</div><ul class="rel">${sps.map(s => relBtn(s.id, `${esc(s.stufe)} · ${esc(s.seite)}`)).join("")}</ul></div>
-      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Quelle: <b>KC ${esc(f.label)}, Sek I Gymnasium</b></div></div>`;
-    foot.innerHTML = openBtn(f.url);
+      ${sdg.length ? `<div class="sec"><div class="eyebrow">Nachhaltigkeitsziele <span class="tag warn" style="margin-left:6px">Vorschlag</span></div><ul class="rel">${sdg.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
+      ${sps.length ? `<div class="sec"><div class="eyebrow">Schwerpunkte (Gymnasium)</div><ul class="rel">${sps.map(s => relBtn(s.id, `${esc(s.stufe)} · ${esc(s.seite)}`)).join("")}</ul></div>`
+        : `<div class="sec"><div class="eyebrow">Schwerpunkte</div><p class="ref">Für dieses Inhaltsfeld noch nicht erfasst.</p></div>`}
+      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Quelle: <b>KC ${esc(f.label)}, Sek I</b></div></div>`;
+    foot.innerHTML = grid(pdfBtns(Object.fromEntries(n.sf.map(k => [k, f.url[k]]))));
   } else if (n.t === "sp") {
     const f = fachOf(n);
     const parent = nb.get(n.id).find(x => byId.get(x.id).t === "if").id;
     el.innerHTML = `<div class="tags"><span class="tag">Schwerpunkt</span><span class="tag ok">✓ Fundstelle ${esc(n.seite)}</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
-      <div class="meta"><span>${esc(f.label)}</span><span>${esc(n.stufe)}</span></div>
+      <div class="meta"><span>${esc(f.label)}</span><span>Gymnasium</span><span>${esc(n.stufe)}</span></div>
       <div class="sec"><div class="eyebrow">Inhaltsfeld</div><ul class="rel">${relBtn(parent)}</ul></div>
       <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Abschnitt: <b>Kap. 7, ${esc(n.seite)}</b></div></div>
       <p class="ref">Formulierung teils gekürzt. Verbindlich ist der Wortlaut im Kerncurriculum.</p>`;
-    foot.innerHTML = openBtn(f.url);
+    foot.innerHTML = grid(pdfBtns({ gy: f.url.gy }));
+  } else if (n.t === "sdg") {
+    const it = nb.get(n.id).filter(x => vis.has(x.id));
+    const fs = new Set(it.map(x => byId.get(x.id).f));
+    el.innerHTML = `<div class="tags"><span class="tag">SDG ${n.nr}</span><span class="tag warn">Zuordnung ist Vorschlag, fachlich zu prüfen</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="meta"><span>Agenda 2030</span><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
+      <div class="sec"><div class="eyebrow">Herkunft</div><p>Die hessischen Kerncurricula nennen die Nachhaltigkeitsziele nicht. Die Zuordnung beruht auf Stichworten aus den Inhaltsfeldern.</p></div>
+      <div class="sec"><div class="eyebrow">Mögliche Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)}`); }).join("") || `<p class="ref">Keine in der aktuellen Auswahl.</p>`}</ul></div>`;
+    foot.innerHTML = `<a class="btn" href="${DATA.bne.info}" target="_blank" rel="noopener">BNE beim Kultusministerium</a>`;
+  } else if (n.t === "bne") {
+    const bel = nb.get(n.id).filter(x => vis.has(x.id));
+    el.innerHTML = `<div class="tags"><span class="tag">Aufgabengebiet</span><span class="tag ok">✓ ${esc(DATA.bne.grundlage)}</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="sec"><div class="eyebrow">Rechtsgrundlage</div><div class="card">${esc(DATA.bne.text)}</div><p class="ref">${esc(DATA.bne.quelle)}</p></div>
+      <div class="sec"><div class="eyebrow">Stellen, an denen das KC Nachhaltigkeit nennt</div><ul class="rel">${bel.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${i.t === "if" ? esc(KURZ[i.f]) + " · " : ""}${esc(x.l.stich)} · ${esc(seitenTxt(x.l.seiten))}`); }).join("")}</ul></div>
+      <div class="sec"><div class="eyebrow">Nachhaltigkeitsziele</div><p>Die 17 Ziele der Agenda 2030 liegen im inneren Ring. Ihre Verbindungen zu Inhaltsfeldern sind Vorschläge.</p></div>`;
+    foot.innerHTML = grid(`<a class="btn primary" href="${DATA.bne.url}" target="_blank" rel="noopener">Schulgesetz (PDF)</a><a class="btn" href="${DATA.bne.info}" target="_blank" rel="noopener">BNE in Hessen</a>`);
   } else {
     const it = nb.get(n.id);
     const fs = new Set(it.map(x => byId.get(x.id).f));
@@ -460,36 +527,46 @@ function detail() {
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="meta"><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
       <div class="sec"><div class="eyebrow">Herkunft</div><p>Gebündelt über gemeinsame Stichworte aus den Kerncurricula. Diese Verbindung steht so nicht im KC.</p></div>
-      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(FACH[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe)}`); }).join("")}</ul></div>`;
+      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe)}`); }).join("")}</ul></div>`;
+    foot.style.display = "none";
   }
   el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => select(b.dataset.go));
 }
 
 // --- Bedienelemente ---
 const fg = document.getElementById("faecher");
-Object.entries(FACH).forEach(([k, v]) => {
+DATA.faecher.forEach(f => {
   const b = document.createElement("button");
-  b.className = "chip"; b.id = "f-" + k; b.setAttribute("aria-pressed", "true");
-  b.innerHTML = `<span class="d" style="--c: var(--${k})"></span>${k === "pow" ? "PoWi" : v}`;
-  b.onclick = () => { state.faecher.has(k) ? state.faecher.delete(k) : state.faecher.add(k); b.setAttribute("aria-pressed", state.faecher.has(k)); render(); };
+  b.className = "chip"; b.id = "f-" + f.k; b.setAttribute("aria-pressed", "true");
+  b.innerHTML = `<span class="d" style="--c: var(--${f.k})"></span>${f.kurz}`;
+  b.onclick = () => { state.faecher.has(f.k) ? state.faecher.delete(f.k) : state.faecher.add(f.k); b.setAttribute("aria-pressed", state.faecher.has(f.k)); render(); };
   fg.appendChild(b);
+});
+document.querySelectorAll("#schulformen [data-sf]").forEach(b => b.onclick = () => {
+  const k = b.dataset.sf;
+  if (state.sf.has(k) && state.sf.size === 1) return; // mindestens eine Fassung bleibt aktiv
+  state.sf.has(k) ? state.sf.delete(k) : state.sf.add(k);
+  b.setAttribute("aria-pressed", state.sf.has(k)); render();
 });
 const setSt = st => { state.st = st; document.querySelectorAll("#stufen [data-st]").forEach(x => x.setAttribute("aria-pressed", x.dataset.st === st)); };
 document.querySelectorAll("#stufen [data-st]").forEach(b => b.onclick = () => { setSt(b.dataset.st); render(); });
-const tsp = document.getElementById("tg-sp"), tth = document.getElementById("tg-th");
-tsp.setAttribute("aria-pressed", state.sp); tth.setAttribute("aria-pressed", state.th);
-tsp.onclick = () => { state.sp = !state.sp; tsp.setAttribute("aria-pressed", state.sp); render(); };
-tth.onclick = () => { state.th = !state.th; tth.setAttribute("aria-pressed", state.th); render(); };
+const tg = { sp: document.getElementById("tg-sp"), th: document.getElementById("tg-th"), bne: document.getElementById("tg-bne") };
+Object.entries(tg).forEach(([k, b]) => {
+  b.setAttribute("aria-pressed", state[k]);
+  b.onclick = () => { state[k] = !state[k]; b.setAttribute("aria-pressed", state[k]); if (k === "bne" && state.bne) state.sel = "BNE"; render(); };
+});
 const qi = document.getElementById("q");
 qi.addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
 document.getElementById("close").onclick = () => select(null);
 document.getElementById("reset").onclick = () => {
-  state.faecher = new Set(Object.keys(FACH)); document.querySelectorAll("#faecher .chip").forEach(c => c.setAttribute("aria-pressed", "true"));
-  setSt("alle"); state.sp = state.th = true; tsp.setAttribute("aria-pressed", true); tth.setAttribute("aria-pressed", true);
+  state.faecher = alleF(); document.querySelectorAll("#faecher .chip").forEach(c => c.setAttribute("aria-pressed", "true"));
+  state.sf = new Set(Object.keys(SF)); document.querySelectorAll("#schulformen [data-sf]").forEach(c => c.setAttribute("aria-pressed", "true"));
+  setSt("alle"); state.sp = state.th = true; state.bne = false;
+  Object.entries(tg).forEach(([k, b]) => b.setAttribute("aria-pressed", state[k]));
   state.q = ""; qi.value = ""; state.sel = null; fit(); render();
 };
 
 fit();
-state.sel = "TH-01"; // Startansicht: Thema Energie ausgewählt
+state.sel = state.bne ? "BNE" : "TH-01"; // Startansicht: Thema Energie oder BNE ausgewählt
 render();
 </script>
