@@ -1,18 +1,18 @@
-key,fach,kurz,farbe
-deu,Deutsch,Deutsch,#ff8a65
-mfs,Moderne Fremdsprachen,Fremdsprachen,#ffb38a
-kun,Kunst,Kunst,#f07ad7
-mus,Musik,Musik,#c58cf5
-spo,Sport,Sport,#9be15d
-mat,Mathematik,Mathematik,#b7a2ff
-inf,Informatik,Informatik,#8b8cff
-phy,Physik,Physik,#7aa7ff
-che,Chemie,Chemie,#38c6d9
-bio,Biologie,Biologie,#4fd1a5
-erd,Erdkunde,Erdkunde,#d8b98a
-ges,Geschichte,Geschichte,#e0a070
-pow,Politik und Wirtschaft,PoWi,#ee8f9a
-al,Arbeitslehre,Arbeitslehre,#c8d36b
-eth,Ethik,Ethik,#a7c4d9
-evr,Evangelische Religion,Ev. Religion,#d9c7a7
-kar,Katholische Religion,Kath. Religion,#c7b3e6
+key,fach,kurz,gruppe,farbe
+deu,Deutsch,Deutsch,spr,#7aa7ff
+mfs,Moderne Fremdsprachen,Fremdsprachen,spr,#a9c4ff
+kun,Kunst,Kunst,kus,#b38cf0
+mus,Musik,Musik,kus,#cdb0f7
+spo,Sport,Sport,kus,#9a74e0
+mat,Mathematik,Mathematik,mint,#5fe0b0
+inf,Informatik,Informatik,mint,#93ecd0
+phy,Physik,Physik,mint,#3ec9a0
+che,Chemie,Chemie,mint,#6fd8c8
+bio,Biologie,Biologie,mint,#7ad99a
+erd,Erdkunde,Erdkunde,ges,#e8b27a
+ges,Geschichte,Geschichte,ges,#f0c89a
+pow,Politik und Wirtschaft,PoWi,ges,#d9985e
+al,Arbeitslehre,Arbeitslehre,ges,#c9a46e
+eth,Ethik,Ethik,eth,#f08aa8
+evr,Evangelische Religion,Ev. Religion,eth,#f5aec2
+kar,Katholische Religion,Kath. Religion,eth,#e0708f

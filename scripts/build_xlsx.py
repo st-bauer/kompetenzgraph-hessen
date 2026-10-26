@@ -68,10 +68,8 @@ bne_rows = [(r["fach"], r["inhaltsfeld"] or "(fachweiter Bildungsstandard)", r["
             for r in lies("bne_belege.csv")]
 sdg_rows = [(int(r["sdg"]), SDG[r["sdg"]], r["fach"], r["inhaltsfeld"], r["stichwort"], "Vorschlag, fachlich zu prüfen")
             for r in lies("bne_vorschlaege.csv")]
-ak_rows = []
-for t, items in AK:
-    for it in items:
-        ak_rows.append((t,) + it + ("Vorschlag, fachlich zu prüfen",))
+ak_rows = [(r["thema"], r["fach"], r["inhaltsfeld"], r["stichwort"], r["stufe"] or r["seite"], "Vorschlag, fachlich zu prüfen")
+           for r in lies("themen.csv")]
 
 ws = wb.create_sheet("Inhaltsfelder")
 sheet(ws, ["ID", "Fach", "Einordnung im KC", "Inhaltsfeld", "Seite HS (Kap. 6)", "Seite RS (Kap. 6)", "Seite GY (Kap. 6)", "Hinweis"],
@@ -86,7 +84,7 @@ ws = wb.create_sheet("Querbezüge belegt")
 sheet(ws, ["Fach (Quelle)", "Bezug zu", "Aussage im KC (sinngemäß)", "Fundstelle"],
       QB, [22, 28, 90, 26])
 ws = wb.create_sheet("Anknüpfungspunkte")
-sheet(ws, ["Thema", "Fach", "Inhaltsfeld", "Stichwort aus dem KC", "Stufe laut KC", "Status"],
+sheet(ws, ["Thema", "Fach", "Inhaltsfeld", "Stichwort aus dem KC", "Stufe laut KC bzw. Seite (Kap. 6)", "Status"],
       ak_rows, [26, 20, 40, 60, 30, 26], fach_col=1)
 ws = wb.create_sheet("BNE Belege")
 sheet(ws, ["Fach", "Inhaltsfeld", "Seite HS", "Seite RS", "Seite GY", "Aussage im KC (gekürzt)"],

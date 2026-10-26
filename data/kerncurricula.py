@@ -2,7 +2,7 @@
 
 Alle Inhalte stammen aus den Kerncurricula Sek I (Fassung Gymnasium) des Hessischen Kultusministeriums.
 Seitenangaben beziehen sich auf die jeweiligen PDFs (siehe URL).
-AK = Anknüpfungspunkte: Vorschläge, NICHT im KC belegt.
+Themenvorschläge (Anknüpfungspunkte) stehen in data/themen.csv, sie sind NICHT im KC belegt.
 """
 
 URL = {
@@ -333,67 +333,7 @@ QB = [
     ("Politik und Wirtschaft", "Geschichte", "Handlungskompetenz: undemokratisches Verhalten erkennen und ein historisches Beispiel damit in Verbindung bringen", "Kap. 6, S. 23"),
 ]
 
-# ---------------- Anknüpfungspunkte (Vorschlag) ----------------
-AK = [
-    ("Energie", [
-        ("Physik", "Energie in Umwelt und Technik", "Anschaulicher Energiebegriff; Energieformen und ihre Umwandlung", P1 + " / " + P910),
-        ("Physik", "Zukunftssichere Energieversorgung", "Regenerative und erschöpfbare Energien", P1),
-        ("Chemie", "Verwandlungen – Chemische Reaktion", "Endotherme und exotherme Reaktionen", C1),
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Zusammenhänge zwischen Stoff- und Energieumwandlungen", B56),
-        ("Erdkunde", "Umwelt-Gesellschaft-Beziehungen und globale Probleme", "Ressourcensicherung", OHNE),
-        ("Politik und Wirtschaft", "Gesellschaft und Natur", "Spannungsfeld zwischen Ökonomie und Ökologie", OHNE)]),
-    ("Klima und Wetter", [
-        ("Physik", "Wettererscheinungen und Klima", "Einfluss des Menschen auf das Klima und Folgen", P910),
-        ("Erdkunde", "Natur/Umwelt", "Geofaktor Klima", OHNE),
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Stoffkreisläufe (z. B. Kohlenstoffkreislauf)", B910),
-        ("Politik und Wirtschaft", "Gesellschaft und Natur", "Nachhaltige Entwicklung, Generationenverantwortung", OHNE)]),
-    ("Wasser, Luft, Boden, Stoffkreisläufe", [
-        ("Chemie", "Schatzkiste der Natur – Chemie in Alltag und Technik", "Luft, Wasser, Boden; Stoffkreisläufe in Natur und Technik", C910),
-        ("Chemie", "Welt der Stoffe – Identifikation und Ordnung von Stoffen", "Alltags-, Lebens- und Umweltrelevanz von Luft und Wasser", C910),
-        ("Physik", "Wettererscheinungen und Klima", "Anomalie des Wassers", P1),
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Stoffkreisläufe (z. B. Kohlenstoffkreislauf)", B910),
-        ("Erdkunde", "Natur/Umwelt", "Geofaktor Boden", OHNE)]),
-    ("Ökosysteme und Eingriffe des Menschen", [
-        ("Biologie", "Wechselwirkungen in Ökosystemen", "Gefährdung von Ökosystemen durch Eingriffe des Menschen", B910),
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Auswirkungen von Eingriffen des Menschen in ökologische Beziehungen", B56),
-        ("Erdkunde", "Umwelt-Gesellschaft-Beziehungen und globale Probleme", "Umweltgefährdung", OHNE),
-        ("Erdkunde", "Geographie auf regionaler Ebene", "Folgen von Eingriffen des Menschen in die Umwelt", OHNE),
-        ("Physik", "Physik in der Verantwortung", "Verantwortung gegenüber der Umwelt", P1),
-        ("Politik und Wirtschaft", "Gesellschaft und Natur", "Nachhaltige Entwicklung", OHNE)]),
-    ("Sinne und Wahrnehmung", [
-        ("Biologie", "Informationsfluss im Organismus und zwischen Organismen", "Sinnesorgane (Auge oder Ohr), Gesundheitsschutz", B910),
-        ("Physik", "Erweiterung der Sinne", "Wahrnehmung der Umgebung mit den Sinnesorganen", P1),
-        ("Physik", "Erweiterung der Sinne", "Auswirkungen von Lärm auf die Gesundheit", P910)]),
-    ("Mobilität und Verkehr", [
-        ("Physik", "Fortbewegung und Mobilität", "Weg, Zeit, Geschwindigkeit; Trägheit und Risiken im Straßenverkehr", P1 + " / " + P910),
-        ("Chemie", "Magie des Kohlenstoffs – Organische Verbindungen", "Kohlenwasserstoffverbindungen u. a. aus Energiewirtschaft und Verkehr (Kap. 6, S. 27)", "Inhaltsfeldbeschreibung"),
-        ("Politik und Wirtschaft", "Wirtschaft", "Analysekompetenz: externe Effekte bei verkehrspolitischen Fragen (Kap. 4, S. 16)", "Kompetenzbeschreibung"),
-        ("Erdkunde", "Mensch/Gesellschaft", "Humangeographisches Teilsystem Verkehr (Kap. 5, S. 19)", "Konzeptbeschreibung")]),
-    ("Ernährung, Gesundheit, Konsum", [
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Aspekte zur ausgewogenen Ernährung", B56),
-        ("Biologie", "Stoffwechsel und Regelmechanismen", "Bewertung des Konsumverhaltens im Hinblick auf Haltung und Nutzung von Lebewesen", B56),
-        ("Chemie", "Magie des Kohlenstoffs – Organische Verbindungen", "Organische Stoffe aus Ernährung und Hygiene (Kap. 6, S. 27)", "Inhaltsfeldbeschreibung"),
-        ("Politik und Wirtschaft", "Wirtschaft", "Rolle als Verbraucherinnen und Verbraucher", OHNE)]),
-    ("Teilchen und Aufbau der Materie", [
-        ("Chemie", "Blick hinter die Kulissen – Aufbau von Stoffen und chemische Bindung", "Teilchenmodell zur Deutung von Phänomenen", C1),
-        ("Physik", "Wettererscheinungen und Klima", "Modelle des Aufbaus der Materie; Aggregatzustände", P1),
-        ("Chemie", "Verwandlungen – Chemische Reaktion", "Aggregatzustand und Aggregatzustandsänderungen", C1),
-        ("Physik", "Physik in der Verantwortung", "Radioaktive Zerfallsprozesse", P910)]),
-    ("Ressourcen und Recycling", [
-        ("Chemie", "Magie des Kohlenstoffs – Organische Verbindungen", "Gewinnung, Verwendung und Recycling organischer Stoffe", C910),
-        ("Physik", "Zukunftssichere Energieversorgung", "Regenerative und erschöpfbare Energien", P1),
-        ("Erdkunde", "Umwelt-Gesellschaft-Beziehungen und globale Probleme", "Ressourcensicherung", OHNE),
-        ("Politik und Wirtschaft", "Gesellschaft und Natur", "Spannungsfeld zwischen Ökonomie und Ökologie", OHNE)]),
-    ("Migration und Globalisierung", [
-        ("Erdkunde", "Mensch/Gesellschaft", "Migration, Globalisierung, Metropolisierung", OHNE),
-        ("Erdkunde", "Umwelt-Gesellschaft-Beziehungen und globale Probleme", "Migration, Standortverlagerungen, wirtschaftliche Globalisierung", OHNE),
-        ("Politik und Wirtschaft", "Internationale Beziehungen und Globalisierung", "Globalisierung; Migration und Integration", OHNE)]),
-    ("Technik, Forschung und Verantwortung", [
-        ("Physik", "Physik in der Verantwortung", "Konsequenzen der Nutzung physikalischer Forschungsergebnisse", P910),
-        ("Biologie", "Vielfalt, Veränderung und Abstammung von Lebewesen", "Bewertung der Eingriffe des Menschen in das Erbgut", B910),
-        ("Biologie", "Fortpflanzung und Entwicklung", "Bewertung gentechnischer Veränderungen von Pflanzen und Tieren", B910),
-        ("Chemie", "Verwandlungen – Chemische Reaktion", "Chancen und Grenzen bei der Herstellung von Stoffen (Bewertung, Kap. 6, S. 24)", "Inhaltsfeldbeschreibung")]),
-]
+# Anknüpfungspunkte (Themenvorschläge) stehen in data/themen.csv
 
 HIN = [
     ("Bildungsgang", "Inhaltsfelder sind für 17 Fächer in allen drei KC-Fassungen erfasst (Hauptschule, Realschule, Gymnasium). Schwerpunkte gibt es für die fünf Pilotfächer in allen drei Fassungen; Kompetenzbereiche und Querbezüge nur in der Gymnasialfassung."),

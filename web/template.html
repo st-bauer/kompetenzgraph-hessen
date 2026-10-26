@@ -140,15 +140,17 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 .tiles.sf .tile small { font-size: .58rem; }
 .nd { cursor: pointer; }
 .nd .core { fill-opacity: .9; }
-.nd.t-sp .core { fill-opacity: .7; }
+.nd.t-sp .core { fill-opacity: .75; }
+.nd.t-thema .core { fill-opacity: .55; stroke: var(--amber); stroke-opacity: .9; stroke-width: 1.2; }
 .nd.sel .ring { stroke: var(--ink); stroke-width: 1.5; fill: none; }
 .lbl { font-family: var(--font); fill: var(--ink); pointer-events: none; paint-order: stroke; stroke: #0b1420; stroke-width: 3px; stroke-linejoin: round; font-weight: 600; }
-.lbl.fach { font-weight: 800; font-size: 15px; }
-.lbl.if { font-size: 9.5px; fill: #c4d3e0; }
-.lbl.thema { font-size: 11px; fill: var(--amber); font-weight: 700; }
+.lbl.fach { font-weight: 700; font-size: 13px; }
+.insel { font: 600 11px var(--mono); letter-spacing: .16em; opacity: .75; }
+.lbl.if { font-size: 9.5px; fill: #c4d3e0; display: none; }
+.lbl.thema { font-size: 11.5px; fill: #f6dca6; font-weight: 700; }
 .lbl.sp { font-size: 8.5px; display: none; }
 .lbl.big { font-size: 13px; font-weight: 800; fill: #ffffff; }
-.dim { opacity: .1; }
+.dim { opacity: .16; }
 .hidden { display: none; }
 
 /* Mobil */
@@ -231,7 +233,7 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 
       <div>
         <div class="eyebrow" style="margin-bottom:8px">Legende</div>
-        <div class="legend">
+        <div class="legend" id="legende">
           <span><span class="d" style="--c: var(--amber)"></span>Thema</span>
           <span><span class="d" style="--c: var(--bne)"></span>BNE</span>
           <span><span class="ln" style="--c: var(--mint)"></span>Im KC belegt</span>
@@ -309,33 +311,42 @@ const alleF = () => new Set(Object.keys(FACH));
 const state = { faecher: alleF(), sf: new Set(Object.keys(SF)), st: "alle", sp: true, th: true, bne: false, q: "", sel: null };
 try { const s = JSON.parse(localStorage.getItem("kg-state") || "null"); if (s) { state.sp = s.sp ?? true; state.th = s.th ?? true; state.bne = s.bne ?? false; } } catch (e) {}
 
-// --- Layout einmal berechnen ---
-const W = 1400, H = 1050, RX = 470, RY = 380;
+// --- Layout einmal berechnen: Inseln nach Aufgabenfeldern, Themen in der Mitte, BNE oben ---
+const W = 1400, H = 1050;
+const GR = Object.fromEntries(DATA.gruppen.map(g => [g.k, g]));
+const GRUPPE = Object.fromEntries(DATA.faecher.map(f => [f.k, f.gruppe]));
 const anchor = {};
-DATA.faecher.forEach((f, i) => {
-  const a = -Math.PI / 2 + i * 2 * Math.PI / DATA.faecher.length;
-  anchor[f.k] = { x: W / 2 + RX * Math.cos(a), y: H / 2 + RY * Math.sin(a) };
+DATA.gruppen.forEach(g => {
+  const fs = DATA.faecher.filter(f => f.gruppe === g.k);
+  const r = fs.length > 1 ? 40 + 15 * fs.length : 0;
+  fs.forEach((f, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / fs.length; anchor[f.k] = { x: g.x + r * Math.cos(a), y: g.y + r * 0.8 * Math.sin(a) }; });
 });
-anchor.thema = anchor.bne = anchor.sdg = { x: W / 2, y: H / 2 };
+anchor.thema = { x: 745, y: 545 };
+anchor.bne = anchor.sdg = { x: 720, y: 150 };
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 nodes.forEach(n => { const a = anchor[n.f]; n.x = a.x + (rnd() - 0.5) * 60; n.y = a.y + (rnd() - 0.5) * 60; });
-// SDGs als fester innerer Ring, BNE in der Mitte
+// SDGs als fester Ring um den BNE-Knoten
 nodes.filter(n => n.t === "sdg").forEach(n => {
   const a = -Math.PI / 2 + (n.nr - 1) * 2 * Math.PI / 17;
-  n.fx = n.x = W / 2 + 175 * Math.cos(a); n.fy = n.y = H / 2 + 150 * Math.sin(a);
+  n.fx = n.x = anchor.bne.x + 120 * Math.cos(a); n.fy = n.y = anchor.bne.y + 95 * Math.sin(a);
 });
-const hub = byId.get("BNE"); hub.fx = hub.x = W / 2; hub.fy = hub.y = H / 2;
-const radius = n => n.t === "fach" ? 13 : n.t === "bne" ? 12 : n.t === "sdg" ? 8 : n.t === "if" ? 6 : n.t === "thema" ? 6.5 : 3.4;
-const weak = { beleg: [420, 0.02], vorschlag: [160, 0.05], sdg: [260, 0.01], bne: [300, 0.01] };
+const hub = byId.get("BNE"); hub.fx = hub.x = anchor.bne.x; hub.fy = hub.y = anchor.bne.y;
+// Themen fest auf zwei versetzten Ringen in der Mitte, damit sich die Beschriftungen nicht überlagern
+nodes.filter(n => n.t === "thema").forEach((n, i, a) => {
+  const w = -Math.PI / 2 + i * 2 * Math.PI / a.length, f = i % 2 ? 0.56 : 1;
+  n.fx = n.x = anchor.thema.x + 275 * f * Math.cos(w); n.fy = n.y = anchor.thema.y + 210 * f * Math.sin(w);
+});
+const radius = n => n.t === "fach" ? 7 : n.t === "bne" ? 12 : n.t === "sdg" ? 8 : n.t === "if" ? 4.5 : n.t === "thema" ? 9 : 2.6;
+const weak = { beleg: [420, 0], vorschlag: [200, 0.012], sdg: [260, 0], bne: [300, 0] };
 
 const sim = d3.forceSimulation(nodes)
   .force("link", d3.forceLink(links).id(d => d.id)
-    .distance(l => weak[l.k] ? weak[l.k][0] : (l.target.t === "sp" ? 22 : 55))
-    .strength(l => weak[l.k] ? weak[l.k][1] : 0.9))
-  .force("charge", d3.forceManyBody().strength(n => n.t === "fach" ? -400 : n.t === "if" ? -80 : n.t === "thema" ? -160 : -14))
-  .force("collide", d3.forceCollide(n => radius(n) + (n.t === "sp" ? 1.8 : 4)))
-  .force("x", d3.forceX(n => anchor[n.f].x).strength(n => n.t === "fach" ? 0.6 : n.t === "thema" ? 0.08 : 0.07))
-  .force("y", d3.forceY(n => anchor[n.f].y).strength(n => n.t === "fach" ? 0.6 : n.t === "thema" ? 0.08 : 0.07))
+    .distance(l => weak[l.k] ? weak[l.k][0] : (l.target.t === "sp" ? 20 : 48))
+    .strength(l => weak[l.k] ? weak[l.k][1] : l.target.t === "sp" ? 0.25 : 0.6))
+  .force("charge", d3.forceManyBody().strength(n => n.t === "fach" ? -120 : n.t === "if" ? -45 : n.t === "thema" ? -260 : -9).distanceMax(220))
+  .force("collide", d3.forceCollide(n => radius(n) + (n.t === "sp" ? 1.4 : n.t === "thema" ? 14 : 3)))
+  .force("x", d3.forceX(n => anchor[n.f].x).strength(n => n.t === "fach" ? 0.8 : n.t === "thema" ? 0.05 : 0.09))
+  .force("y", d3.forceY(n => anchor[n.f].y).strength(n => n.t === "fach" ? 0.8 : n.t === "thema" ? 0.05 : 0.09))
   .randomSource(rnd)
   .stop();
 for (let i = 0; i < 400; i++) sim.tick();
@@ -348,6 +359,22 @@ const dust = g.append("g").attr("pointer-events", "none");
 for (let i = 0; i < 320; i++) dust.append("circle").attr("cx", -200 + rnd() * (W + 400)).attr("cy", -150 + rnd() * (H + 300))
   .attr("r", rnd() * 1.1 + 0.2).attr("fill", "#8fb3cc").attr("opacity", rnd() * 0.35 + 0.05);
 
+// Wolken (Nebel) unter jeder Insel
+const defs = svg.select("defs");
+const neb = g.append("g").attr("pointer-events", "none");
+DATA.gruppen.forEach(gr => {
+  const ms = nodes.filter(n => GRUPPE[n.f] === gr.k);
+  const cx = d3.mean(ms, n => n.x), cy = d3.mean(ms, n => n.y);
+  const ds = ms.map(n => Math.hypot(n.x - cx, n.y - cy)).sort(d3.ascending);
+  const r = d3.quantile(ds, 0.92) + 70;
+  const rg = defs.append("radialGradient").attr("id", "neb-" + gr.k);
+  rg.append("stop").attr("offset", "0%").attr("stop-color", gr.farbe).attr("stop-opacity", 0.2);
+  rg.append("stop").attr("offset", "60%").attr("stop-color", gr.farbe).attr("stop-opacity", 0.07);
+  rg.append("stop").attr("offset", "100%").attr("stop-color", gr.farbe).attr("stop-opacity", 0);
+  neb.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r).attr("fill", `url(#neb-${gr.k})`);
+  neb.append("text").attr("class", "insel").attr("x", cx).attr("y", cy - r + 34).attr("text-anchor", "middle").attr("fill", gr.farbe).text(gr.label.toUpperCase());
+});
+
 const order = { beleg: 0, bne: 1, hat: 2, vorschlag: 3, sdg: 4 };
 const lk = g.append("g").selectAll("line").data(links.slice().sort((a, b) => order[a.k] - order[b.k])).join("line")
   .attr("class", l => "lk " + l.k)
@@ -359,10 +386,8 @@ const nd = g.append("g").selectAll("g").data(nodes.slice().sort((a, b) => (a.t =
   .attr("tabindex", n => n.t === "sp" ? -1 : 0).attr("role", "button").attr("aria-label", n => n.label)
   .on("click", (e, n) => { e.stopPropagation(); select(n.id); })
   .on("keydown", (e, n) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(n.id); } });
-nd.filter(n => n.t !== "thema").append("circle").attr("class", "core").attr("r", radius).attr("fill", n => n.t === "bne" ? "var(--bne)" : col(n))
-  .attr("filter", n => n.t === "fach" || n.t === "bne" ? "url(#glowbig)" : n.t === "if" || n.t === "sdg" ? "url(#glow)" : null);
-nd.filter(n => n.t === "thema").append("rect").attr("class", "core").attr("x", -5.5).attr("y", -5.5).attr("width", 11).attr("height", 11)
-  .attr("transform", "rotate(45)").attr("fill", "var(--amber)").attr("filter", "url(#glow)");
+nd.append("circle").attr("class", "core").attr("r", radius).attr("fill", n => n.t === "bne" ? "var(--bne)" : col(n))
+  .attr("filter", n => ["fach", "bne", "thema"].includes(n.t) ? "url(#glowbig)" : n.t === "if" || n.t === "sdg" ? "url(#glow)" : null);
 nd.filter(n => n.t === "sdg").append("text").attr("class", "nr").attr("y", 3).text(n => n.nr);
 nd.append("circle").attr("class", "ring").attr("r", n => radius(n) + 5).attr("fill", "none");
 nd.append("title").text(n => n.t === "sdg" ? `SDG ${n.nr}: ${n.label}` : n.label);
@@ -371,7 +396,8 @@ const lb = g.append("g").selectAll("text").data(nodes).join("text")
   .attr("class", n => "lbl " + n.t).attr("x", n => n.x + radius(n) + 4).attr("y", n => n.y + 3)
   .attr("fill", n => n.t === "sdg" ? n.farbe : null)
   .text(n => n.t === "if" ? short(n.label, 34) : n.t === "sp" ? short(n.label, 40) : n.t === "sdg" ? short(n.label, 26) : n.t === "fach" ? n.kurz : n.label);
-lb.filter(n => n.t === "fach" || n.t === "bne").attr("x", n => n.x).attr("y", n => n.y - 20).attr("text-anchor", "middle");
+lb.filter(n => n.t === "fach" || n.t === "bne").attr("x", n => n.x).attr("y", n => n.y - 14).attr("text-anchor", "middle");
+lb.filter(n => n.t === "thema").attr("x", n => n.x).attr("y", n => n.y - 15).attr("text-anchor", "middle");
 lb.filter(n => n.t === "bne").text("BNE");
 function short(s, m) { const t = s.split(" – ")[0]; return t.length > m ? t.slice(0, m - 1) + "…" : t; }
 
@@ -380,7 +406,7 @@ svg.call(zoom).on("click", () => select(null));
 function fit() {
   const el = document.getElementById("stage"); const w = el.clientWidth, h = el.clientHeight;
   const xs = nodes.map(n => n.x), ys = nodes.map(n => n.y);
-  const x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 80, y0 = Math.min(...ys) - 120, y1 = Math.max(...ys) + 90;
+  const x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 80, y0 = Math.min(...ys) - 220, y1 = Math.max(...ys) + 90;
   const k = Math.min(w / (x1 - x0), h / (y1 - y0));
   svg.call(zoom.transform, d3.zoomIdentity.translate(w / 2 - k * (x0 + x1) / 2, h / 2 - k * (y0 + y1) / 2).scale(k));
 }
@@ -422,10 +448,10 @@ function render() {
   nd.classed("hidden", n => !vis.has(n.id)).classed("dim", off).classed("sel", n => n.id === state.sel);
   lb.classed("hidden", n => !vis.has(n.id)).classed("dim", off)
     .classed("big", n => n.id === state.sel && n.t !== "fach")
-    .style("display", n => n.t === "sp" && vis.has(n.id) && ((focus && focus.has(n.id)) || (hits && hits.has(n.id))) ? "block" : null);
+    .style("display", n => (n.t === "sp" || n.t === "if") && vis.has(n.id) && ((focus && focus.has(n.id)) || (hits && hits.has(n.id))) ? "block" : null);
   const lvis = l => vis.has(l.source.id) && vis.has(l.target.id);
   const lhot = l => s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp"));
-  lk.classed("hidden", l => !lvis(l))
+  lk.classed("hidden", l => !lvis(l) || !lhot(l))
     .classed("hot", l => !!lhot(l))
     .classed("dim", l => (s && !lhot(l)) || (hits && !(hits.has(l.source.id) || hits.has(l.target.id))));
   document.getElementById("s-n").textContent = vis.size.toLocaleString("de-DE");
@@ -531,13 +557,14 @@ function detail(vis) {
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="meta"><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
       <div class="sec"><div class="eyebrow">Herkunft</div><p>Gebündelt über gemeinsame Stichworte aus den Kerncurricula. Diese Verbindung steht so nicht im KC.</p></div>
-      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe)}`); }).join("")}</ul></div>`;
+      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe || "Kap. 6, " + x.l.seite)}`); }).join("")}</ul></div>`;
     foot.style.display = "none";
   }
   el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => select(b.dataset.go));
 }
 
 // --- Bedienelemente ---
+document.getElementById("legende").insertAdjacentHTML("afterbegin", DATA.gruppen.map(gr => `<span><span class="d" style="--c: ${gr.farbe}"></span>${gr.label}</span>`).join(""));
 const fg = document.getElementById("faecher");
 DATA.faecher.forEach(f => {
   const b = document.createElement("button");

@@ -3,13 +3,14 @@
 ## Worum es geht
 Plattform, die die hessischen Kerncurricula (KC) aller Fächer als Kompetenzgraph darstellt. Später sollen die Schulcurricula der Johann-Christian-Senckenberg-Schule (JCS, Integrierte Gesamtschule, Runkel) eingebunden werden. Ziel ist, für themenorientiertes Arbeiten und Projektlernen (Vorbild TheA, THEO) gemeinsame Anknüpfungspunkte über Fächer und Jahrgangsstufen zu finden.
 
-Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterleiste links, Kompetenz-Inspektor rechts, Zähler unten (angelehnt an ein Bildungsplan-Tool aus Baden-Württemberg). Eigenen Namen behalten, keine fremden Marken übernehmen.
+Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterleiste links, Kompetenz-Inspektor rechts, Zähler unten (angelehnt an ein Bildungsplan-Tool aus Baden-Württemberg). Fächer liegen als farbige Inseln (Wolken) je Aufgabenfeld, Themen als leuchtende Knoten in der Mitte, Linien erscheinen nur bei Auswahl. Eigenen Namen behalten, keine fremden Marken übernehmen.
 
 ## Aktueller Stand (26.10.2026)
 - 17 Fächer einer IGS 5 bis 10: Deutsch, Moderne Fremdsprachen, Kunst, Musik, Sport, Mathematik, Informatik, Physik, Chemie, Biologie, Erdkunde, Geschichte, PoWi, Arbeitslehre, Ethik, Ev. Religion, Kath. Religion
 - Inhaltsfelder (129) in allen drei KC-Fassungen (Hauptschule, Realschule, Gymnasium) mit Seitenangabe je Fassung; Filter „KC-Fassung“ auf der Seite
 - Schwerpunkte für die 5 Pilotfächer in allen drei Fassungen: Gymnasium 166 (Pilot), Haupt- und Realschule 304 Zeilen in `schwerpunkte_sek1.csv`; Erdkunde und PoWi nutzen Stichworte aus Kap. 6, das in allen Fassungen gleich lautet
-- Kompetenzbereiche, 13 belegte Querbezüge und 11 Themenvorschläge (47 Verknüpfungen) bisher nur Pilotfächer, Fassung Gymnasium
+- 20 Themenvorschläge mit 138 Verknüpfungen über alle 17 Fächer (`themen.csv`, Vorschlag)
+- Kompetenzbereiche und 13 belegte Querbezüge bisher nur Pilotfächer, Fassung Gymnasium
 - BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit 64 Zuordnungen (Vorschlag)
 - Webseite: `docs/index.html` (wird aus `web/template.html` gebaut, GitHub Pages liefert `docs/` aus)
 - Online: https://st-bauer.github.io/kompetenzgraph-hessen/ (Repo st-bauer/kompetenzgraph-hessen, öffentlich)
@@ -17,13 +18,15 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 
 ## Struktur
 ```
-data/faecher.csv        Fächer mit Kurzname und Farbe (Reihenfolge = Anordnung im Graphen)
+data/aufgabenfelder.csv Inseln im Graphen: Aufgabenfeld, Farbe, Lage (x, y)
+data/faecher.csv        Fächer mit Kurzname, Aufgabenfeld und Farbe
+data/themen.csv         Themenvorschläge: Thema, Fach, Inhaltsfeld, Stichwort aus dem KC, Stufe oder Seite (Kap. 6)
 data/inhaltsfelder_sek1.csv  Inhaltsfelder aller Fächer, Seite je KC-Fassung (leer = nicht in dieser Fassung)
 data/schwerpunkte_sek1.csv   Schwerpunkte Haupt- und Realschule (eine Zeile je Fassung, Stufe im KC-Wortlaut)
 data/bne_sdg.csv        17 SDGs mit offizieller Farbe
 data/bne_belege.csv     Stellen, an denen das KC Nachhaltigkeit nennt (Beleg)
 data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern (Vorschlag)
-data/kerncurricula.py   Pilotdaten Gymnasium (Schwerpunkte, Kompetenzbereiche, Querbezüge, Themenvorschläge, Hinweise)
+data/kerncurricula.py   Pilotdaten Gymnasium (Schwerpunkte, Kompetenzbereiche, Querbezüge, Hinweise)
 data/quellen_sek1.csv   Alle KC- und Leitfaden-PDFs Sek I mit URL (Stand 26.10.2026)
 scripts/build_xlsx.py   erzeugt die Excel-Tabelle
 scripts/build_graph.py  erzeugt output/data.json und docs/index.html
@@ -66,7 +69,7 @@ Vor dem öffentlichen Teilen klären: Nutzungsbedingungen des Hessischen Kultusm
 - Inhaltliche Schwerpunkte dürfen gekürzt werden, der Sinn bleibt erhalten. Verbindlich ist der Wortlaut im PDF.
 - Fächerübergreifende Verbindungen strikt trennen:
   - `QB` / Kantentyp `beleg`: steht ausdrücklich im KC (mit Fundstelle).
-  - `AK` / Kantentyp `vorschlag`: eigene Bündelung über gemeinsame Stichworte. Immer als „Vorschlag, fachlich zu prüfen“ kennzeichnen.
+  - `themen.csv` / Kantentyp `vorschlag`: eigene Bündelung über gemeinsame Stichworte aus dem KC. Immer als „Vorschlag, fachlich zu prüfen“ kennzeichnen.
 - BNE: `bne_belege.csv` nur, wo das KC selbst Nachhaltigkeit nennt. SDG-Zuordnungen sind immer Vorschlag (die KC nennen keine SDGs).
 - Keine Vermutungen als Fakten darstellen. Unsicheres klar markieren (Spalte „Hinweis“).
 - Stufen exakt so übernehmen, wie das KC sie benennt. Sie sind je Fach verschieden:
@@ -86,7 +89,8 @@ Vor dem öffentlichen Teilen klären: Nutzungsbedingungen des Hessischen Kultusm
 2. SDG-Vorschläge fachlich prüfen lassen (Fachschaften, BNE-Beauftragte).
 3. Schulcurricula der JCS als zweite Ebene: Zuordnung von Unterrichtseinheiten zu Schwerpunkten und zu Jahrgängen.
 4. Ein reales TheA/THEO-Thema als Testfall durchspielen.
-5. Restliche Pilotdaten aus `kerncurricula.py` in CSV überführen (Inhaltsfelder sind schon umgestellt).
+5. Restliche Pilotdaten aus `kerncurricula.py` in CSV überführen (Inhaltsfelder und Themen sind schon umgestellt).
+6. Belegte Querbezüge aus Kap. 3/4 der übrigen KC auslesen (z. B. Geschichte → Erdkunde, PoWi).
 
 ## Schreibregeln für Texte und Oberfläche
 - Deutsch, natürlicher Ton.

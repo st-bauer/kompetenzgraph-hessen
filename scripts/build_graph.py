@@ -11,6 +11,7 @@ def lies(name):
 
 # Fächer in Reihenfolge der Anordnung im Kreis (benachbarte Fächer liegen nebeneinander)
 FAECHER = [(r["key"], r["fach"], r["kurz"], r["farbe"]) for r in lies("faecher.csv")]
+GRUPPE = {r["key"]: r["gruppe"] for r in lies("faecher.csv")}
 KEY = {f: k for k, f, _, _ in FAECHER}
 SF = {"hs": "Hauptschule", "rs": "Realschule", "gy": "Gymnasium"}
 EARLY = {b.B56, b.C1, b.P1}
@@ -73,11 +74,14 @@ for i, n in enumerate(sp_nodes, 1):
     fach = next(f for k, f, _, _ in FAECHER if k == n["f"])
     links.append({"s": if_id[(fach, n["feld"])], "t": n["id"], "k": "hat"})
 
-for j, (thema, items) in enumerate(b.AK, 1):
-    tid = f"TH-{j:02d}"
-    nodes.append({"id": tid, "t": "thema", "f": "thema", "label": thema})
-    for fach, feld, stich, stufe in items:
-        links.append({"s": tid, "t": if_id[(fach, feld)], "k": "vorschlag", "stich": stich, "stufe": stufe})
+# Themenvorschläge (eigene Bündelung, nicht im KC)
+th_id = {}
+for r in lies("themen.csv"):
+    if r["thema"] not in th_id:
+        th_id[r["thema"]] = f"TH-{len(th_id) + 1:02d}"
+        nodes.append({"id": th_id[r["thema"]], "t": "thema", "f": "thema", "label": r["thema"]})
+    links.append({"s": th_id[r["thema"]], "t": if_id[(r["fach"], r["inhaltsfeld"])], "k": "vorschlag",
+                  "stich": r["stichwort"], "stufe": r["stufe"], "seite": r["seite"]})
 
 # belegte Querbezüge zwischen Fächern
 beleg = [
@@ -104,7 +108,8 @@ for r in lies("bne_vorschlaege.csv"):
 
 out = {
     "stand": "26.10.2026",
-    "faecher": [{"k": k, "label": f, "kurz": kurz, "farbe": c} for k, f, kurz, c in FAECHER],
+    "faecher": [{"k": k, "label": f, "kurz": kurz, "farbe": c, "gruppe": GRUPPE[k]} for k, f, kurz, c in FAECHER],
+    "gruppen": [{"k": r["key"], "label": r["label"], "farbe": r["farbe"], "x": int(r["x"]), "y": int(r["y"])} for r in lies("aufgabenfelder.csv")],
     "schulformen": SF,
     "nodes": nodes, "links": links,
     "querbezuege": [list(q) for q in b.QB],
