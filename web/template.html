@@ -1,0 +1,495 @@
+<title>Kompetenzgraph Hessen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: App-Rahmen in drei Spalten (Filterleiste | Graph-Bühne | Inspektor), mobil gestapelt. Bewusst nur dunkles Thema. */
+:root {
+  --bg: #0b1420;
+  --bg2: #0f1b2a;
+  --panel: #111d2b;
+  --panel2: #16263a;
+  --line: #22344a;
+  --ink: #e8f0f7;
+  --muted: #8a9db0;
+  --faint: #5d7084;
+  --mint: #5fe0b0;
+  --mint-ink: #08261d;
+  --amber: #f2c46d;
+  --bio: #4fd1a5; --che: #38c6d9; --phy: #7aa7ff; --erd: #d8b98a; --pow: #ee8f9a;
+  --font: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45;
+}
+.app { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; }
+/* Kopfleiste */
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid var(--line); background: var(--bg);
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 50%, rgba(95,224,176,.35), transparent 65%), var(--panel); display: grid; place-items: center; flex: none; }
+.logo i { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px var(--mint); }
+.brand b { font-weight: 800; letter-spacing: .14em; font-size: .9rem; }
+.brand b span { color: var(--mint); font-weight: 600; }
+.brand small { display: block; color: var(--muted); font-size: .72rem; }
+.pills { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pill { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; display: inline-flex; gap: 6px; align-items: center; }
+.pill .on { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+.btn { font: 600 .8rem var(--font); border-radius: 8px; padding: 7px 12px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+.btn.primary { background: var(--mint); color: var(--mint-ink); border-color: var(--mint); }
+.btn:focus-visible, .tile:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+/* Hauptbereich */
+.main { display: grid; grid-template-columns: 270px minmax(0, 1fr) 340px; min-height: 0; }
+.side { border-right: 1px solid var(--line); padding: 18px 16px; overflow: auto; display: flex; flex-direction: column; gap: 18px; background: var(--bg); }
+.eyebrow { font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: 1.9rem; line-height: 1.1; margin: 8px 0 8px; font-weight: 800; letter-spacing: -.02em; }
+.hero h1 em { font-style: normal; color: var(--mint); }
+.hero p { color: var(--muted); font-size: .82rem; margin: 0; }
+.field-label { font-weight: 700; font-size: .82rem; margin-bottom: 8px; }
+.search input { width: 100%; font: .85rem var(--font); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; }
+.search input::placeholder { color: var(--faint); }
+.box { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.tile { font: 700 .85rem var(--font); color: var(--ink); background: var(--bg2); border: 1px solid var(--line); border-radius: 9px; padding: 9px 4px 7px; cursor: pointer; text-align: center; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+.tile small { font: 500 .62rem var(--font); color: var(--muted); }
+.tile[aria-pressed="true"] { border-color: var(--mint); background: rgba(95,224,176,.09); color: var(--mint); }
+.box .note { color: var(--muted); font-size: .72rem; margin: 8px 0 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 .78rem var(--font); color: var(--ink); background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+.chip .d { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); }
+.chip[aria-pressed="false"] { opacity: .4; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: .74rem; color: var(--muted); }
+.legend span { display: inline-flex; gap: 7px; align-items: center; }
+.legend .d { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.legend .ln { width: 18px; height: 0; border-top: 2px solid var(--c); }
+.legend .ln.dash { border-top-style: dashed; }
+.hinweis { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--panel); display: flex; gap: 8px; }
+.hinweis::before { content: "◆"; color: var(--mint); font-size: .7rem; }
+
+/* Bühne */
+.stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 50%, #13243a 0%, var(--bg) 75%); }
+.stage-head { position: absolute; left: 22px; top: 16px; pointer-events: none; }
+.stage-head h2 { margin: 6px 0 2px; font-size: 1.35rem; font-weight: 800; letter-spacing: -.01em; }
+.stage-head p { margin: 0; color: var(--muted); font-size: .78rem; }
+.stage-head .crumb { margin-top: 10px; font-size: .72rem; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.stage-head .crumb::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+.badge3d { position: absolute; right: 16px; top: 16px; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; color: var(--mint); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; background: rgba(17,29,43,.7); }
+svg { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.stats { position: absolute; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; border: 1px solid var(--line); border-radius: 12px; background: rgba(17,29,43,.88); backdrop-filter: blur(6px); }
+.stats div { padding: 10px 16px; border-right: 1px solid var(--line); }
+.stats div:last-child { border-right: 0; }
+.stats b { display: block; font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stats small { color: var(--muted); font-size: .66rem; }
+.zoom { position: absolute; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 2px; border: 1px solid var(--line); border-radius: 12px; background: rgba(17,29,43,.88); padding: 4px; }
+.zoom button { width: 34px; height: 32px; background: transparent; border: 0; color: var(--ink); font: 600 1rem var(--font); cursor: pointer; border-radius: 8px; }
+.zoom button:hover { background: var(--panel2); }
+.hint-bar { position: absolute; left: 0; right: 0; bottom: 2px; text-align: center; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; color: var(--faint); pointer-events: none; }
+
+/* Inspektor */
+.insp { border-left: 1px solid var(--line); background: var(--bg); display: flex; flex-direction: column; min-height: 0; }
+.insp-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.insp-head h3 { margin: 6px 0 0; font-size: 1.05rem; font-weight: 800; }
+.x { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; font-size: 1rem; }
+.insp-body { padding: 16px 18px; overflow: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; }
+.insp-foot { padding: 12px 18px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.insp-foot a { display: block; text-align: center; text-decoration: none; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 700 .62rem var(--mono); letter-spacing: .12em; text-transform: uppercase; border-radius: 6px; padding: 5px 8px; background: rgba(95,224,176,.14); color: var(--mint); border: 1px solid rgba(95,224,176,.35); }
+.tag.ok { text-transform: none; letter-spacing: 0; font: 600 .72rem var(--font); background: transparent; }
+.tag.warn { background: rgba(242,196,109,.12); color: var(--amber); border-color: rgba(242,196,109,.45); text-transform: none; letter-spacing: 0; font: 600 .72rem var(--font); }
+.ititle { font-size: 1.25rem; line-height: 1.3; font-weight: 800; margin: 0; text-wrap: balance; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.meta span { font-size: .74rem; color: var(--ink); border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 4px 8px; }
+.sec { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.sec .eyebrow { color: var(--ink); opacity: .85; }
+.sec p { margin: 0; color: var(--ink); font-size: .85rem; }
+.card { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 10px 12px; font-size: .83rem; }
+.ref { font-family: var(--mono); font-size: .74rem; color: var(--muted); }
+.ref b { color: var(--ink); font-weight: 600; }
+ul.rel { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+ul.rel li button { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: block; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 9px 11px; font-size: .83rem; font-weight: 600; color: var(--ink); }
+ul.rel li button:hover { border-color: var(--mint); }
+ul.rel li button:focus-visible { outline: 2px solid var(--mint); }
+ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-size: .74rem; margin-top: 2px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); margin-right: 6px; box-shadow: 0 0 6px var(--c); }
+.empty { text-align: center; color: var(--muted); padding: 40px 10px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.empty .star { font-size: 2rem; color: var(--mint); text-shadow: 0 0 18px var(--mint); }
+.empty h4 { margin: 0; color: var(--ink); font-size: 1.3rem; font-weight: 800; line-height: 1.25; }
+
+/* Graph */
+.lk { stroke: #3a6f86; stroke-opacity: .35; stroke-width: .7; }
+.lk.vorschlag { stroke: var(--amber); stroke-opacity: .75; stroke-dasharray: 4 3; stroke-width: 1.1; }
+.lk.beleg { stroke: var(--mint); stroke-opacity: .5; stroke-width: 2.6; }
+.lk.hot { stroke: var(--mint); stroke-opacity: .95; stroke-width: 1.4; }
+.lk.vorschlag.hot { stroke: var(--amber); stroke-width: 1.8; }
+.nd { cursor: pointer; }
+.nd .core { fill-opacity: .9; }
+.nd.t-sp .core { fill-opacity: .7; }
+.nd.sel .ring { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.lbl { font-family: var(--font); fill: var(--ink); pointer-events: none; paint-order: stroke; stroke: #0b1420; stroke-width: 3px; stroke-linejoin: round; font-weight: 600; }
+.lbl.fach { font-weight: 800; font-size: 15px; }
+.lbl.if { font-size: 9.5px; fill: #c4d3e0; }
+.lbl.thema { font-size: 11px; fill: var(--amber); font-weight: 700; }
+.lbl.sp { font-size: 8.5px; display: none; }
+.lbl.big { font-size: 13px; font-weight: 800; fill: #ffffff; }
+.dim { opacity: .1; }
+.hidden { display: none; }
+
+/* Mobil */
+@media (max-width: 1100px) { .main { grid-template-columns: 240px minmax(0, 1fr) 300px; } }
+@media (max-width: 860px) {
+  .app { height: auto; display: block; }
+  .main { display: flex; flex-direction: column; }
+  .stage { height: 64vh; min-height: 380px; order: 1; }
+  .insp { order: 2; border-left: 0; border-top: 1px solid var(--line); }
+  .side { order: 3; border-right: 0; border-top: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .insp-head, .insp-body, .insp-foot { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .stage-head { left: 16px; }
+  .stage-head h2 { font-size: 1.1rem; }
+  .badge3d, .hint-bar, .top .pill.hide-m { display: none; }
+  .stats div { padding: 7px 10px; }
+  .stats b { font-size: .95rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="logo"><i></i></div>
+      <div><b>KERNCURRICULUM <span>/ GRAPH</span></b><small>Hessen · Sekundarstufe I · Gymnasium</small></div>
+    </div>
+    <div class="pills">
+      <span class="pill"><span class="on"></span>Pilot</span>
+      <span class="pill hide-m">5 Fächer · Stand 26.10.2026</span>
+      <button class="btn" id="reset">↗ Ansicht zurücksetzen</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <aside class="side">
+      <div class="hero">
+        <div class="eyebrow">Kerncurriculum entdecken</div>
+        <h1>Fächer,<br><em>verknüpft.</em></h1>
+        <p>Die hessischen Kerncurricula als Netz aus Inhaltsfeldern und Schwerpunkten, mit Anknüpfungspunkten für themenorientiertes Arbeiten.</p>
+      </div>
+
+      <div class="search">
+        <div class="field-label">Begriff suchen</div>
+        <input id="q" type="search" placeholder="z. B. Energie, Klima, Wasser" aria-label="Begriff suchen">
+      </div>
+
+      <div class="box">
+        <div class="field-label">Stufe laut KC</div>
+        <div class="tiles" id="stufen">
+          <button class="tile" data-st="frueh" id="st-frueh" aria-pressed="false">Früh<small>5/6 · 1. Jahr</small></button>
+          <button class="tile" data-st="spaet" id="st-spaet" aria-pressed="false">9/10<small>bis Ende</small></button>
+          <button class="tile" data-st="alle" id="st-alle" aria-pressed="true">Beide<small>Vergleich</small></button>
+        </div>
+        <p class="note">Die Fächer benennen die erste Stufe unterschiedlich: Biologie „bis Ende 5/6“, Chemie „1. Lernjahr“, Physik „ca. Hälfte des Stundenkontingents“.</p>
+      </div>
+
+      <div>
+        <div class="field-label">Fächer</div>
+        <div class="chips" id="faecher"></div>
+      </div>
+
+      <div>
+        <div class="field-label">Ebenen</div>
+        <div class="chips">
+          <button class="chip" id="tg-sp" aria-pressed="true"><span class="d" style="--c: #9fb3c6"></span>Schwerpunkte</button>
+          <button class="chip" id="tg-th" aria-pressed="true"><span class="d" style="--c: var(--amber)"></span>Themenvorschläge</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="eyebrow" style="margin-bottom:8px">Legende</div>
+        <div class="legend">
+          <span><span class="d" style="--c: var(--bio)"></span>Biologie</span>
+          <span><span class="d" style="--c: var(--che)"></span>Chemie</span>
+          <span><span class="d" style="--c: var(--phy)"></span>Physik</span>
+          <span><span class="d" style="--c: var(--erd)"></span>Erdkunde</span>
+          <span><span class="d" style="--c: var(--pow)"></span>PoWi</span>
+          <span><span class="d" style="--c: var(--amber)"></span>Thema</span>
+          <span><span class="ln" style="--c: var(--mint)"></span>Im KC belegt</span>
+          <span><span class="ln dash" style="--c: var(--amber)"></span>Vorschlag</span>
+        </div>
+      </div>
+
+      <div class="hinweis">Themenvorschläge stehen so nicht im Kerncurriculum und sind fachlich zu prüfen. Verbindlich ist der Wortlaut im Original.</div>
+    </aside>
+
+    <section class="stage" id="stage">
+      <div class="stage-head">
+        <div class="eyebrow" style="color:var(--mint)">◆ Datenansicht</div>
+        <h2>Kerncurriculum-Universum</h2>
+        <p>Fächer, Inhaltsfelder und Anknüpfungspunkte erkunden</p>
+        <div class="crumb" id="crumb">Übersicht · alle Fächer</div>
+      </div>
+      <div class="badge3d">● NETZWERK</div>
+      <svg id="svg" aria-label="Netz aus Fächern, Inhaltsfeldern und Schwerpunkten">
+        <defs>
+          <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="3.2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowbig" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur stdDeviation="9" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+      </svg>
+      <div class="stats">
+        <div><b id="s-n">0</b><small>Knoten sichtbar</small></div>
+        <div><b id="s-l">0</b><small>Verbindungen sichtbar</small></div>
+        <div><b id="s-k">–</b><small>Verbindungen zum Knoten</small></div>
+      </div>
+      <div class="zoom">
+        <button id="zout" aria-label="Verkleinern">−</button>
+        <button id="zin" aria-label="Vergrößern">+</button>
+        <button id="zfit" aria-label="Ansicht einpassen">⌖</button>
+      </div>
+      <div class="hint-bar">ZIEHEN ZUM VERSCHIEBEN · SCROLLEN ZUM ZOOMEN · KLICKEN FÜR DETAILS</div>
+    </section>
+
+    <aside class="insp">
+      <div class="insp-head">
+        <div><div class="eyebrow">Kompetenz-Inspektor</div><h3>Knoten untersuchen</h3></div>
+        <button class="x" id="close" aria-label="Auswahl aufheben">×</button>
+      </div>
+      <div class="insp-body" id="detail" aria-live="polite"></div>
+      <div class="insp-foot" id="foot"></div>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const DATA = /*__DATA__*/null;
+const FACH = { bio: "Biologie", che: "Chemie", phy: "Physik", erd: "Erdkunde", pow: "Politik und Wirtschaft" };
+const KIND = { fach: "Fach", if: "Inhaltsfeld", sp: "Schwerpunkt", thema: "Themenvorschlag" };
+const col = f => f === "thema" ? "var(--amber)" : `var(--${f})`;
+
+const nodes = DATA.nodes.map(d => ({ ...d }));
+const byId = new Map(nodes.map(n => [n.id, n]));
+const links = DATA.links.map(l => ({ ...l, source: l.s, target: l.t }));
+const nb = new Map(nodes.map(n => [n.id, []]));
+links.forEach(l => { nb.get(l.s).push({ id: l.t, l }); nb.get(l.t).push({ id: l.s, l }); });
+
+const state = { faecher: new Set(Object.keys(FACH)), st: "alle", sp: true, th: true, q: "", sel: null };
+try { const s = JSON.parse(localStorage.getItem("kg-state") || "null"); if (s) { state.sp = s.sp ?? true; state.th = s.th ?? true; } } catch (e) {}
+
+// --- Layout einmal berechnen ---
+const W = 1200, H = 900, R = 300;
+const anchor = {};
+Object.keys(FACH).forEach((k, i) => {
+  const a = -Math.PI / 2 + i * 2 * Math.PI / 5;
+  anchor[k] = { x: W / 2 + R * Math.cos(a), y: H / 2 + R * Math.sin(a) };
+});
+anchor.thema = { x: W / 2, y: H / 2 };
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+nodes.forEach(n => { const a = anchor[n.f]; n.x = a.x + (rnd() - 0.5) * 60; n.y = a.y + (rnd() - 0.5) * 60; });
+const radius = n => n.t === "fach" ? 13 : n.t === "if" ? 6.5 : n.t === "thema" ? 6.5 : 3.4;
+
+const sim = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id)
+    .distance(l => l.k === "beleg" ? 380 : l.k === "vorschlag" ? 150 : (l.target.t === "sp" ? 22 : 60))
+    .strength(l => l.k === "beleg" ? 0.02 : l.k === "vorschlag" ? 0.06 : 0.9))
+  .force("charge", d3.forceManyBody().strength(n => n.t === "fach" ? -400 : n.t === "if" ? -90 : n.t === "thema" ? -160 : -14))
+  .force("collide", d3.forceCollide(n => radius(n) + (n.t === "sp" ? 1.8 : 4)))
+  .force("x", d3.forceX(n => anchor[n.f].x).strength(n => n.t === "fach" ? 0.5 : n.t === "thema" ? 0.08 : 0.06))
+  .force("y", d3.forceY(n => anchor[n.f].y).strength(n => n.t === "fach" ? 0.5 : n.t === "thema" ? 0.08 : 0.06))
+  .randomSource(rnd)
+  .stop();
+for (let i = 0; i < 400; i++) sim.tick();
+
+// --- Zeichnen ---
+const svg = d3.select("#svg");
+const g = svg.append("g");
+// Sternenstaub im Hintergrund
+const dust = g.append("g").attr("pointer-events", "none");
+for (let i = 0; i < 260; i++) dust.append("circle").attr("cx", -200 + rnd() * (W + 400)).attr("cy", -150 + rnd() * (H + 300))
+  .attr("r", rnd() * 1.1 + 0.2).attr("fill", "#8fb3cc").attr("opacity", rnd() * 0.35 + 0.05);
+
+const order = { beleg: 0, hat: 1, vorschlag: 2 };
+const lk = g.append("g").selectAll("line").data(links.slice().sort((a, b) => order[a.k] - order[b.k])).join("line")
+  .attr("class", l => "lk " + l.k)
+  .attr("x1", l => l.source.x).attr("y1", l => l.source.y).attr("x2", l => l.target.x).attr("y2", l => l.target.y);
+
+const nd = g.append("g").selectAll("g").data(nodes.slice().sort((a, b) => (a.t === "sp") - (b.t === "sp")).reverse()).join("g")
+  .attr("class", n => "nd t-" + n.t).attr("transform", n => `translate(${n.x},${n.y})`)
+  .attr("tabindex", n => n.t === "sp" ? -1 : 0).attr("role", "button").attr("aria-label", n => n.label)
+  .on("click", (e, n) => { e.stopPropagation(); select(n.id); })
+  .on("keydown", (e, n) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(n.id); } });
+nd.filter(n => n.t !== "thema").append("circle").attr("class", "core").attr("r", radius).attr("fill", n => col(n.f))
+  .attr("filter", n => n.t === "fach" ? "url(#glowbig)" : n.t === "if" ? "url(#glow)" : null);
+nd.filter(n => n.t === "thema").append("rect").attr("class", "core").attr("x", -5.5).attr("y", -5.5).attr("width", 11).attr("height", 11)
+  .attr("transform", "rotate(45)").attr("fill", "var(--amber)").attr("filter", "url(#glow)");
+nd.append("circle").attr("class", "ring").attr("r", n => radius(n) + 5).attr("fill", "none");
+nd.append("title").text(n => n.label);
+
+const lb = g.append("g").selectAll("text").data(nodes).join("text")
+  .attr("class", n => "lbl " + n.t).attr("x", n => n.x + radius(n) + 4).attr("y", n => n.y + 3)
+  .text(n => n.t === "if" ? short(n.label, 34) : n.t === "sp" ? short(n.label, 40) : n.label);
+lb.filter(n => n.t === "fach").attr("x", n => n.x).attr("y", n => n.y - 22).attr("text-anchor", "middle");
+function short(s, m) { const t = s.split(" – ")[0]; return t.length > m ? t.slice(0, m - 1) + "…" : t; }
+
+const zoom = d3.zoom().scaleExtent([0.3, 6]).on("zoom", e => g.attr("transform", e.transform));
+svg.call(zoom).on("click", () => select(null));
+function fit() {
+  const el = document.getElementById("stage"); const w = el.clientWidth, h = el.clientHeight;
+  const xs = nodes.map(n => n.x), ys = nodes.map(n => n.y);
+  const x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 80, y0 = Math.min(...ys) - 120, y1 = Math.max(...ys) + 90;
+  const k = Math.min(w / (x1 - x0), h / (y1 - y0));
+  svg.call(zoom.transform, d3.zoomIdentity.translate(w / 2 - k * (x0 + x1) / 2, h / 2 - k * (y0 + y1) / 2).scale(k));
+}
+document.getElementById("zin").onclick = () => svg.transition().duration(200).call(zoom.scaleBy, 1.4);
+document.getElementById("zout").onclick = () => svg.transition().duration(200).call(zoom.scaleBy, 1 / 1.4);
+document.getElementById("zfit").onclick = fit;
+window.addEventListener("resize", fit);
+
+// --- Sichtbarkeit ---
+function visible(n) {
+  if (n.t === "thema") return state.th;
+  if (!state.faecher.has(n.f)) return false;
+  if (n.t === "sp") {
+    if (!state.sp) return false;
+    if (state.st === "frueh" && n.st !== "frueh") return false;
+    if (state.st === "spaet" && n.st === "frueh") return false;
+  }
+  return true;
+}
+function match(n) {
+  if (!state.q) return true;
+  const q = state.q.toLowerCase();
+  return n.label.toLowerCase().includes(q) || (n.t === "if" && links.some(l => l.k === "vorschlag" && l.t === n.id && l.stich.toLowerCase().includes(q)));
+}
+function render() {
+  const vis = new Set(nodes.filter(visible).map(n => n.id));
+  if (state.sel && !vis.has(state.sel)) state.sel = null;
+  let focus = null;
+  const s = state.sel && byId.get(state.sel);
+  if (s) {
+    focus = new Set([s.id]);
+    nb.get(s.id).forEach(x => focus.add(x.id));
+    if (s.t === "thema") nb.get(s.id).forEach(x => nb.get(x.id).forEach(y => { if (byId.get(y.id).t === "sp") focus.add(y.id); }));
+  }
+  const hits = state.q ? new Set(nodes.filter(n => vis.has(n.id) && match(n)).map(n => n.id)) : null;
+  const off = n => (focus && !focus.has(n.id)) || (hits && !hits.has(n.id));
+  nd.classed("hidden", n => !vis.has(n.id)).classed("dim", off).classed("sel", n => n.id === state.sel);
+  lb.classed("hidden", n => !vis.has(n.id)).classed("dim", off)
+    .classed("big", n => n.id === state.sel && n.t !== "fach")
+    .style("display", n => n.t === "sp" && vis.has(n.id) && ((focus && focus.has(n.id)) || (hits && hits.has(n.id))) ? "block" : null);
+  const lvis = l => vis.has(l.source.id) && vis.has(l.target.id);
+  const lhot = l => s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp"));
+  lk.classed("hidden", l => !lvis(l))
+    .classed("hot", l => !!lhot(l))
+    .classed("dim", l => (s && !lhot(l)) || (hits && !(hits.has(l.source.id) || hits.has(l.target.id))));
+  document.getElementById("s-n").textContent = vis.size.toLocaleString("de-DE");
+  document.getElementById("s-l").textContent = links.filter(lvis).length.toLocaleString("de-DE");
+  document.getElementById("s-k").textContent = s ? nb.get(s.id).filter(x => vis.has(x.id)).length : "–";
+  const fs = [...state.faecher];
+  document.getElementById("crumb").textContent = s ? `${KIND[s.t]} · ${s.t === "thema" ? "fächerübergreifend" : FACH[s.f]}` : (fs.length === 5 ? "Übersicht · alle Fächer" : "Auswahl · " + fs.map(k => k === "pow" ? "PoWi" : FACH[k]).join(", "));
+  detail();
+  try { localStorage.setItem("kg-state", JSON.stringify({ sp: state.sp, th: state.th })); } catch (e) {}
+}
+function select(id) { state.sel = id; render(); }
+
+// --- Inspektor ---
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const relBtn = (id, extra) => { const n = byId.get(id); return `<li><button data-go="${id}"><span class="dot" style="--c:${col(n.f)}"></span>${esc(n.label)}${extra ? `<small>${extra}</small>` : ""}</button></li>`; };
+const fachOf = n => byId.get("F-" + n.f);
+function detail() {
+  const el = document.getElementById("detail"), foot = document.getElementById("foot");
+  const n = state.sel && byId.get(state.sel);
+  foot.innerHTML = "";
+  if (!n) {
+    el.innerHTML = `<div class="empty"><div class="star">✦</div><h4>Jede Verbindung<br>hat eine Fundstelle.</h4>
+      <p>Wählen Sie ein Fach, ein Inhaltsfeld oder ein Thema, um Quelle und Verbindungen zu sehen.</p>
+      <p class="ref">TIPP · Suche nach „Klima“</p></div>
+      <div class="sec"><div class="eyebrow">Im KC belegte Querbezüge</div>
+      <ul class="rel">${DATA.querbezuege.filter(q => q[0] !== "alle fünf").map(q => `<li><button tabindex="-1" style="cursor:default">${esc(q[0])} → ${esc(q[1])}<small>${esc(q[2])} · ${esc(q[3])}</small></button></li>`).join("")}</ul></div>`;
+    return;
+  }
+  const openBtn = url => `<a class="btn primary" href="${url}" target="_blank" rel="noopener">+ Original öffnen (PDF)</a>`;
+  if (n.t === "fach") {
+    const ifs = nb.get(n.id).filter(x => byId.get(x.id).t === "if").map(x => x.id);
+    const bel = nb.get(n.id).filter(x => x.l.k === "beleg");
+    const spc = ifs.reduce((a, id) => a + nb.get(id).filter(x => byId.get(x.id).t === "sp").length, 0);
+    el.innerHTML = `<div class="tags"><span class="tag">Fach</span><span class="tag ok">✓ Kerncurriculum Hessen</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="meta"><span>Sek I</span><span>Gymnasium</span><span>${ifs.length} Inhaltsfelder</span><span>${spc} Schwerpunkte</span></div>
+      ${bel.length ? `<div class="sec"><div class="eyebrow">Belegte Querbezüge</div><ul class="rel">${bel.map(x => relBtn(x.id, `${esc(x.l.stich)} · ${esc(x.l.fund)}`)).join("")}</ul></div>` : ""}
+      <div class="sec"><div class="eyebrow">Inhaltsfelder</div><ul class="rel">${ifs.map(id => relBtn(id, `Kap. 6, ${esc(byId.get(id).seite)}`)).join("")}</ul></div>`;
+    foot.innerHTML = openBtn(n.url);
+  } else if (n.t === "if") {
+    const f = fachOf(n);
+    const sps = nb.get(n.id).filter(x => byId.get(x.id).t === "sp").map(x => byId.get(x.id));
+    const th = nb.get(n.id).filter(x => x.l.k === "vorschlag");
+    el.innerHTML = `<div class="tags"><span class="tag">Inhaltsfeld</span><span class="tag ok">✓ Fundstelle Kap. 6, ${esc(n.seite)}</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="meta"><span>${esc(f.label)}</span><span>Sek I</span><span>${sps.length} Schwerpunkte</span></div>
+      <div class="sec"><div class="eyebrow">Basiskonzept</div><div class="card">${esc(n.bk)}</div></div>
+      ${n.hin ? `<div class="sec"><div class="eyebrow">Hinweis</div><p>${esc(n.hin)}</p></div>` : ""}
+      ${th.length ? `<div class="sec"><div class="eyebrow">In Themenvorschlägen</div><ul class="rel">${th.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
+      <div class="sec"><div class="eyebrow">Schwerpunkte</div><ul class="rel">${sps.map(s => relBtn(s.id, `${esc(s.stufe)} · ${esc(s.seite)}`)).join("")}</ul></div>
+      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Quelle: <b>KC ${esc(f.label)}, Sek I Gymnasium</b></div></div>`;
+    foot.innerHTML = openBtn(f.url);
+  } else if (n.t === "sp") {
+    const f = fachOf(n);
+    const parent = nb.get(n.id).find(x => byId.get(x.id).t === "if").id;
+    el.innerHTML = `<div class="tags"><span class="tag">Schwerpunkt</span><span class="tag ok">✓ Fundstelle ${esc(n.seite)}</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="meta"><span>${esc(f.label)}</span><span>${esc(n.stufe)}</span></div>
+      <div class="sec"><div class="eyebrow">Inhaltsfeld</div><ul class="rel">${relBtn(parent)}</ul></div>
+      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Abschnitt: <b>Kap. 7, ${esc(n.seite)}</b></div></div>
+      <p class="ref">Formulierung teils gekürzt. Verbindlich ist der Wortlaut im Kerncurriculum.</p>`;
+    foot.innerHTML = openBtn(f.url);
+  } else {
+    const it = nb.get(n.id);
+    const fs = new Set(it.map(x => byId.get(x.id).f));
+    el.innerHTML = `<div class="tags"><span class="tag">Thema</span><span class="tag warn">Vorschlag, fachlich zu prüfen</span></div>
+      <h4 class="ititle">${esc(n.label)}</h4>
+      <div class="meta"><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
+      <div class="sec"><div class="eyebrow">Herkunft</div><p>Gebündelt über gemeinsame Stichworte aus den Kerncurricula. Diese Verbindung steht so nicht im KC.</p></div>
+      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(FACH[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe)}`); }).join("")}</ul></div>`;
+  }
+  el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => select(b.dataset.go));
+}
+
+// --- Bedienelemente ---
+const fg = document.getElementById("faecher");
+Object.entries(FACH).forEach(([k, v]) => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.id = "f-" + k; b.setAttribute("aria-pressed", "true");
+  b.innerHTML = `<span class="d" style="--c: var(--${k})"></span>${k === "pow" ? "PoWi" : v}`;
+  b.onclick = () => { state.faecher.has(k) ? state.faecher.delete(k) : state.faecher.add(k); b.setAttribute("aria-pressed", state.faecher.has(k)); render(); };
+  fg.appendChild(b);
+});
+const setSt = st => { state.st = st; document.querySelectorAll("#stufen [data-st]").forEach(x => x.setAttribute("aria-pressed", x.dataset.st === st)); };
+document.querySelectorAll("#stufen [data-st]").forEach(b => b.onclick = () => { setSt(b.dataset.st); render(); });
+const tsp = document.getElementById("tg-sp"), tth = document.getElementById("tg-th");
+tsp.setAttribute("aria-pressed", state.sp); tth.setAttribute("aria-pressed", state.th);
+tsp.onclick = () => { state.sp = !state.sp; tsp.setAttribute("aria-pressed", state.sp); render(); };
+tth.onclick = () => { state.th = !state.th; tth.setAttribute("aria-pressed", state.th); render(); };
+const qi = document.getElementById("q");
+qi.addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
+document.getElementById("close").onclick = () => select(null);
+document.getElementById("reset").onclick = () => {
+  state.faecher = new Set(Object.keys(FACH)); document.querySelectorAll("#faecher .chip").forEach(c => c.setAttribute("aria-pressed", "true"));
+  setSt("alle"); state.sp = state.th = true; tsp.setAttribute("aria-pressed", true); tth.setAttribute("aria-pressed", true);
+  state.q = ""; qi.value = ""; state.sel = null; fit(); render();
+};
+
+fit();
+state.sel = "TH-01"; // Startansicht: Thema Energie ausgewählt
+render();
+</script>
