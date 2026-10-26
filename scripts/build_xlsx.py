@@ -56,7 +56,13 @@ ov.title = "Übersicht"
 IFP = {(fach, feld): bk for fach, bk, feld, seite, hin in IF}
 if_rows = [(f"IF-{i:03d}", r["fach"], r["bereich"] or IFP.get((r["fach"], r["inhaltsfeld"]), ""), r["inhaltsfeld"],
             r["seite_hs"], r["seite_rs"], r["seite_gy"], r["hinweis"]) for i, r in enumerate(lies("inhaltsfelder_sek1.csv"), 1)]
-sp_rows = [(f"SP-{i:03d}",) + r[:2] + ("Gymnasium",) + r[2:] for i, r in enumerate(SP, 1)]
+SFN = {"hs": "Hauptschule", "rs": "Realschule", "gy": "Gymnasium"}
+sp_rows = [r[:2] + ("Gymnasium",) + r[2:] + ("",) for r in SP]
+sp_rows += [r[:2] + ("Hauptschule, Realschule", r[2], r[3], r[4], "Kap. 6 lautet in allen drei Fassungen gleich")
+            for r in SP if r[0] in ("Erdkunde", "Politik und Wirtschaft")]
+sp_rows += [(r["fach"], r["inhaltsfeld"], SFN[r["schulform"]], r["stufe"], r["schwerpunkt"], r["seite"], r["hinweis"])
+            for r in lies("schwerpunkte_sek1.csv")]
+sp_rows = [(f"SP-{i:03d}",) + r for i, r in enumerate(sp_rows, 1)]
 SDG = {r["nr"]: r["titel"] for r in lies("bne_sdg.csv")}
 bne_rows = [(r["fach"], r["inhaltsfeld"] or "(fachweiter Bildungsstandard)", r["seite_hs"], r["seite_rs"], r["seite_gy"], r["zitat"])
             for r in lies("bne_belege.csv")]
@@ -71,8 +77,8 @@ ws = wb.create_sheet("Inhaltsfelder")
 sheet(ws, ["ID", "Fach", "Einordnung im KC", "Inhaltsfeld", "Seite HS (Kap. 6)", "Seite RS (Kap. 6)", "Seite GY (Kap. 6)", "Hinweis"],
       if_rows, [9, 20, 36, 52, 11, 11, 11, 40], fach_col=1)
 ws = wb.create_sheet("Schwerpunkte")
-sheet(ws, ["ID", "Fach", "Inhaltsfeld", "KC-Fassung", "Stufe laut KC", "Inhaltlicher Schwerpunkt", "Seite"],
-      sp_rows, [9, 20, 40, 13, 30, 70, 10], fach_col=1)
+sheet(ws, ["ID", "Fach", "Inhaltsfeld", "KC-Fassung", "Stufe laut KC", "Inhaltlicher Schwerpunkt", "Seite", "Hinweis"],
+      sp_rows, [9, 20, 40, 16, 34, 70, 10, 34], fach_col=1)
 ws = wb.create_sheet("Kompetenzbereiche")
 sheet(ws, ["Fach", "Kompetenzbereich", "Teilbereiche / Operatoren", "Seite", "Hinweis"],
       KB, [20, 34, 80, 8, 36], fach_col=0)
@@ -127,7 +133,7 @@ r += 2
 ov.cell(r, 1, "Tabellenblätter").font = Font(name=F, bold=True, size=11)
 for name, desc in [
     ("Inhaltsfelder", "Alle Inhaltsfelder je Fach mit Einordnung und Seitenangabe je KC-Fassung (leer = in dieser Fassung nicht vorhanden)"),
-    ("Schwerpunkte", "Inhaltliche Schwerpunkte je Inhaltsfeld und Stufe, bisher nur Pilotfächer in der Gymnasialfassung"),
+    ("Schwerpunkte", "Inhaltliche Schwerpunkte je Inhaltsfeld, KC-Fassung und Stufe, bisher für die fünf Pilotfächer"),
     ("Kompetenzbereiche", "Fachliche Kompetenzbereiche und Teilbereiche"),
     ("Querbezüge belegt", "Fächerübergreifende Bezüge, die ausdrücklich im KC stehen"),
     ("Anknüpfungspunkte", "Themenvorschläge über gemeinsame Stichworte, zu prüfen"),
@@ -145,4 +151,4 @@ for L, w in zip("DEFGH", (20, 16, 16, 16, 16)):
     ov.column_dimensions[L].width = w
 
 wb.save(OUT)
-print(OUT, len(if_rows), len(SP), len(KB), len(QB), len(ak_rows), len(bne_rows), len(sdg_rows))
+print(OUT, len(if_rows), len(sp_rows), len(KB), len(QB), len(ak_rows), len(bne_rows), len(sdg_rows))

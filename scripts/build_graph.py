@@ -46,13 +46,32 @@ for n in list(nodes):
     if n["t"] == "if":
         links.append({"s": "F-" + n["f"], "t": n["id"], "k": "hat"})
 
-# Schwerpunkte: bisher nur Pilot, Fassung Gymnasium
-for i, (fach, feld, stufe, sp, seite) in enumerate(b.SP, 1):
-    nid = f"SP-{i:03d}"
+# Schwerpunkte Gymnasium (Pilot). Erdkunde und PoWi: Stichworte aus Kap. 6, das in allen drei Fassungen wortgleich ist
+KAP6_ALLE = {"Erdkunde", "Politik und Wirtschaft"}
+sp_nodes = []
+for fach, feld, stufe, sp, seite in b.SP:
     st = "frueh" if stufe in EARLY else ("spaet" if stufe == b.B910 else "ohne")
-    nodes.append({"id": nid, "t": "sp", "f": KEY[fach], "label": sp, "feld": feld,
-                  "stufe": stufe, "st": st, "seite": seite, "sf": ["gy"]})
-    links.append({"s": if_id[(fach, feld)], "t": nid, "k": "hat"})
+    sfs = list(SF) if fach in KAP6_ALLE else ["gy"]
+    hin = "Stichwort aus Kap. 6, das in allen drei KC-Fassungen gleich lautet" if fach in KAP6_ALLE else ""
+    sp_nodes.append({"f": KEY[fach], "label": sp, "feld": feld, "st": st, "sf": sfs, "hin": hin,
+                     "stufen": {s: stufe for s in sfs}, "seiten": {s: seite for s in sfs}})
+
+# Schwerpunkte Haupt- und Realschule; gleich lautende Zeilen werden ein Knoten
+gruppe = {}
+for r in lies("schwerpunkte_sek1.csv"):
+    key = (r["fach"], r["inhaltsfeld"], r["schwerpunkt"], r["stufe_typ"])
+    if key not in gruppe:
+        gruppe[key] = {"f": KEY[r["fach"]], "label": r["schwerpunkt"], "feld": r["inhaltsfeld"], "st": r["stufe_typ"],
+                       "sf": [], "hin": r["hinweis"], "stufen": {}, "seiten": {}}
+        sp_nodes.append(gruppe[key])
+    g = gruppe[key]
+    g["sf"].append(r["schulform"]); g["stufen"][r["schulform"]] = r["stufe"]; g["seiten"][r["schulform"]] = r["seite"]
+
+for i, n in enumerate(sp_nodes, 1):
+    n.update({"id": f"SP-{i:03d}", "t": "sp"})
+    nodes.append(n)
+    fach = next(f for k, f, _, _ in FAECHER if k == n["f"])
+    links.append({"s": if_id[(fach, n["feld"])], "t": n["id"], "k": "hat"})
 
 for j, (thema, items) in enumerate(b.AK, 1):
     tid = f"TH-{j:02d}"

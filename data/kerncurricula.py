@@ -396,7 +396,8 @@ AK = [
 ]
 
 HIN = [
-    ("Bildungsgang", "Inhaltsfelder sind für 17 Fächer in allen drei KC-Fassungen erfasst (Hauptschule, Realschule, Gymnasium). Schwerpunkte, Kompetenzbereiche und Querbezüge gibt es bisher nur für die fünf Pilotfächer in der Gymnasialfassung."),
+    ("Bildungsgang", "Inhaltsfelder sind für 17 Fächer in allen drei KC-Fassungen erfasst (Hauptschule, Realschule, Gymnasium). Schwerpunkte gibt es für die fünf Pilotfächer in allen drei Fassungen; Kompetenzbereiche und Querbezüge nur in der Gymnasialfassung."),
+    ("Haupt- und Realschule", "Biologie, Chemie, Physik: Übersichtstabelle Kap. 7.3 bzw. 7.2, Stufen bis Jg. 5/6 bzw. 1. Lernjahr bzw. Hälfte des Stundenkontingents und zusätzlich bis Abschluss Jg. 9 (HS) oder 10 (RS). Erdkunde: Kap. 7.1 (Ende Jg. 6), Kap. 7.2 entfällt laut KC. PoWi: Kap. 7 entfällt laut KC."),
     ("Fächerauswahl", "Aufgenommen sind die Fächer einer IGS 5 bis 10. Latein, Griechisch, Chinesisch, Arabisch sowie alevitische, jüdische und islamische Religion fehlen noch. Informatik gibt es nur als KC für den Wahlunterricht am Gymnasium."),
     ("Moderne Fremdsprachen", "Ein gemeinsames KC für alle modernen Fremdsprachen. Die Inhaltsfelder sind drei Lebenswelten."),
     ("Kunst", "Die Zuordnung der neun Inhaltsfelder zu den drei Kernbereichen steht nur in Abb. 2 (Kap. 5)."),

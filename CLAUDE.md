@@ -8,7 +8,8 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 ## Aktueller Stand (26.10.2026)
 - 17 Fächer einer IGS 5 bis 10: Deutsch, Moderne Fremdsprachen, Kunst, Musik, Sport, Mathematik, Informatik, Physik, Chemie, Biologie, Erdkunde, Geschichte, PoWi, Arbeitslehre, Ethik, Ev. Religion, Kath. Religion
 - Inhaltsfelder (129) in allen drei KC-Fassungen (Hauptschule, Realschule, Gymnasium) mit Seitenangabe je Fassung; Filter „KC-Fassung“ auf der Seite
-- Schwerpunkte (166), Kompetenzbereiche, 13 belegte Querbezüge und 11 Themenvorschläge (47 Verknüpfungen) bisher nur für die 5 Pilotfächer, Fassung Gymnasium
+- Schwerpunkte für die 5 Pilotfächer in allen drei Fassungen: Gymnasium 166 (Pilot), Haupt- und Realschule 304 Zeilen in `schwerpunkte_sek1.csv`; Erdkunde und PoWi nutzen Stichworte aus Kap. 6, das in allen Fassungen gleich lautet
+- Kompetenzbereiche, 13 belegte Querbezüge und 11 Themenvorschläge (47 Verknüpfungen) bisher nur Pilotfächer, Fassung Gymnasium
 - BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit 64 Zuordnungen (Vorschlag)
 - Webseite: `docs/index.html` (wird aus `web/template.html` gebaut, GitHub Pages liefert `docs/` aus)
 - Online: https://st-bauer.github.io/kompetenzgraph-hessen/ (Repo st-bauer/kompetenzgraph-hessen, öffentlich)
@@ -18,15 +19,17 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 ```
 data/faecher.csv        Fächer mit Kurzname und Farbe (Reihenfolge = Anordnung im Graphen)
 data/inhaltsfelder_sek1.csv  Inhaltsfelder aller Fächer, Seite je KC-Fassung (leer = nicht in dieser Fassung)
+data/schwerpunkte_sek1.csv   Schwerpunkte Haupt- und Realschule (eine Zeile je Fassung, Stufe im KC-Wortlaut)
 data/bne_sdg.csv        17 SDGs mit offizieller Farbe
 data/bne_belege.csv     Stellen, an denen das KC Nachhaltigkeit nennt (Beleg)
 data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern (Vorschlag)
-data/kerncurricula.py   Pilotdaten (Schwerpunkte, Kompetenzbereiche, Querbezüge, Themenvorschläge, Hinweise)
+data/kerncurricula.py   Pilotdaten Gymnasium (Schwerpunkte, Kompetenzbereiche, Querbezüge, Themenvorschläge, Hinweise)
 data/quellen_sek1.csv   Alle KC- und Leitfaden-PDFs Sek I mit URL (Stand 26.10.2026)
 scripts/build_xlsx.py   erzeugt die Excel-Tabelle
 scripts/build_graph.py  erzeugt output/data.json und docs/index.html
 scripts/fetch_pdfs.py   lädt PDFs aus quellen_sek1.csv und extrahiert Text (quellen/, nicht im Repo)
 scripts/kc_seiten.py    zeigt KC-Text mit Seitenzahl, Hilfe beim Erfassen
+scripts/schwerpunkte_auslesen.py  Entwurf aus vierspaltigen Schwerpunkt-Tabellen (Kap. 7.2/7.3), danach von Hand prüfen
 web/template.html       Graph-Seite (d3 7.8.5 per CDN, Platzhalter /*__DATA__*/null)
 docs/                   veröffentlichte Seite für GitHub Pages (nicht von Hand bearbeiten)
 ```
@@ -40,6 +43,7 @@ python3 scripts/fetch_pdfs.py --fach Biologie --schulform Realschule
 python3 scripts/fetch_pdfs.py --alle
 python3 scripts/kc_seiten.py biologie_realschule --kapitel
 python3 scripts/kc_seiten.py biologie_realschule 41-48 --breite 80
+python3 scripts/schwerpunkte_auslesen.py biologie_realschule 41 48 Biologie
 ```
 `pdftotext` kommt aus poppler (`brew install poppler`). Der Server des Kultusministeriums bricht bei vielen Abrufen mit 503 ab, das Skript wartet dann und versucht es erneut.
 `docs/index.html` im Browser öffnen (Internet nötig wegen d3 vom CDN).
@@ -66,18 +70,19 @@ Vor dem öffentlichen Teilen klären: Nutzungsbedingungen des Hessischen Kultusm
 - BNE: `bne_belege.csv` nur, wo das KC selbst Nachhaltigkeit nennt. SDG-Zuordnungen sind immer Vorschlag (die KC nennen keine SDGs).
 - Keine Vermutungen als Fakten darstellen. Unsicheres klar markieren (Spalte „Hinweis“).
 - Stufen exakt so übernehmen, wie das KC sie benennt. Sie sind je Fach verschieden:
-  Biologie „bis Ende 5/6“, Chemie „1. Lernjahr“, Physik „nach ca. der Hälfte des Stundenkontingents“, jeweils plus „bis Ende 9/10“. Erdkunde und PoWi sind im Gymnasium nicht gestuft.
+  Gymnasium: Biologie „bis Ende 5/6“, Chemie „1. Lernjahr“, Physik „nach ca. der Hälfte des Stundenkontingents“, jeweils plus „bis Ende 9/10“. Erdkunde und PoWi sind im Gymnasium nicht gestuft.
+  Haupt-/Realschule: Biologie „Jahrgangsstufe 5/6“, Chemie „1. Lernjahr“, Physik wie Gymnasium, jeweils plus „zusätzlich dazu nach Abschluss der Jahrgangsstufe 9“ (HS) bzw. „10“ (RS). Erdkunde „am Ende der Jahrgangsstufe 6“ (Kap. 7.2 entfällt), PoWi ohne Kap. 7.
 
 ## Bekannte Lücken
 - PoWi-PDF: rechter Rand der quer gesetzten Tabellen wurde beim Auslesen abgeschnitten. Stichworte am Original prüfen.
 - Abbildungen (Basiskonzept-Zuordnung Physik, Verzahnung Erdkunde/PoWi/Geschichte) fehlen, weil sie nur als Grafik vorliegen.
-- Schwerpunkte fehlen für alle Haupt- und Realschulfassungen und für die 12 Nicht-Pilotfächer. HS und RS haben eigene Stufen (Ende Jg. 6, Ende Jg. 8, Abschluss).
+- Schwerpunkte fehlen für die 12 Nicht-Pilotfächer. Jedes Fach ist anders aufgebaut (Tabellen nur in Bio, Ch, Ph; Geschichte mit Epochenbezügen, Deutsch nach Kompetenzbereichen usw.).
 - Nicht aufgenommen: Latein, Griechisch, Chinesisch, Arabisch, alevitische, jüdische und islamische Religion.
 - Deutsch: Zuordnung der Inhaltsfelder zu Kompetenzbereichen nicht erfasst. Kunst: Zuordnung zu Kernbereichen nur als Grafik.
 - Primarstufe und Oberstufe noch nicht geprüft.
 
 ## Nächste Schritte
-1. Schwerpunkte der Pilotfächer in Haupt- und Realschulfassung erfassen (Kap. 7.3 bzw. Kap. 6), danach Geschichte und Arbeitslehre.
+1. Schwerpunkte für Geschichte und Arbeitslehre erfassen (gesellschaftswissenschaftliches Aufgabenfeld), danach weitere Fächer.
 2. SDG-Vorschläge fachlich prüfen lassen (Fachschaften, BNE-Beauftragte).
 3. Schulcurricula der JCS als zweite Ebene: Zuordnung von Unterrichtseinheiten zu Schwerpunkten und zu Jahrgängen.
 4. Ein reales TheA/THEO-Thema als Testfall durchspielen.

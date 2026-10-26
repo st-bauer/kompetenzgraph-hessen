@@ -202,17 +202,17 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
           <button class="tile" data-sf="rs" aria-pressed="true">Real<small>schule</small></button>
           <button class="tile" data-sf="gy" aria-pressed="true">Gym<small>nasium</small></button>
         </div>
-        <p class="note">Die IGS arbeitet mit allen drei Fassungen. Schwerpunkte sind bisher nur für die Pilotfächer in der Gymnasialfassung erfasst.</p>
+        <p class="note">Die IGS arbeitet mit allen drei Fassungen. Schwerpunkte sind bisher für die fünf Pilotfächer erfasst.</p>
       </div>
 
       <div class="box">
         <div class="field-label">Stufe laut KC</div>
         <div class="tiles" id="stufen">
           <button class="tile" data-st="frueh" id="st-frueh" aria-pressed="false">Früh<small>5/6 · 1. Jahr</small></button>
-          <button class="tile" data-st="spaet" id="st-spaet" aria-pressed="false">9/10<small>bis Ende</small></button>
+          <button class="tile" data-st="spaet" id="st-spaet" aria-pressed="false">Abschluss<small>Jg. 9 bzw. 10</small></button>
           <button class="tile" data-st="alle" id="st-alle" aria-pressed="true">Beide<small>Vergleich</small></button>
         </div>
-        <p class="note">Die Fächer benennen die erste Stufe unterschiedlich: Biologie „bis Ende 5/6“, Chemie „1. Lernjahr“, Physik „ca. Hälfte des Stundenkontingents“.</p>
+        <p class="note">Die Fächer benennen die erste Stufe unterschiedlich: Biologie „5/6“, Chemie „1. Lernjahr“, Physik „ca. Hälfte des Stundenkontingents“, Erdkunde HS/RS „Ende Jahrgangsstufe 6“. Der Abschluss liegt in der Hauptschule bei Jahrgang 9, sonst bei 10.</p>
       </div>
 
       <div>
@@ -445,6 +445,8 @@ function select(id) { state.sel = id; render(); }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const relBtn = (id, extra) => { const n = byId.get(id); return `<li><button data-go="${id}"><span class="dot" style="--c:${col(n)}"></span>${esc(n.t === "sdg" ? `SDG ${n.nr} · ${n.label}` : n.label)}${extra ? `<small>${extra}</small>` : ""}</button></li>`; };
 const fachOf = n => byId.get("F-" + n.f);
+const SFK = { hs: "HS", rs: "RS", gy: "GY" };
+const stufeKurz = s => { const v = [...new Set(s.sf.filter(k => state.sf.has(k)).map(k => s.stufen[k]))]; return v.length === 1 ? v[0] : s.st === "spaet" ? "zusätzlich bis zum Abschluss" : v.join(" / "); };
 const seitenTxt = seiten => Object.entries(seiten).map(([k, v]) => `${SF[k]} ${v}`).join(" · ");
 const pdfBtns = url => Object.entries(url || {}).map(([k, u]) => `<a class="btn${k === "gy" || Object.keys(url).length === 1 ? " primary" : ""}" href="${u}" target="_blank" rel="noopener">PDF ${SF[k]}</a>`).join("");
 function detail(vis) {
@@ -476,7 +478,7 @@ function detail(vis) {
     foot.innerHTML = grid(pdfBtns(n.url));
   } else if (n.t === "if") {
     const f = fachOf(n);
-    const sps = nb.get(n.id).filter(x => byId.get(x.id).t === "sp").map(x => byId.get(x.id));
+    const sps = nb.get(n.id).filter(x => byId.get(x.id).t === "sp" && vis.has(x.id)).map(x => byId.get(x.id));
     const th = nb.get(n.id).filter(x => x.l.k === "vorschlag");
     const sdg = nb.get(n.id).filter(x => x.l.k === "sdg");
     const bne = nb.get(n.id).filter(x => x.l.k === "bne");
@@ -489,20 +491,22 @@ function detail(vis) {
       ${bne.length ? `<div class="sec"><div class="eyebrow">KC nennt Nachhaltigkeit</div>${bne.map(x => `<div class="card">${esc(x.l.stich)}<div class="ref">${esc(seitenTxt(x.l.seiten))}</div></div>`).join("")}</div>` : ""}
       ${th.length ? `<div class="sec"><div class="eyebrow">In Themenvorschlägen</div><ul class="rel">${th.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
       ${sdg.length ? `<div class="sec"><div class="eyebrow">Nachhaltigkeitsziele <span class="tag warn" style="margin-left:6px">Vorschlag</span></div><ul class="rel">${sdg.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
-      ${sps.length ? `<div class="sec"><div class="eyebrow">Schwerpunkte (Gymnasium)</div><ul class="rel">${sps.map(s => relBtn(s.id, `${esc(s.stufe)} · ${esc(s.seite)}`)).join("")}</ul></div>`
-        : `<div class="sec"><div class="eyebrow">Schwerpunkte</div><p class="ref">Für dieses Inhaltsfeld noch nicht erfasst.</p></div>`}
+      ${sps.length ? `<div class="sec"><div class="eyebrow">Schwerpunkte</div><ul class="rel">${sps.map(s => relBtn(s.id, `${s.sf.filter(k => state.sf.has(k)).map(k => SFK[k]).join(", ")} · ${esc(stufeKurz(s))} · ${esc([...new Set(Object.values(s.seiten))].join(" / "))}`)).join("")}</ul></div>`
+        : `<div class="sec"><div class="eyebrow">Schwerpunkte</div><p class="ref">${state.sp ? "Für dieses Inhaltsfeld und die gewählten Fassungen noch nicht erfasst." : "Ebene Schwerpunkte ist ausgeblendet."}</p></div>`}
       <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Quelle: <b>KC ${esc(f.label)}, Sek I</b></div></div>`;
     foot.innerHTML = grid(pdfBtns(Object.fromEntries(n.sf.map(k => [k, f.url[k]]))));
   } else if (n.t === "sp") {
     const f = fachOf(n);
     const parent = nb.get(n.id).find(x => byId.get(x.id).t === "if").id;
-    el.innerHTML = `<div class="tags"><span class="tag">Schwerpunkt</span><span class="tag ok">✓ Fundstelle ${esc(n.seite)}</span></div>
+    el.innerHTML = `<div class="tags"><span class="tag">Schwerpunkt</span><span class="tag ok">✓ Fundstelle im KC</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
-      <div class="meta"><span>${esc(f.label)}</span><span>Gymnasium</span><span>${esc(n.stufe)}</span></div>
+      <div class="meta"><span>${esc(f.label)}</span>${n.sf.map(k => `<span>${SF[k]}</span>`).join("")}</div>
+      <div class="sec"><div class="eyebrow">Stufe und Fundstelle je KC-Fassung</div><div class="card">${n.sf.map(k => `${SF[k]}: ${esc(n.stufen[k])} · <b>${esc(n.seiten[k])}</b>`).join("<br>")}</div></div>
+      ${n.hin ? `<div class="sec"><div class="eyebrow">Hinweis</div><p>${esc(n.hin)}</p></div>` : ""}
       <div class="sec"><div class="eyebrow">Inhaltsfeld</div><ul class="rel">${relBtn(parent)}</ul></div>
-      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Abschnitt: <b>Kap. 7, ${esc(n.seite)}</b></div></div>
+      <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b></div></div>
       <p class="ref">Formulierung teils gekürzt. Verbindlich ist der Wortlaut im Kerncurriculum.</p>`;
-    foot.innerHTML = grid(pdfBtns({ gy: f.url.gy }));
+    foot.innerHTML = grid(pdfBtns(Object.fromEntries(n.sf.map(k => [k, f.url[k]]))));
   } else if (n.t === "sdg") {
     const it = nb.get(n.id).filter(x => vis.has(x.id));
     const fs = new Set(it.map(x => byId.get(x.id).f));
