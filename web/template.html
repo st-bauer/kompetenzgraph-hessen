@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Kompetenzgraph Hessen</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -139,6 +140,22 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 .nd text.nr { font: 800 8px var(--font); fill: #fff; text-anchor: middle; pointer-events: none; }
 .tiles.sf .tile small { font-size: .58rem; }
 details.uz { padding: 8px 10px; }
+.werk { display: flex; flex-direction: column; gap: 8px; }
+.werk input:not([type]), .werk textarea { width: 100%; box-sizing: border-box; font: .85rem var(--font); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+.werk .field-label { margin: 4px 0 0; }
+.w-fach { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.w-kopf { font-weight: 700; font-size: .82rem; margin-top: 4px; }
+.w-feld { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 7px 9px; }
+.w-sp { margin: 4px 0 0 22px; }
+.w-row { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; font-size: .82rem; font-weight: 600; }
+.w-sp .w-row { font-weight: 500; font-size: .78rem; }
+.w-row input { accent-color: var(--mint); margin-top: 3px; flex: none; }
+.w-row small { display: block; color: var(--muted); font-weight: 400; font-size: .72rem; margin-top: 2px; }
+.werk-knoepfe { display: flex; flex-wrap: wrap; gap: 6px; }
+.werk-knoepfe .btn { flex: 1 1 auto; text-align: center; }
+ul.rel li button.w-weg { width: auto; margin-top: 4px; font-size: .72rem; color: var(--muted); padding: 4px 8px; }
+.lk.werk { stroke: var(--mint); stroke-opacity: .85; stroke-width: 1.4; stroke-dasharray: 5 3; }
+.werk-kern { fill: var(--mint); }
 details.uz summary { cursor: pointer; font-size: .8rem; color: var(--ink); }
 details.uz p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); }
 .nd { cursor: pointer; }
@@ -183,6 +200,7 @@ details.uz p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); }
     <div class="pills">
       <span class="pill"><span class="on"></span>IGS 5–10</span>
       <span class="pill hide-m" id="pill-stand"></span>
+      <button class="btn" id="werk-btn">✎ Themenwerkstatt</button>
       <button class="btn" id="reset">↗ Ansicht zurücksetzen</button>
     </div>
   </div>
@@ -384,6 +402,7 @@ const lk = g.append("g").selectAll("line").data(links.slice().sort((a, b) => ord
   .attr("stroke", l => l.k === "sdg" ? l.source.farbe : null)
   .attr("x1", l => l.source.x).attr("y1", l => l.source.y).attr("x2", l => l.target.x).attr("y2", l => l.target.y);
 
+const werkG = g.append("g").attr("pointer-events", "none"); // Themenwerkstatt
 const nd = g.append("g").selectAll("g").data(nodes.slice().sort((a, b) => (a.t === "sp") - (b.t === "sp")).reverse()).join("g")
   .attr("class", n => "nd t-" + n.t).attr("transform", n => `translate(${n.x},${n.y})`)
   .attr("tabindex", n => n.t === "sp" ? -1 : 0).attr("role", "button").attr("aria-label", n => n.label)
@@ -449,14 +468,20 @@ function render() {
   // Thema oder Fach: Nachhaltigkeitsziele über die eigenen Inhaltsfelder mit anzeigen
   const ueber = s && (s.t === "thema" || s.t === "fach") ? new Set(nb.get(s.id).filter(x => byId.get(x.id).t === "if").map(x => x.id)) : null;
   if (ueber && state.bne) ueber.forEach(id => nb.get(id).forEach(x => { if (x.l.k === "sdg") focus.add(x.id); }));
+  const werkSet = werk.offen ? werk.auswahl : null;
+  if (werk.offen) {
+    focus = new Set(werk.auswahl);
+    werk.treffer.forEach(t => { focus.add(t.n.id); t.sps.forEach(x => focus.add(x.id)); });
+    if (!focus.size) focus = null;
+  }
   const hits = state.q ? new Set(nodes.filter(n => vis.has(n.id) && match(n)).map(n => n.id)) : null;
   const off = n => (focus && !focus.has(n.id)) || (hits && !hits.has(n.id));
-  nd.classed("hidden", n => !vis.has(n.id)).classed("dim", off).classed("sel", n => n.id === state.sel);
+  nd.classed("hidden", n => !vis.has(n.id)).classed("dim", off).classed("sel", n => n.id === state.sel || (werkSet && werkSet.has(n.id)));
   lb.classed("hidden", n => !vis.has(n.id)).classed("dim", off)
     .classed("big", n => n.id === state.sel && n.t !== "fach")
     .style("display", n => (n.t === "sp" || n.t === "if") && vis.has(n.id) && ((focus && focus.has(n.id)) || (hits && hits.has(n.id))) ? "block" : null);
   const lvis = l => vis.has(l.source.id) && vis.has(l.target.id);
-  const lhot = l => s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp")
+  const lhot = l => (werkSet && l.k === "hat" && werkSet.has(l.source.id) && werkSet.has(l.target.id)) || s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp")
     || (ueber && state.bne && l.k === "sdg" && ueber.has(l.target.id)));
   lk.classed("hidden", l => !lvis(l) || !lhot(l))
     .classed("hot", l => !!lhot(l))
@@ -466,14 +491,16 @@ function render() {
   document.getElementById("s-k").textContent = s ? nb.get(s.id).filter(x => vis.has(x.id)).length : "–";
   const fs = [...state.faecher];
   const sfTxt = state.sf.size === 3 ? "" : " · " + [...state.sf].map(k => SF[k]).join(", ");
-  document.getElementById("crumb").textContent = s
+  document.getElementById("crumb").textContent = werk.offen ? `Themenwerkstatt · ${werk.titel || "neues Thema"}` : s
     ? `${KIND[s.t]} · ${["thema", "sdg", "bne"].includes(s.t) ? "fächerübergreifend" : FACH[s.f]}`
     : (fs.length === DATA.faecher.length ? "Übersicht · alle Fächer" : fs.length > 4 ? `Auswahl · ${fs.length} Fächer` : "Auswahl · " + fs.map(k => KURZ[k]).join(", ")) + sfTxt;
   detail(vis);
+  zeichneWerk();
   try { localStorage.setItem("kg-state", JSON.stringify({ sp: state.sp, th: state.th, bne: state.bne })); } catch (e) {}
 }
 function select(id) {
   const n = id && byId.get(id);
+  if (werk.offen) { if (n && (n.t === "if" || n.t === "sp")) werkUmschalten(id); return; }
   if (n && (n.t === "sdg" || n.t === "bne") && !state.bne) { state.bne = true; document.getElementById("tg-bne").setAttribute("aria-pressed", true); }
   state.sel = id; render();
 }
@@ -498,6 +525,8 @@ function sdgUeber(ifIds) {
 }
 function detail(vis) {
   const el = document.getElementById("detail"), foot = document.getElementById("foot");
+  if (werk.offen) { foot.style.display = ""; werkPanel(el, foot); return; }
+  if (el.querySelector("#werk-form")) el.innerHTML = "";
   const n = state.sel && byId.get(state.sel);
   foot.innerHTML = "";
   foot.style.display = "";
@@ -590,6 +619,171 @@ function detail(vis) {
   }
   el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => select(b.dataset.go));
 }
+
+// --- Themenwerkstatt: eigene Themen gegen die Kerncurricula prüfen ---
+const WERK_KEY = "kg-werkstatt";
+const JG = { "56": "5/6", "78": "7/8", "910": "9/10" };
+const keyOf = n => n.t === "if" ? `${n.f}|${n.label}` : `${n.f}|${n.feld}|${n.label}`;
+const idOfKey = new Map(nodes.filter(n => n.t === "if" || n.t === "sp").map(n => [keyOf(n), n.id]));
+const werk = { offen: false, titel: "", stichworte: "", jg: "56", auswahl: new Set(), entwuerfe: [], treffer: [] };
+const entwurf = () => ({ titel: werk.titel, stichworte: werk.stichworte, jg: werk.jg, auswahl: [...werk.auswahl].map(id => keyOf(byId.get(id))) });
+const laden = e => { werk.titel = e.titel || ""; werk.stichworte = e.stichworte || ""; werk.jg = e.jg || "56"; werk.auswahl = new Set((e.auswahl || []).map(k => idOfKey.get(k)).filter(Boolean)); };
+try { const w = JSON.parse(localStorage.getItem(WERK_KEY) || "null"); if (w) { laden(w); werk.entwuerfe = w.entwuerfe || []; } } catch (e) {}
+function werkSichern() { try { localStorage.setItem(WERK_KEY, JSON.stringify({ ...entwurf(), entwuerfe: werk.entwuerfe })); } catch (e) {} }
+
+// Passt ein Schwerpunkt zum gewählten Jahrgang? Fächer ohne Zwischenstufe gelten bis zum Abschluss.
+function jgPasst(sp, alle) {
+  const hat = st => alle.some(x => x.st === st);
+  if (werk.jg === "56") return sp.st === "frueh" || (!hat("frueh") && sp.st !== "mitte");
+  if (werk.jg === "78") return sp.st === "mitte" || (!hat("mitte") && sp.st !== "frueh");
+  return sp.st === "spaet" || sp.st === "ohne" || (!hat("spaet") && !hat("ohne") && sp.st === "mitte");
+}
+const ifVon = n => n.t === "if" ? n : byId.get(nb.get(n.id).find(x => byId.get(x.id).t === "if").id);
+
+function werkSuche() {
+  const terme = werk.stichworte.toLowerCase().split(/[,;\n]+/).map(t => t.trim()).filter(t => t.length >= 3)
+    .map(t => ({ wort: t, rx: new RegExp("(^|[^a-zäöüß])" + (t.length > 6 ? t.slice(0, -2) : t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) }));
+  werk.treffer = [];
+  if (!terme.length) return;
+  const has = txt => terme.filter(t => t.rx.test(txt.toLowerCase())).map(t => t.wort); // nur am Wortanfang, sonst findet „Handel“ auch „aushandeln“
+  nodes.filter(n => n.t === "if" && inSf(n) && state.faecher.has(n.f)).forEach(n => {
+    const gruende = []; let score = 0; const worte = new Set();
+    const a = has(n.label + " " + (n.bk || "")); if (a.length) { score += 3 * a.length; gruende.push("Titel"); }
+    const b = has(n.w || ""); if (b.length) { score += b.length; gruende.push("Beschreibung im KC"); }
+    const c = has(nb.get(n.id).filter(x => x.l.k === "vorschlag" || x.l.k === "sdg").map(x => x.l.stich).join(" "));
+    if (c.length) { score += c.length; gruende.push("Stichwort aus Themen/SDGs"); }
+    const kinder = nb.get(n.id).map(x => byId.get(x.id)).filter(s => s.t === "sp" && inSf(s));
+    const sps = kinder.filter(s => jgPasst(s, kinder) && has(s.label).length);
+    if (sps.length) { score += 2 * sps.length; gruende.push("Schwerpunkt"); }
+    [...a, ...b, ...c, ...sps.flatMap(s => has(s.label))].forEach(w => worte.add(w));
+    if (score) werk.treffer.push({ n, score, gruende, sps, worte: [...worte] });
+  });
+  werk.treffer.sort((x, y) => y.score - x.score);
+}
+
+function werkPanel(el, foot) {
+  if (!el.querySelector("#werk-form")) {
+    el.innerHTML = `<div class="tags"><span class="tag">Themenwerkstatt</span><span class="tag warn">Entwurf, fachlich zu prüfen</span></div>
+      <div id="werk-form" class="werk">
+        <label class="field-label" for="w-titel">Titel des Themas</label>
+        <input id="w-titel" placeholder="z. B. Die Lahn">
+        <label class="field-label" for="w-stich">Stichworte, durch Komma getrennt</label>
+        <textarea id="w-stich" rows="2" placeholder="z. B. Fluss, Wasser, Hochwasser, Burg, Handel"></textarea>
+        <div class="field-label">Jahrgang</div>
+        <div class="tiles" id="w-jg">${Object.entries(JG).map(([k, v]) => `<button class="tile" data-jg="${k}">${v}<small>Jahrgang</small></button>`).join("")}</div>
+        <p class="ref">Gesucht wird am Wortanfang: „Wasser“ findet „Wasserkreislauf“, aber nicht „Trinkwasser“. Zusammengesetzte Wörter bei Bedarf als eigenes Stichwort eingeben. Ein Klick im Graphen auf ein Inhaltsfeld oder einen Schwerpunkt nimmt ihn auf oder entfernt ihn.</p>
+      </div>
+      <div id="w-abdeckung"></div><div id="w-treffer"></div><div id="w-entwuerfe"></div>`;
+    const ti = el.querySelector("#w-titel"), st = el.querySelector("#w-stich");
+    ti.value = werk.titel; st.value = werk.stichworte;
+    let timer;
+    ti.oninput = () => { werk.titel = ti.value; werkSichern(); zeichneWerk(); };
+    st.oninput = () => { werk.stichworte = st.value; werkSichern(); clearTimeout(timer); timer = setTimeout(() => { werkSuche(); render(); }, 250); };
+    el.querySelectorAll("#w-jg [data-jg]").forEach(b => b.onclick = () => { werk.jg = b.dataset.jg; werkSichern(); werkSuche(); render(); });
+    foot.innerHTML = `<div class="werk-knoepfe">
+      <button class="btn primary" id="w-speichern">Entwurf speichern</button>
+      <button class="btn" id="w-md">Als Text (.md)</button>
+      <button class="btn" id="w-json">Datei (.json)</button>
+      <label class="btn" for="w-import">Datei einlesen</label><input type="file" id="w-import" accept=".json,application/json" hidden>
+      <button class="btn" id="w-neu">Neu</button></div>`;
+    foot.querySelector("#w-speichern").onclick = () => {
+      const e = { ...entwurf(), stand: new Date().toLocaleDateString("de-DE") };
+      werk.entwuerfe = [e, ...werk.entwuerfe.filter(x => x.titel !== e.titel)];
+      werkSichern(); werkFuellen();
+    };
+    foot.querySelector("#w-md").onclick = () => herunterladen(`${dateiname()}.md`, werkText(), "text/markdown");
+    foot.querySelector("#w-json").onclick = () => herunterladen(`${dateiname()}.json`, JSON.stringify({ ...entwurf(), stand: new Date().toISOString().slice(0, 10), quelle: "Kompetenzgraph Hessen, Themenwerkstatt" }, null, 2), "application/json");
+    foot.querySelector("#w-import").onchange = ev => {
+      const f = ev.target.files[0]; if (!f) return;
+      f.text().then(t => {
+        const d = JSON.parse(t); const liste = Array.isArray(d) ? d : [d];
+        laden(liste[0]); werk.entwuerfe = [...liste.map(x => ({ ...x, stand: x.stand || "" })), ...werk.entwuerfe.filter(x => !liste.some(y => y.titel === x.titel))];
+        werkSichern(); el.innerHTML = ""; werkSuche(); render();
+      }).catch(() => alert("Die Datei konnte nicht gelesen werden."));
+    };
+    foot.querySelector("#w-neu").onclick = () => { laden({}); werkSichern(); el.innerHTML = ""; werkSuche(); render(); };
+  }
+  el.querySelectorAll("#w-jg [data-jg]").forEach(b => b.setAttribute("aria-pressed", b.dataset.jg === werk.jg));
+  werkFuellen();
+}
+
+function werkFuellen() {
+  const el = document.getElementById("detail");
+  const gew = [...werk.auswahl].map(id => byId.get(id));
+  const fGew = new Set(gew.map(n => n.f));
+  const ifsGew = new Set(gew.map(n => ifVon(n).id));
+  const sdgs = new Map();
+  ifsGew.forEach(id => nb.get(id).filter(x => x.l.k === "sdg").forEach(x => sdgs.set(x.id, byId.get(x.id))));
+  const fehlt = DATA.faecher.filter(f => !fGew.has(f.k) && state.faecher.has(f.k));
+  el.querySelector("#w-abdeckung").innerHTML = `<div class="sec"><div class="eyebrow">Abdeckung des Entwurfs</div>
+    <div class="meta"><span>${ifsGew.size} Inhaltsfelder</span><span>${gew.filter(n => n.t === "sp").length} Schwerpunkte</span><span>${fGew.size} Fächer</span><span>Jg. ${JG[werk.jg]}</span></div>
+    ${fGew.size ? `<div class="chips">${[...fGew].map(k => `<span class="chip" style="cursor:default"><span class="d" style="--c: var(--${k})"></span>${esc(KURZ[k])}</span>`).join("")}</div>` : `<p class="ref">Noch nichts ausgewählt. Treffer unten ankreuzen oder im Graphen anklicken.</p>`}
+    ${fGew.size ? `<p class="ref">Ohne Anteil: ${fehlt.map(f => esc(f.kurz)).join(", ") || "keins"}</p>` : ""}
+    ${sdgs.size ? `<p class="ref">Berührte Nachhaltigkeitsziele (Vorschlag): ${[...sdgs.values()].sort((a, b) => a.nr - b.nr).map(s => `SDG ${s.nr}`).join(", ")}</p>` : ""}</div>`;
+  const box = (id, txt, extra) => `<label class="w-row"><input type="checkbox" data-w="${id}" ${werk.auswahl.has(id) ? "checked" : ""}><span>${txt}${extra ? `<small>${extra}</small>` : ""}</span></label>`;
+  const gruppen = new Map();
+  werk.treffer.forEach(t => { if (!gruppen.has(t.n.f)) gruppen.set(t.n.f, []); gruppen.get(t.n.f).push(t); });
+  const imTreffer = new Set(werk.treffer.flatMap(t => [t.n.id, ...t.sps.map(s => s.id)]));
+  const weitere = gew.filter(n => !imTreffer.has(n.id));
+  el.querySelector("#w-treffer").innerHTML = (werk.stichworte.trim() ? `<div class="sec"><div class="eyebrow">Treffer in den Kerncurricula (${werk.treffer.length} Inhaltsfelder)</div>
+    ${werk.treffer.length ? "" : `<p class="ref">Keine Treffer. Andere oder allgemeinere Stichworte versuchen.</p>`}
+    ${[...gruppen.entries()].map(([f, ts]) => `<div class="w-fach"><div class="w-kopf"><span class="dot" style="--c: var(--${f})"></span>${esc(FACH[f])}</div>
+      ${ts.map(t => `<div class="w-feld">${box(t.n.id, esc(t.n.label), `${esc(t.gruende.join(", "))} · „${esc(t.worte.join("“, „"))}“ · ${esc(seitenTxt(t.n.seiten))}`)}
+        ${t.sps.map(s => `<div class="w-sp">${box(s.id, esc(s.label), `${s.sf.filter(k => state.sf.has(k)).map(k => SFK[k]).join(", ")} · ${esc(stufeKurz(s))} · ${esc([...new Set(Object.values(s.seiten))].join(" / "))}`)}</div>`).join("")}</div>`).join("")}</div>`).join("")}</div>` : "")
+    + (weitere.length ? `<div class="sec"><div class="eyebrow">Weitere ausgewählte Stellen</div>${weitere.map(n => `<div class="w-feld">${box(n.id, esc(n.label), esc(KURZ[n.f]) + (n.t === "sp" ? " · Schwerpunkt" : " · Inhaltsfeld"))}</div>`).join("")}</div>` : "");
+  el.querySelectorAll("[data-w]").forEach(c => c.onchange = () => { werkUmschalten(c.dataset.w); });
+  el.querySelector("#w-entwuerfe").innerHTML = werk.entwuerfe.length ? `<div class="sec"><div class="eyebrow">Gespeicherte Entwürfe (nur in diesem Browser)</div><ul class="rel">${werk.entwuerfe.map((e, i) => `<li><button data-laden="${i}">${esc(e.titel || "Ohne Titel")}<small>Jg. ${JG[e.jg] || "?"} · ${(e.auswahl || []).length} Stellen${e.stand ? " · " + esc(e.stand) : ""}</small></button><button class="w-weg" data-weg="${i}" aria-label="Entwurf löschen">Löschen</button></li>`).join("")}</ul></div>` : "";
+  el.querySelectorAll("[data-laden]").forEach(b => b.onclick = () => { laden(werk.entwuerfe[+b.dataset.laden]); werkSichern(); el.innerHTML = ""; werkSuche(); render(); });
+  el.querySelectorAll("[data-weg]").forEach(b => b.onclick = () => { if (confirm("Diesen Entwurf aus dem Browser löschen?")) { werk.entwuerfe.splice(+b.dataset.weg, 1); werkSichern(); werkFuellen(); } });
+}
+function werkUmschalten(id) { werk.auswahl.has(id) ? werk.auswahl.delete(id) : werk.auswahl.add(id); werkSichern(); render(); }
+
+function werkText() {
+  const gew = [...werk.auswahl].map(id => byId.get(id));
+  const ifs = [...new Set(gew.map(n => ifVon(n)))];
+  const zeilen = [`# ${werk.titel || "Neues Thema"}`, "", `Entwurf aus der Themenwerkstatt des Kompetenzgraphen Hessen, Stand ${new Date().toLocaleDateString("de-DE")}.`,
+    `Jahrgang ${JG[werk.jg]} · KC-Fassungen: ${[...state.sf].map(k => SF[k]).join(", ")}`, werk.stichworte ? `Stichworte: ${werk.stichworte}` : "", "",
+    "Die Zuordnung ist ein Entwurf und fachlich zu prüfen. Verbindlich ist der Wortlaut im Kerncurriculum (Seitenangaben).", ""];
+  DATA.faecher.filter(f => ifs.some(i => i.f === f.k)).forEach(f => {
+    zeilen.push(`## ${f.label}`, "");
+    ifs.filter(i => i.f === f.k).forEach(i => {
+      zeilen.push(`- **${i.label}** (Kap. 6: ${seitenTxt(i.seiten)})`);
+      gew.filter(n => n.t === "sp" && ifVon(n).id === i.id).forEach(s => zeilen.push(`  - ${s.label} (${s.sf.map(k => `${SF[k]}: ${s.stufen[k]}, ${s.seiten[k]}`).join("; ")})`));
+    });
+    zeilen.push("");
+  });
+  const sdgs = new Map();
+  ifs.forEach(i => nb.get(i.id).filter(x => x.l.k === "sdg").forEach(x => sdgs.set(x.id, { s: byId.get(x.id), uz: x.l.uz })));
+  if (sdgs.size) zeilen.push("## Berührte Nachhaltigkeitsziele (Vorschlag)", "", ...[...sdgs.values()].sort((a, b) => a.s.nr - b.s.nr).map(({ s, uz }) => `- SDG ${s.nr}: ${s.label}${uz ? ` (Unterziel ${uz})` : ""}`), "");
+  const fehlt = DATA.faecher.filter(f => !ifs.some(i => i.f === f.k)).map(f => f.kurz);
+  zeilen.push(`Fächer ohne Anteil: ${fehlt.join(", ") || "keins"}`);
+  return zeilen.filter((z, i, a) => !(z === "" && a[i - 1] === "")).join("\n");
+}
+const dateiname = () => "Thema_" + (werk.titel || "Entwurf").replace(/[^\wäöüÄÖÜß-]+/g, "_").slice(0, 40);
+function herunterladen(name, inhalt, typ) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([inhalt], { type: typ + ";charset=utf-8" }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// Entwurf im Graphen: eigener Knoten in der Mitte mit Linien zu den gewählten Stellen
+function zeichneWerk() {
+  werkG.selectAll("*").remove();
+  if (!werk.offen) return;
+  const c = anchor.thema;
+  [...werk.auswahl].forEach(id => { const n = byId.get(id); werkG.append("line").attr("class", "lk werk").attr("x1", c.x).attr("y1", c.y).attr("x2", n.x).attr("y2", n.y); });
+  werkG.append("circle").attr("class", "werk-kern").attr("cx", c.x).attr("cy", c.y).attr("r", 12).attr("filter", "url(#glowbig)");
+  werkG.append("text").attr("class", "lbl big").attr("x", c.x).attr("y", c.y - 20).attr("text-anchor", "middle").text(werk.titel || "Neues Thema");
+}
+const werkKnopf = document.getElementById("werk-btn");
+werkKnopf.onclick = () => {
+  werk.offen = !werk.offen;
+  werkKnopf.textContent = werk.offen ? "× Werkstatt schließen" : "✎ Themenwerkstatt";
+  werkKnopf.classList.toggle("primary", werk.offen);
+  document.getElementById("detail").innerHTML = ""; document.getElementById("foot").innerHTML = "";
+  state.sel = null; werkSuche(); render();
+};
 
 // --- Bedienelemente ---
 document.getElementById("legende").insertAdjacentHTML("afterbegin", DATA.gruppen.map(gr => `<span><span class="d" style="--c: ${gr.farbe}"></span>${gr.label}</span>`).join(""));

@@ -26,6 +26,10 @@ for q in lies("quellen_sek1.csv"):
 nodes, links = [], []
 pilot = {(fach, feld): (bk, hin) for fach, bk, feld, seite, hin in b.IF}
 
+# Suchwörter je Inhaltsfeld für die Themenwerkstatt (scripts/build_suchindex.py)
+ip = os.path.join(ROOT, "data", "suchindex.json")
+SUCH = json.load(open(ip, encoding="utf-8")) if os.path.exists(ip) else {}
+
 if_id = {}
 for i, r in enumerate(lies("inhaltsfelder_sek1.csv"), 1):
     fach, feld = r["fach"], r["inhaltsfeld"]
@@ -35,7 +39,7 @@ for i, r in enumerate(lies("inhaltsfelder_sek1.csv"), 1):
     nid = f"IF-{i:03d}"
     if_id[(fach, feld)] = nid
     nodes.append({"id": nid, "t": "if", "f": KEY[fach], "label": feld, "bk": r["bereich"] or bk,
-                  "sf": list(seiten), "seiten": seiten, "hin": hin})
+                  "sf": list(seiten), "seiten": seiten, "hin": hin, "w": SUCH.get(f"{fach}|{feld}", "")})
 fehlt = [k for k in pilot if k not in if_id]
 assert not fehlt, f"Pilot-Inhaltsfelder fehlen in inhaltsfelder_sek1.csv: {fehlt}"
 

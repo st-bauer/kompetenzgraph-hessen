@@ -13,6 +13,7 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 - 33 belegte Querbezüge zwischen Fächern (`querbezuege.csv`, aus Kap. 3 bis 5); Kompetenzbereiche bisher nur Pilotfächer
 - Prüfliste für die Fachschaften: `output/Pruefliste_Fachschaften.xlsx` (Themen, SDG-Zuordnungen, neu erfasste Schwerpunkte, mit Auswahlliste zur Bewertung)
 - BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit amtlichem Zieltext und 63 schulrelevanten Unterzielen; 64 Zuordnungen zu Inhaltsfeldern, 60 davon mit Unterziel (Vorschlag). Themen und Fächer zeigen die Ziele ihrer Inhaltsfelder.
+- Themenwerkstatt (Knopf oben): eigenes Thema mit Titel, Stichworten und Jahrgang gegen die KC prüfen; Treffer je Fach ankreuzen oder im Graphen anklicken; Abdeckung (Fächer, SDGs); Entwürfe im Browser (localStorage), Export als .md und .json, Import der .json. Suche am Wortanfang über Titel, Schwerpunkte, Themen-/SDG-Stichworte und einen Wortindex der Kap.-6-Beschreibungen
 - Webseite: `docs/index.html` (wird aus `web/template.html` gebaut, GitHub Pages liefert `docs/` aus)
 - Online: https://st-bauer.github.io/kompetenzgraph-hessen/ (Repo st-bauer/kompetenzgraph-hessen, öffentlich)
 - Tabelle: `output/Kerncurricula_Hessen_Sek1.xlsx`
@@ -29,6 +30,7 @@ data/bne_sdg.csv        17 SDGs mit offizieller Farbe und amtlichem Zieltext
 data/bne_unterziele.csv Auswahl schulrelevanter Unterziele im amtlichen deutschen Wortlaut (Quelle: Destatis, sdg-indikatoren.de)
 data/bne_belege.csv     Stellen, an denen das KC Nachhaltigkeit nennt (Beleg)
 data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern mit Unterziel (Vorschlag)
+data/suchindex.json     Wörter je Inhaltsfeld aus Kap. 6 (nur für die Suche der Themenwerkstatt, wird nicht angezeigt)
 data/kerncurricula.py   Pilotdaten Gymnasium (Schwerpunkte, Kompetenzbereiche, Querbezüge, Hinweise)
 data/quellen_sek1.csv   Alle KC- und Leitfaden-PDFs Sek I mit URL (Stand 26.10.2026)
 scripts/build_xlsx.py   erzeugt die Excel-Tabelle
@@ -39,14 +41,17 @@ scripts/schwerpunkte_auslesen.py  Entwurf aus vierspaltigen Schwerpunkt-Tabellen
 scripts/inhaltsfelder_auslesen.py Entwurf aus beschriebenen Inhaltsfeldern (Aufzählungen bzw. Satz „Im Mittelpunkt …“)
 scripts/tabelle_auslesen.py       Entwurf aus Spaltentabellen über Wortkoordinaten (Mathematik Kap. 7.3, Kath. Religion Kap. 8.3)
 scripts/build_pruefliste.py       erzeugt die Prüfliste für die Fachschaften
+scripts/build_suchindex.py        erzeugt data/suchindex.json (braucht quellen/txt)
 web/template.html       Graph-Seite (d3 7.8.5 per CDN, Platzhalter /*__DATA__*/null)
 docs/                   veröffentlichte Seite für GitHub Pages (nicht von Hand bearbeiten)
+notizen/                Arbeitsnotizen, nicht Teil der App (z. B. themen_recherche.md: Themen anderer Schulen, nur Orientierung)
 ```
 
 ## Befehle
 ```
 pip install openpyxl
 python3 scripts/build_xlsx.py
+python3 scripts/build_suchindex.py   # nur nach Änderungen an Inhaltsfeldern, braucht quellen/
 python3 scripts/build_graph.py
 python3 scripts/build_pruefliste.py
 python3 scripts/fetch_pdfs.py --fach Biologie --schulform Realschule
