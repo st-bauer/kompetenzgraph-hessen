@@ -156,6 +156,14 @@ details.uz { padding: 8px 10px; }
 .w-ideen input { flex: 1; min-width: 0; }
 .w-vorlagen summary { cursor: pointer; }
 .w-vorlagen .chips { margin-top: 6px; }
+.w-teil { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 6px 8px; align-items: start; margin-bottom: 12px; }
+.w-teil > input[type=checkbox] { accent-color: var(--mint); margin-top: 8px; }
+.w-teil.aus .w-teil-text { opacity: .45; }
+.w-nr { font: 700 .72rem var(--mono); color: var(--mint); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; margin-top: 2px; }
+.w-teil-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.w-teil-titel { font: 700 .85rem var(--font); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; width: 100%; }
+.w-inhalt { margin: 0; font-size: .78rem; color: var(--muted); }
+.w-leit { margin: 0; font-size: .8rem; font-style: italic; color: var(--ink); }
 .w-aspekt { border-left: 3px solid var(--mint); padding-left: 9px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
 .werk-knoepfe .btn { flex: 1 1 auto; text-align: center; }
 ul.rel li button.w-weg { width: auto; margin-top: 4px; font-size: .72rem; color: var(--muted); padding: 4px 8px; }
@@ -630,11 +638,12 @@ const WERK_KEY = "kg-werkstatt";
 const JG = { "56": "5/6", "78": "7/8", "910": "9/10" };
 const keyOf = n => n.t === "if" ? `${n.f}|${n.label}` : `${n.f}|${n.feld}|${n.label}`;
 const idOfKey = new Map(nodes.filter(n => n.t === "if" || n.t === "sp").map(n => [keyOf(n), n.id]));
-const werk = { offen: false, satz: "", titel: "", stichworte: "", jg: "56", teile: false, auswahl: new Set(), entwuerfe: [], treffer: [], aspekte: [] };
+const werk = { offen: false, satz: "", titel: "", stichworte: "", jg: "56", teile: false, auswahl: new Set(), entwuerfe: [], treffer: [], aspekte: [], gliederung: null };
 const entwurf = () => ({ satz: werk.satz, titel: werk.titel, stichworte: werk.stichworte, jg: werk.jg, auswahl: [...werk.auswahl].map(id => keyOf(byId.get(id))),
-  aspekte: werk.aspekte.map(a => ({ aspekt: a.aspekt, begruendung: a.begruendung, quelle: a.quelle, eintraege: [...a.ifs, ...a.sps].map(id => keyOf(byId.get(id))) })) });
+  aspekte: werk.aspekte.map(a => ({ aspekt: a.aspekt, begruendung: a.begruendung, quelle: a.quelle, eintraege: [...a.ifs, ...a.sps].map(id => keyOf(byId.get(id))) })),
+  gliederung: werk.gliederung });
 const laden = e => {
-  werk.satz = e.satz || ""; werk.titel = e.titel || ""; werk.stichworte = e.stichworte || ""; werk.jg = e.jg || "56";
+  werk.satz = e.satz || ""; werk.titel = e.titel || ""; werk.stichworte = e.stichworte || ""; werk.jg = e.jg || "56"; werk.gliederung = e.gliederung || null;
   werk.auswahl = new Set((e.auswahl || []).map(k => idOfKey.get(k)).filter(Boolean));
   werk.aspekte = (e.aspekte || []).map(a => { const ids = (a.eintraege || []).map(k => idOfKey.get(k)).filter(Boolean);
     return { aspekt: a.aspekt || "", begruendung: a.begruendung || "", quelle: a.quelle || "", ifs: ids.filter(id => byId.get(id).t === "if"), sps: ids.filter(id => byId.get(id).t === "sp") }; });
@@ -709,7 +718,7 @@ function werkPanel(el, foot) {
         <label class="w-row"><input type="checkbox" id="w-teile"><span>Auch Wortteile finden<small>z. B. „Trinkwasser“ bei „Wasser“. Findet mehr, aber auch Unpassendes wie „aushandeln“ bei „Handel“.</small></span></label>
         <p class="ref">Groß- und Kleinschreibung, Umlaute und einfache Endungen spielen keine Rolle: „Wald“ findet auch „Wälder“. Bei jedem Treffer steht das gefundene Wort, so lassen sich Fehltreffer erkennen. Ein Klick im Graphen auf ein Inhaltsfeld oder einen Schwerpunkt nimmt ihn auf oder entfernt ihn.</p>
       </div>
-      <div id="w-aspekte"></div><div id="w-abdeckung"></div><div id="w-treffer"></div><div id="w-entwuerfe"></div>`;
+      <div id="w-gliederung"></div><div id="w-aspekte"></div><div id="w-abdeckung"></div><div id="w-treffer"></div><div id="w-entwuerfe"></div>`;
     const ti = el.querySelector("#w-titel"), st = el.querySelector("#w-stich");
     ti.value = werk.titel; st.value = werk.stichworte;
     const sa = el.querySelector("#w-satz"), ib = el.querySelector("#w-ideen-btn");
@@ -770,7 +779,21 @@ function werkFuellen() {
     ${fGew.size ? `<p class="ref">Ohne Anteil: ${fehlt.map(f => esc(f.kurz)).join(", ") || "keins"}</p>` : ""}
     ${sdgs.size ? `<p class="ref">Berührte Nachhaltigkeitsziele (Vorschlag): ${[...sdgs.values()].sort((a, b) => a.nr - b.nr).map(s => `SDG ${s.nr}`).join(", ")}</p>` : ""}</div>`;
   const box = (id, txt, extra) => `<label class="w-row"><input type="checkbox" data-w="${id}" ${werk.auswahl.has(id) ? "checked" : ""}><span>${txt}${extra ? `<small>${extra}</small>` : ""}</span></label>`;
-  el.querySelector("#w-aspekte").innerHTML = werk.aspekte.length ? `<div class="sec"><div class="eyebrow">Ideen zum Thema <span class="tag warn" style="margin-left:6px">Vorschlag</span></div>
+  const g = werk.gliederung;
+  el.querySelector("#w-gliederung").innerHTML = g ? `<div class="sec"><div class="eyebrow">Aufbau des Themas <span class="tag warn" style="margin-left:6px">Vorschlag von Claude</span></div>
+    ${g.aufbau ? `<p>${esc(g.aufbau)}</p>` : ""}
+    <p class="ref">Schritt 1: Teilbereiche prüfen, umbenennen oder abwählen. Schritt 2: die gewählten Teilbereiche den Fächern und Kompetenzen zuordnen.</p>
+    ${g.teile.map((t, i) => `<div class="w-teil${t.an ? "" : " aus"}">
+      <input type="checkbox" data-teil="${i}" ${t.an ? "checked" : ""} aria-label="Teilbereich ${i + 1} verwenden"><span class="w-nr">${i + 1}</span>
+      <div class="w-teil-text"><input class="w-teil-titel" data-titel="${i}" value="${esc(t.titel)}" aria-label="Titel von Teilbereich ${i + 1}">
+        ${t.leitfrage ? `<p class="w-leit">${esc(t.leitfrage)}</p>` : ""}${t.inhalt ? `<p class="w-inhalt">${esc(t.inhalt)}</p>` : ""}
+        ${t.faecher.length ? `<div class="chips">${t.faecher.map(k => `<span class="chip" style="cursor:default"><span class="d" style="--c: var(--${k})"></span>${esc(KURZ[k])}</span>`).join("")}</div>` : ""}</div></div>`).join("")}
+    <div class="werk-knoepfe"><button class="btn primary" id="w-zuordnen">Fächer und Kompetenzen zuordnen</button><button class="btn" id="w-neu-gliedern">Neu gliedern</button></div></div>` : "";
+  el.querySelectorAll("[data-teil]").forEach(c => c.onchange = () => { g.teile[+c.dataset.teil].an = c.checked; c.parentElement.classList.toggle("aus", !c.checked); werkSichern(); });
+  el.querySelectorAll("[data-titel]").forEach(c => c.oninput = () => { g.teile[+c.dataset.titel].titel = c.value; werkSichern(); });
+  const zb = el.querySelector("#w-zuordnen"); if (zb) zb.onclick = () => ideenZuordnen(zb);
+  const ng = el.querySelector("#w-neu-gliedern"); if (ng) ng.onclick = () => ideenFinden(document.getElementById("w-ideen-btn"));
+  el.querySelector("#w-aspekte").innerHTML = werk.aspekte.length ? `<div class="sec"><div class="eyebrow">${g ? "Zuordnung zu den Kerncurricula" : "Ideen zum Thema"} <span class="tag warn" style="margin-left:6px">Vorschlag</span></div>
     <p class="ref">Quelle: ${esc(werk.aspekte[0].quelle)}. Alles Angekreuzte gehört zum Entwurf. Bitte fachlich prüfen.</p>
     ${werk.aspekte.map(a => `<div class="w-aspekt"><div class="w-kopf">${esc(a.aspekt)}</div>${a.begruendung ? `<p class="ref">${esc(a.begruendung)}</p>` : ""}
       ${a.ifs.map(id => { const n = byId.get(id); return `<div class="w-feld">${box(id, `<span class="dot" style="--c: var(--${n.f})"></span>${esc(KURZ[n.f])}: ${esc(n.label)}`, esc(seitenTxt(n.seiten)))}</div>`; }).join("")}
@@ -791,12 +814,32 @@ function werkFuellen() {
   el.querySelectorAll("[data-weg]").forEach(b => b.onclick = () => { if (confirm("Diesen Entwurf aus dem Browser löschen?")) { werk.entwuerfe.splice(+b.dataset.weg, 1); werkSichern(); werkFuellen(); } });
 }
 // Ideen aus einem Thema: mit Claude (claude.ai-Fassung) oder aus den Vorlagen
-let sampleFn = null, ideenCtl = null;
-if (typeof window.claude !== "undefined" && window.claude.use) window.claude.use("sample").then(f => { sampleFn = f; ideenHinweis(); }).catch(() => {});
+let sampleFn = null, ideenCtl = null, claudeZustand = "";
+if (typeof window.claude !== "undefined" && window.claude.use) window.claude.use("sample").then(async f => {
+  sampleFn = f;
+  if (!f) { const perm = await window.claude.use("permissions").catch(() => null); claudeZustand = perm ? await perm.state("sample").catch(() => "unavailable") : "unavailable"; }
+  ideenHinweis();
+}).catch(() => {});
+const IDEEN_FEHLER = {
+  not_granted: "Die Seite darf Claude nicht nutzen. Erlauben lässt sich das über das Menü der Seite unter Berechtigungen.",
+  sampling_disabled: "Claude ist für dieses Konto nicht freigeschaltet.",
+  session_expired: "Die Anmeldung bei claude.ai ist abgelaufen. Bitte neu anmelden.",
+  rate_limited: "Claude ist gerade ausgelastet. Später noch einmal versuchen.",
+  invalid_json: "Claudes Antwort war unvollständig. Bitte noch einmal versuchen.",
+  prompt_too_large: "Die Liste ist zu lang. Bitte weniger Fächer oder KC-Fassungen auswählen.",
+  upstream_error: "Die Verbindung zu Claude ist abgebrochen. Bitte noch einmal versuchen.",
+  keine_kennungen: "Claudes Antwort enthielt keine Einträge aus der Liste. Bitte noch einmal versuchen oder das Thema anders formulieren.",
+};
+const CLAUDE_ZUSTAND = {
+  kein_rahmen: "Diese Fassung läuft außerhalb von claude.ai und sucht darum ohne Claude.",
+  unavailable: "Claude ist in dieser Ansicht nicht verfügbar. Meist hilft es, sich bei claude.ai anzumelden und die Seite neu zu laden.",
+  denied: "Die Nutzung von Claude wurde für diese Seite abgelehnt. Freigeben lässt sie sich im Menü der Seite unter Berechtigungen.",
+};
 const SAMPLE_AUS = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"];
 function ideenStatus(t) { const e = document.getElementById("w-ideen-status"); if (e) e.textContent = t; }
 function ideenHinweis() {
   ideenStatus(sampleFn ? "Claude schlägt Aspekte vor und wählt dabei nur aus den Einträgen der hessischen Kerncurricula."
+    : claudeZustand ? (CLAUDE_ZUSTAND[claudeZustand] || "Claude ist hier nicht verfügbar.") + ` (Zustand: ${claudeZustand}) Die Werkstatt sucht eine passende Vorlage.`
     : "Ohne Claude sucht die Werkstatt eine passende Vorlage. In der claude.ai-Fassung schlägt Claude Aspekte zu jedem Thema vor.");
 }
 const FUELL = new Set("ich wir du ihr mein meine meinen meinem unser unsere unseren unserem eine einen einem einer ein der die das den dem des und oder mit für von zum zur auf aus bei nach über unter vor wie was wer wo planen machen gestalten bauen erstellen neue neuen neues klasse klassen schule schulen jahrgang".split(" "));
@@ -805,7 +848,10 @@ const passt = (txt, staemme) => woerter(txt).some(x => staemme.some(st => x.f.st
 function aspekteUebernehmen(aspekte, quelle) {
   werk.aspekte.forEach(a => [...a.ifs, ...a.sps].forEach(id => werk.auswahl.delete(id))); // alte Vorschläge ersetzen, Handauswahl bleibt
   werk.aspekte = aspekte.map(a => ({ ...a, quelle }));
-  werk.aspekte.forEach(a => [...a.ifs, ...a.sps].forEach(id => werk.auswahl.add(id)));
+  werk.aspekte.forEach(a => { // Schwerpunkte ankreuzen, ein Inhaltsfeld nur, wenn keiner seiner Schwerpunkte dabei ist
+    a.sps.forEach(id => werk.auswahl.add(id));
+    a.ifs.filter(id => !a.sps.some(s => ifVon(byId.get(s)).id === id)).forEach(id => werk.auswahl.add(id));
+  });
   werkSichern(); render();
 }
 function vorlageAnwenden(t) {
@@ -818,65 +864,139 @@ function vorlageAnwenden(t) {
     });
     return { aspekt: a.aspekt, begruendung: "", ifs, sps };
   }).filter(a => a.ifs.length);
+  werk.gliederung = null;
   ideenStatus(`Vorlage „${t.thema}“ übernommen, angepasst an Jahrgang ${JG[werk.jg]}.`);
   aspekteUebernehmen(aspekte, `Vorlage „${t.thema}“ aus der Ideenliste`);
 }
-function vorlageSuchen(satz) {
+// Themenvorschlag aus dem Graphen als Vorlage: ein Aspekt je Fach mit den Stichworten aus dem KC
+function themaAnwenden(th) {
+  const jeFach = new Map();
+  nb.get(th.id).filter(x => x.l.k === "vorschlag").forEach(x => {
+    const n = byId.get(x.id); if (!inSf(n) || !state.faecher.has(n.f)) return;
+    if (!jeFach.has(n.f)) jeFach.set(n.f, { ifs: [], stich: [] });
+    jeFach.get(n.f).ifs.push(n.id); if (x.l.stich) jeFach.get(n.f).stich.push(x.l.stich);
+  });
+  const aspekte = [...jeFach].map(([f, a]) => {
+    const st = stammListe(a.stich.join(" "));
+    const sps = a.ifs.flatMap(id => {
+      const kinder = nb.get(id).map(x => byId.get(x.id)).filter(s => s.t === "sp" && inSf(s));
+      return kinder.filter(s => jgPasst(s, kinder) && passt(s.label, st)).slice(0, 3).map(s => s.id);
+    });
+    return { aspekt: FACH[f], begruendung: a.stich.join("; "), ifs: a.ifs, sps };
+  });
+  werk.gliederung = null;
+  ideenStatus(`Themenvorschlag „${th.label}“ aus dem Graphen übernommen, angepasst an Jahrgang ${JG[werk.jg]}.`);
+  aspekteUebernehmen(aspekte, `Themenvorschlag „${th.label}“`);
+}
+function vorlageSuchen(satz, vorweg = "") {
   const st = stammListe(satz).filter(x => x.length >= 4);
-  const wertung = DATA.ideen.map(t => ({ t, n: st.filter(x => woerter(t.thema + " " + t.such).some(w => !FUELL.has(w.o) && (w.f.startsWith(x) || (stammVon(w.o).length >= 4 && (x.startsWith(stammVon(w.o)) || x.endsWith(stammVon(w.o))))))).length }));
+  const zaehle = txt => st.filter(x => woerter(txt).some(w => !FUELL.has(w.o) && (w.f.startsWith(x) || (stammVon(w.o).length >= 4 && (x.startsWith(stammVon(w.o)) || x.endsWith(stammVon(w.o))))))).length;
+  const wertung = [...DATA.ideen.map(t => ({ t, n: zaehle(t.thema + " " + t.such) })),
+    // Themen aus dem Graphen nur bei ganzen Wörtern, sonst passt „Welt“ zu „Weltdeutung“
+    ...nodes.filter(n => n.t === "thema").map(th => ({ th, n: st.filter(x => woerter(th.label).some(w => !FUELL.has(w.o) && stammVon(w.o) === x)).length + 0.5 }))].filter(w => w.n >= 1);
   const best = wertung.sort((a, b) => b.n - a.n)[0];
-  if (best && best.n > 0) return vorlageAnwenden(best.t);
-  aspekteUebernehmen([], "");
-  ideenStatus("Keine Vorlage passt zu diesem Thema. Wählen Sie eine Vorlage oder suchen Sie unten nach Stichworten.");
+  if (best) { best.t ? vorlageAnwenden(best.t) : themaAnwenden(best.th); if (vorweg) ideenStatus(vorweg + document.getElementById("w-ideen-status").textContent); return; }
+  werk.gliederung = null; aspekteUebernehmen([], "");
+  ideenStatus(vorweg + "Keine Vorlage passt zu diesem Thema. Wählen Sie eine Vorlage oder suchen Sie unten nach Stichworten.");
   const d = document.querySelector(".w-vorlagen"); if (d) d.open = true;
 }
-async function ideenClaude(satz) {
+// Zweistufig mit Claude: erst das Thema gliedern, dann die gewählten Teilbereiche den Fächern und Kompetenzen zuordnen
+const fachVonName = name => { const t = String(name).toLowerCase().trim(); return DATA.faecher.find(f => f.label.toLowerCase() === t || f.kurz.toLowerCase() === t)?.k
+  || DATA.faecher.find(f => t && (f.label.toLowerCase().startsWith(t) || t.startsWith(f.kurz.toLowerCase())))?.k; };
+async function ideenGliedern(satz) {
+  const faecher = DATA.faecher.filter(f => state.faecher.has(f.k)).map(f => f.label);
+  const prompt = `Du unterstützt Lehrerinnen und Lehrer einer hessischen Integrierten Gesamtschule (Sekundarstufe I) bei der Planung eines fächerübergreifenden Projektthemas.
+Thema: „${satz}“
+Jahrgang: ${JG[werk.jg]}
+
+Aufgabe: Entwirf einen sinnvollen Aufbau für dieses Thema als Lernweg (zum Beispiel Einstieg, Erarbeitung in mehreren Teilbereichen, Produkt oder Präsentation). Gliedere das Thema in 4 bis 6 Teilbereiche in sinnvoller Reihenfolge. Jeder Teilbereich bekommt einen kurzen Titel, eine Leitfrage aus Sicht der Schülerinnen und Schüler, ein bis zwei Sätze, was die Schülerinnen und Schüler dort tun, und die 1 bis 3 Fächer, die dafür am wichtigsten sind. Wähle Fächer nur aus dieser Liste: ${faecher.join(", ")}.
+Achte auf das Alter der Schülerinnen und Schüler (Jahrgang ${JG[werk.jg]}) und auf ein Thema, das in der Schule tatsächlich umsetzbar ist.
+
+Antworte nur mit JSON in genau dieser Form:
+{"aufbau":"ein Satz zum roten Faden","teile":[{"titel":"kurzer Titel","leitfrage":"Frage?","inhalt":"ein bis zwei Sätze","faecher":["Mathematik"]}]}`;
+  ideenCtl = new AbortController();
+  ideenStatus("Claude gliedert das Thema … Das dauert meist 10 bis 30 Sekunden.");
+  const d = await sampleFn.json(prompt, { modelTier: "default", signal: ideenCtl.signal });
+  const teile = (Array.isArray(d?.teile) ? d.teile : Array.isArray(d) ? d : []).slice(0, 8).map(t => ({
+    titel: String(t?.titel || "Teilbereich").slice(0, 80), leitfrage: String(t?.leitfrage || "").slice(0, 200), inhalt: String(t?.inhalt || "").slice(0, 400),
+    faecher: [...new Set((Array.isArray(t?.faecher) ? t.faecher : []).map(fachVonName).filter(k => k && state.faecher.has(k)))], an: true }));
+  if (!teile.length) throw { code: "invalid_json" };
+  aspekteUebernehmen([], "");
+  werk.gliederung = { aufbau: String(d?.aufbau || "").slice(0, 300), teile };
+  werkSichern(); render();
+  ideenStatus(`Claude hat ${teile.length} Teilbereiche vorgeschlagen. Prüfen, umbenennen oder abwählen, dann „Fächer und Kompetenzen zuordnen“.`);
+}
+async function ideenZuordnen(knopf) {
+  if (ideenCtl) { ideenCtl.abort(); return; }
+  const teile = werk.gliederung.teile.filter(t => t.an);
+  if (!teile.length) { ideenStatus("Bitte mindestens einen Teilbereich auswählen."); return; }
+  if (!sampleFn) { ideenStatus("Claude ist hier nicht verfügbar."); return; }
+  const faecher = new Set(teile.flatMap(t => t.faecher));
+  if (!faecher.size) state.faecher.forEach(k => faecher.add(k));
   const kennung = new Map(), zeilen = []; let i = 0, j = 0;
-  nodes.filter(n => n.t === "if" && inSf(n) && state.faecher.has(n.f)).forEach(n => {
+  nodes.filter(n => n.t === "if" && inSf(n) && faecher.has(n.f)).forEach(n => {
     const ik = "I" + (++i); kennung.set(ik, n.id); zeilen.push(`${ik} | ${FACH[n.f]} | ${n.label}`);
     const kinder = nb.get(n.id).map(x => byId.get(x.id)).filter(s => s.t === "sp" && inSf(s));
     kinder.filter(s => jgPasst(s, kinder)).forEach(s => { const sk = "S" + (++j); kennung.set(sk, s.id); zeilen.push(`  ${sk} ${s.label}`); });
   });
-  const prompt = `Du unterstützt Lehrerinnen und Lehrer einer hessischen Gesamtschule (Sekundarstufe I) bei der Planung eines fächerübergreifenden Projektthemas.
-Thema: „${satz}“
+  const prompt = `Du unterstützt Lehrerinnen und Lehrer einer hessischen Integrierten Gesamtschule (Sekundarstufe I) bei der Planung eines fächerübergreifenden Projektthemas.
+Thema: „${werk.satz}“
 Jahrgang: ${JG[werk.jg]}
 
-Unten stehen die Inhaltsfelder (Kennung I…) und Schwerpunkte (Kennung S…) aus den hessischen Kerncurricula, die für diesen Jahrgang gelten. Die Schwerpunkte stehen eingerückt unter ihrem Inhaltsfeld.
+Das Thema ist bereits in diese Teilbereiche gegliedert:
+${teile.map((t, k) => `T${k + 1} ${t.titel}: ${t.inhalt} (Fächer: ${t.faecher.map(f => FACH[f]).join(", ") || "offen"})`).join("\n")}
 
-Aufgabe: Zerlege das Thema in 4 bis 8 konkrete Aspekte, die Schülerinnen und Schüler bei diesem Thema bearbeiten würden (zum Beispiel „Fläche und Maßstab berechnen“ oder „Farben und Raumwirkung“). Ordne jedem Aspekt die passenden Einträge aus der Liste zu: das Inhaltsfeld und, wo es passt, konkrete Schwerpunkte. Nimm nur Einträge, die fachlich wirklich passen, höchstens 8 je Aspekt, und verteile die Aspekte möglichst auf mehrere Fächer. Verwende ausschließlich Kennungen aus der Liste und erfinde keine Inhalte.
+Aufgabe: Ordne jedem Teilbereich die Kompetenzen aus den hessischen Kerncurricula zu, die dort im Mittelpunkt stehen. Nimm je Teilbereich nur die 2 bis 4 zentralsten Einträge, vorzugsweise Schwerpunkte (S…), und ein Inhaltsfeld (I…) nur, wenn kein Schwerpunkt passt. Bleib bei den genannten Fächern des Teilbereichs. Lieber weniger und dafür treffend. Verwende ausschließlich Kennungen aus der Liste und erfinde keine Inhalte.
 
 Antworte nur mit JSON in genau dieser Form:
-{"aspekte":[{"aspekt":"kurzer Titel","begruendung":"ein Satz, warum der Aspekt zum Thema gehört","eintraege":["I12","S340"]}]}
+{"zuordnung":[{"teil":"T1","eintraege":["S12","S40"],"begruendung":"ein Satz, was die Schülerinnen und Schüler dabei lernen"}]}
 
-Liste:
+Liste (eingerückt die Schwerpunkte unter ihrem Inhaltsfeld):
 ${zeilen.join("\n")}`;
-  ideenCtl = new AbortController();
-  ideenStatus("Claude denkt nach … Das dauert meist 20 bis 60 Sekunden.");
-  const d = await sampleFn.json(prompt, { modelTier: "default", signal: ideenCtl.signal });
-  const aspekte = (d && Array.isArray(d.aspekte) ? d.aspekte : []).map(a => {
-    const ids = [...new Set((Array.isArray(a.eintraege) ? a.eintraege : []).map(k => kennung.get(String(k).trim())).filter(Boolean))];
-    return { aspekt: String(a.aspekt || "Aspekt").slice(0, 90), begruendung: String(a.begruendung || "").slice(0, 300),
-      ifs: ids.filter(id => byId.get(id).t === "if"), sps: ids.filter(id => byId.get(id).t === "sp") };
-  }).filter(a => a.ifs.length || a.sps.length);
-  if (!aspekte.length) { ideenStatus("Claude hat keine passenden Einträge gefunden. Formulieren Sie das Thema anders oder nutzen Sie eine Vorlage."); return; }
-  ideenStatus(`Claude hat ${aspekte.length} Aspekte vorgeschlagen. Bitte prüfen.`);
-  aspekteUebernehmen(aspekte, "Vorschlag von Claude");
+  ideenCtl = new AbortController(); knopf.textContent = "Abbrechen";
+  ideenStatus("Claude ordnet die Teilbereiche den Kerncurricula zu … Das dauert meist 20 bis 60 Sekunden.");
+  try {
+    const d = await sampleFn.json(prompt, { modelTier: "default", signal: ideenCtl.signal });
+    const liste = Array.isArray(d?.zuordnung) ? d.zuordnung : Array.isArray(d) ? d : [];
+    const aspekte = teile.map((t, k) => {
+      const z = liste.find(x => String(x?.teil).replace(/\D/g, "") === String(k + 1)) || liste[k] || {};
+      const ids = [...new Set((JSON.stringify(z.eintraege ?? z).match(/\b[IS]\d+\b/g) || []).map(x => kennung.get(x)).filter(Boolean))];
+      const sps = ids.filter(id => byId.get(id).t === "sp");
+      const ifs = [...new Set([...ids.filter(id => byId.get(id).t === "if"), ...sps.map(id => ifVon(byId.get(id)).id)])];
+      return { aspekt: t.titel, begruendung: [t.leitfrage, String(z.begruendung || "")].filter(Boolean).join(" "), ifs, sps };
+    }).filter(a => a.ifs.length || a.sps.length);
+    if (!aspekte.length) throw { code: "keine_kennungen" };
+    ideenStatus(`Zugeordnet: ${aspekte.reduce((s, a) => s + a.sps.length, 0)} Schwerpunkte in ${aspekte.length} Teilbereichen. Bitte fachlich prüfen.`);
+    aspekteUebernehmen(aspekte, "Vorschlag von Claude");
+  } catch (e) {
+    if (e?.code === "cancelled") ideenStatus("Abgebrochen.");
+    else { const code = e?.code || "unbekannt"; ideenStatus((IDEEN_FEHLER[code] || "Claude hat nicht geantwortet.") + ` (Code: ${code})`); }
+  } finally { ideenCtl = null; knopf.textContent = "Fächer und Kompetenzen zuordnen"; }
 }
 async function ideenFinden(knopf) {
   if (ideenCtl) { ideenCtl.abort(); return; }               // zweiter Klick bricht ab
   const satz = werk.satz.trim();
   if (!satz) { ideenStatus("Bitte zuerst ein Thema eingeben."); return; }
   if (!werk.titel) { werk.titel = satz; const ti = document.getElementById("w-titel"); if (ti) ti.value = satz; }
+  let fehler = "";
+  const rahmen = typeof window.claude !== "undefined" && window.claude.use;
+  if (!sampleFn && rahmen) sampleFn = await window.claude.use("sample").catch(() => null); // zweiter Versuch beim Klick
+  if (!sampleFn) {
+    const perm = rahmen ? await window.claude.use("permissions").catch(() => null) : null;
+    const z = perm ? await perm.state("sample").catch(() => "unavailable") : rahmen ? "unavailable" : "kein_rahmen";
+    fehler = (CLAUDE_ZUSTAND[z] || "Claude ist hier nicht verfügbar.") + ` (Zustand: ${z}) `;
+  }
   if (sampleFn) {
     knopf.textContent = "Abbrechen";
-    try { await ideenClaude(satz); return; }
+    try { await ideenGliedern(satz); return; }
     catch (e) {
       if (e && e.code === "cancelled") { ideenStatus("Abgebrochen."); return; }
       if (e && SAMPLE_AUS.includes(e.code)) sampleFn = null;
-      ideenStatus(e && e.code === "rate_limited" ? "Claude ist gerade ausgelastet. Später noch einmal versuchen. Bis dahin eine Vorlage:" : "Claude war nicht erreichbar. Die Werkstatt nutzt die Vorlagen.");
+      const code = (e && e.code) || "unbekannt";
+      fehler = (IDEEN_FEHLER[code] || "Claude hat nicht geantwortet.") + ` (Code: ${code}) `;
     } finally { ideenCtl = null; knopf.textContent = "Ideen finden"; }
   }
-  vorlageSuchen(satz);
+  vorlageSuchen(satz, fehler);
 }
 function werkUmschalten(id) { werk.auswahl.has(id) ? werk.auswahl.delete(id) : werk.auswahl.add(id); werkSichern(); render(); }
 
@@ -886,8 +1006,14 @@ function werkText() {
   const zeilen = [`# ${werk.titel || "Neues Thema"}`, "", `Entwurf aus der Themenwerkstatt des Kompetenzgraphen Hessen, Stand ${new Date().toLocaleDateString("de-DE")}.`,
     `Jahrgang ${JG[werk.jg]} · KC-Fassungen: ${[...state.sf].map(k => SF[k]).join(", ")}`, werk.stichworte ? `Stichworte: ${werk.stichworte}` : "", "",
     "Die Zuordnung ist ein Entwurf und fachlich zu prüfen. Verbindlich ist der Wortlaut im Kerncurriculum (Seitenangaben).", ""];
+  const g = werk.gliederung;
+  if (g) {
+    zeilen.push("## Aufbau des Themas (Vorschlag von Claude)", "", ...(g.aufbau ? [g.aufbau, ""] : []));
+    g.teile.filter(t => t.an).forEach((t, i) => zeilen.push(`${i + 1}. **${t.titel}**${t.leitfrage ? ` (${t.leitfrage})` : ""}${t.inhalt ? `: ${t.inhalt}` : ""}${t.faecher.length ? ` Fächer: ${t.faecher.map(k => KURZ[k]).join(", ")}` : ""}`));
+    zeilen.push("");
+  }
   if (werk.aspekte.length) {
-    zeilen.push("## Aspekte", "", `Quelle: ${werk.aspekte[0].quelle}`, "");
+    zeilen.push(g ? "## Zuordnung zu den Kerncurricula" : "## Aspekte", "", `Quelle: ${werk.aspekte[0].quelle}`, "");
     werk.aspekte.forEach(a => {
       const teile = [...a.ifs, ...a.sps].filter(id => werk.auswahl.has(id)).map(id => { const n = byId.get(id); return `${KURZ[n.f]}: ${n.label}`; });
       zeilen.push(`- **${a.aspekt}**${a.begruendung ? `: ${a.begruendung}` : ""}`, ...teile.map(t => `  - ${t}`));
