@@ -1,18 +1,18 @@
-nr,titel,farbe
-1,Keine Armut,#e5243b
-2,Kein Hunger,#dda63a
-3,Gesundheit und Wohlergehen,#4c9f38
-4,Hochwertige Bildung,#c5192d
-5,Geschlechtergleichheit,#ff3a21
-6,Sauberes Wasser und Sanitäreinrichtungen,#26bde2
-7,Bezahlbare und saubere Energie,#fcc30b
-8,Menschenwürdige Arbeit und Wirtschaftswachstum,#a21942
-9,"Industrie, Innovation und Infrastruktur",#fd6925
-10,Weniger Ungleichheiten,#dd1367
-11,Nachhaltige Städte und Gemeinden,#fd9d24
-12,Nachhaltige/r Konsum und Produktion,#bf8b2e
-13,Maßnahmen zum Klimaschutz,#3f7e44
-14,Leben unter Wasser,#0a97d9
-15,Leben an Land,#56c02b
-16,"Frieden, Gerechtigkeit und starke Institutionen",#00689d
-17,Partnerschaften zur Erreichung der Ziele,#19486a
+nr,titel,farbe,ziel
+1,Keine Armut,#e5243b,Armut in allen ihren Formen und überall beenden
+2,Kein Hunger,#dda63a,"Den Hunger beenden, Ernährungssicherheit und eine bessere Ernährung erreichen und eine nachhaltige Landwirtschaft fördern"
+3,Gesundheit und Wohlergehen,#4c9f38,Ein gesundes Leben für alle Menschen jeden Alters gewährleisten und ihr Wohlergehen fördern
+4,Hochwertige Bildung,#c5192d,"Inklusive, gleichberechtigte und hochwertige Bildung gewährleisten und Möglichkeiten lebenslangen Lernens für alle fördern"
+5,Geschlechtergleichheit,#ff3a21,Geschlechtergleichstellung erreichen und alle Frauen und Mädchen zur Selbstbestimmung befähigen
+6,Sauberes Wasser und Sanitäreinrichtungen,#26bde2,Verfügbarkeit und nachhaltige Bewirtschaftung von Wasser und Sanitärversorgung für alle gewährleisten
+7,Bezahlbare und saubere Energie,#fcc30b,"Zugang zu bezahlbarer, verlässlicher, nachhaltiger und moderner Energie für alle sichern"
+8,Menschenwürdige Arbeit und Wirtschaftswachstum,#a21942,"Dauerhaftes, inklusives und nachhaltiges Wirtschaftswachstum, produktive Vollbeschäftigung und menschenwürdige Arbeit für alle fördern"
+9,"Industrie, Innovation und Infrastruktur",#fd6925,"Eine widerstandsfähige Infrastruktur aufbauen, inklusive und nachhaltige Industrialisierung fördern und Innovationen unterstützen"
+10,Weniger Ungleichheiten,#dd1367,Ungleichheit in und zwischen Ländern verringern
+11,Nachhaltige Städte und Gemeinden,#fd9d24,"Städte und Siedlungen inklusiv, sicher, widerstandsfähig und nachhaltig gestalten"
+12,Nachhaltige/r Konsum und Produktion,#bf8b2e,Nachhaltige Konsum- und Produktionsmuster sicherstellen
+13,Maßnahmen zum Klimaschutz,#3f7e44,Umgehend Maßnahmen zur Bekämpfung des Klimawandels und seiner Auswirkungen ergreifen
+14,Leben unter Wasser,#0a97d9,"Ozeane, Meere und Meeresressourcen im Sinne nachhaltiger Entwicklung erhalten und nachhaltig nutzen"
+15,Leben an Land,#56c02b,"Landökosysteme schützen, wiederherstellen und ihre nachhaltige Nutzung fördern, Wälder nachhaltig bewirtschaften, Wüstenbildung bekämpfen, Bodendegradation beenden und umkehren und dem Verlust der biologischen Vielfalt ein Ende setzen"
+16,"Frieden, Gerechtigkeit und starke Institutionen",#00689d,"Friedliche und inklusive Gesellschaften für eine nachhaltige Entwicklung fördern, allen Menschen Zugang zur Justiz ermöglichen und leistungsfähige, rechenschaftspflichtige und inklusive Institutionen auf allen Ebenen aufbauen"
+17,Partnerschaften zur Erreichung der Ziele,#19486a,Umsetzungsmittel stärken und die Globale Partnerschaft für nachhaltige Entwicklung mit neuem Leben erfüllen

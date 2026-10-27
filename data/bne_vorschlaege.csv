@@ -1,65 +1,65 @@
-sdg,fach,inhaltsfeld,stichwort
-1,Politik und Wirtschaft,Wirtschaft,Einkommen und Verteilung
-1,Politik und Wirtschaft,Internationale Beziehungen und Globalisierung,Globale Entwicklungsunterschiede
-1,Erdkunde,Mensch/Gesellschaft,Lebensbedingungen in verschiedenen Räumen
-1,Geschichte,Epochenbezug Neuzeit,Industrielle Revolutionen und Soziale Frage
-1,Arbeitslehre,Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens,Einkommen und soziale Sicherung
-2,Biologie,Stoffwechsel und Regelmechanismen,Ausgewogene Ernährung
-2,Erdkunde,Umwelt-Gesellschaft-Beziehungen und globale Probleme,Ressourcensicherung
-3,Biologie,Funktionsteilung im Organismus,Immunsystem und Infektionskrankheiten
-3,Biologie,Sexualität des Menschen,Gesundheitserziehung
-3,Sport,"Den Körper trainieren, die Fitness verbessern",Fitness und Gesundheit
-3,Arbeitslehre,Erhalt der psychischen und physischen Gesundheit,Gesundheit im Arbeitsleben
-4,Arbeitslehre,Berufswegeplanung,Bildungs- und Berufswege
-5,Biologie,Sexualität des Menschen,Geschlechterrollen
-5,Politik und Wirtschaft,Individuum und Gesellschaft,Gleichberechtigung
-5,Ethik,Freiheit und Würde,"Würde unabhängig von Herkunft, Geschlecht, Alter"
-5,Geschichte,Alltagskulturen,Geschlecht und Sexualität im Wandel
-6,Chemie,Welt der Stoffe – Identifikation und Ordnung von Stoffen,Luft und Wasser
-6,Chemie,Schatzkiste der Natur – Chemie in Alltag und Technik,"Luft, Wasser, Boden"
-6,Erdkunde,Natur/Umwelt,Wasser als Naturfaktor
-7,Physik,Energie in Umwelt und Technik,Energieformen und Energieumwandlung
-7,Physik,Zukunftssichere Energieversorgung,Regenerative und erschöpfbare Energien
-7,Chemie,Verwandlungen – Chemische Reaktion,Energieumsatz bei Reaktionen
-7,Chemie,Magie des Kohlenstoffs – Organische Verbindungen,Energieträger
-8,Arbeitslehre,Organisation von Arbeit,Menschenwürdige Arbeitsbedingungen
-8,Arbeitslehre,Zukunft der Arbeit,Zukunft der Erwerbsarbeit
-8,Politik und Wirtschaft,Wirtschaft,Wirtschaftsordnung und Arbeit
-8,Geschichte,Wirtschaft,Wandel von Arbeit und Wirtschaft
-9,Physik,Technik im Dienst des Menschen,Technik und Innovation
-9,Arbeitslehre,Technische Systeme und Prozesse,Technische Systeme
-9,Informatik,Hardware und Rechnerarchitektur,Digitale Infrastruktur
-9,Informatik,Internet und HTML,Digitale Infrastruktur
-10,Politik und Wirtschaft,Individuum und Gesellschaft,Soziale Ungleichheit
-10,Ethik,Recht und Gerechtigkeit,Gerechtigkeitsvorstellungen
-10,Geschichte,Eigenes und Fremdes,Umgang mit dem Fremden
-10,Moderne Fremdsprachen,Öffentlich-gesellschaftliche Lebenswelten „Ich und die Gesellschaft“,Gesellschaft in anderen Ländern
-11,Erdkunde,Geographie auf regionaler Ebene,Stadt und Region
-11,Physik,Fortbewegung und Mobilität,Mobilität
-11,Geschichte,Epochenbezug Mittelalter,Städte als Triebkraft der Entwicklung
-11,Geschichte,Bewältigung und Nutzung von Räumen,Raumnutzung
-12,Politik und Wirtschaft,Wirtschaft,Konsumentenentscheidungen
-12,Chemie,Schatzkiste der Natur – Chemie in Alltag und Technik,Stoffe in Alltag und Technik
-12,Chemie,Magie des Kohlenstoffs – Organische Verbindungen,Kunststoffe und Rohstoffe
-12,Arbeitslehre,Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens,Verwendung von Einkommen
-13,Physik,Wettererscheinungen und Klima,Wetter und Klima
-13,Erdkunde,Umwelt-Gesellschaft-Beziehungen und globale Probleme,Globale Probleme
-13,Erdkunde,Natur/Umwelt,Klima als Naturfaktor
-13,Biologie,Stoffwechsel und Regelmechanismen,Kohlenstoffkreislauf
-14,Biologie,Wechselwirkungen in Ökosystemen,Gewässer als Ökosystem
-15,Biologie,Wechselwirkungen in Ökosystemen,Gefährdung von Ökosystemen
-15,Biologie,"Vielfalt, Veränderung und Abstammung von Lebewesen",Artenvielfalt und Artensterben
-15,Erdkunde,Natur/Umwelt,Naturräume
-15,Ethik,"Mensch, Natur und Technik",Verantwortung für Lebewesen und Natur
-15,Kunst,Wahrnehmung der Umwelt,Haltung zur Umwelt
-16,Politik und Wirtschaft,Demokratie,Demokratische Institutionen
-16,Politik und Wirtschaft,Recht und Rechtsprechung,Rechtsstaat
-16,Geschichte,Herrschaft,Legitimation von Herrschaft
-16,Geschichte,Epochenbezug Neueste Zeit,"Friedenssicherung, totalitäre Systeme, Shoa"
-16,Ethik,Recht und Gerechtigkeit,Recht und Menschenrechte
-16,Evangelische Religion,Ethik,Verantwortliches Handeln
-17,Politik und Wirtschaft,Internationale Beziehungen und Globalisierung,Internationale Zusammenarbeit
-17,Moderne Fremdsprachen,Kulturelle Lebenswelten „Ich und die Welt“,Interkulturelle Verständigung
-17,Ethik,"Religionen, Weltbilder und Kulturen",Dialog der Kulturen
-17,Evangelische Religion,Religionen,Dialog der Religionen
-17,Katholische Religion,Religionen,Dialog der Religionen
+sdg,unterziel,fach,inhaltsfeld,stichwort
+1,1.2,Politik und Wirtschaft,Wirtschaft,Einkommen und Verteilung
+1,1.2,Politik und Wirtschaft,Internationale Beziehungen und Globalisierung,Globale Entwicklungsunterschiede
+1,1.2,Erdkunde,Mensch/Gesellschaft,Lebensbedingungen in verschiedenen Räumen
+1,1.3,Geschichte,Epochenbezug Neuzeit,Industrielle Revolutionen und Soziale Frage
+1,1.3,Arbeitslehre,Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens,Einkommen und soziale Sicherung
+2,2.2,Biologie,Stoffwechsel und Regelmechanismen,Ausgewogene Ernährung
+2,2.4,Erdkunde,Umwelt-Gesellschaft-Beziehungen und globale Probleme,Ressourcensicherung
+3,3.3,Biologie,Funktionsteilung im Organismus,Immunsystem und Infektionskrankheiten
+3,3.7,Biologie,Sexualität des Menschen,Gesundheitserziehung
+3,3.4,Sport,"Den Körper trainieren, die Fitness verbessern",Fitness und Gesundheit
+3,3.4,Arbeitslehre,Erhalt der psychischen und physischen Gesundheit,Gesundheit im Arbeitsleben
+4,4.4,Arbeitslehre,Berufswegeplanung,Bildungs- und Berufswege
+5,5.1,Biologie,Sexualität des Menschen,Geschlechterrollen
+5,5.5,Politik und Wirtschaft,Individuum und Gesellschaft,Gleichberechtigung
+5,5.1,Ethik,Freiheit und Würde,"Würde unabhängig von Herkunft, Geschlecht, Alter"
+5,5.1,Geschichte,Alltagskulturen,Geschlecht und Sexualität im Wandel
+6,6.3,Chemie,Welt der Stoffe – Identifikation und Ordnung von Stoffen,Luft und Wasser
+6,6.3,Chemie,Schatzkiste der Natur – Chemie in Alltag und Technik,"Luft, Wasser, Boden"
+6,6.6,Erdkunde,Natur/Umwelt,Wasser als Naturfaktor
+7,7.3,Physik,Energie in Umwelt und Technik,Energieformen und Energieumwandlung
+7,7.2,Physik,Zukunftssichere Energieversorgung,Regenerative und erschöpfbare Energien
+7,7.3,Chemie,Verwandlungen – Chemische Reaktion,Energieumsatz bei Reaktionen
+7,7.2,Chemie,Magie des Kohlenstoffs – Organische Verbindungen,Energieträger
+8,8.8,Arbeitslehre,Organisation von Arbeit,Menschenwürdige Arbeitsbedingungen
+8,8.5,Arbeitslehre,Zukunft der Arbeit,Zukunft der Erwerbsarbeit
+8,8.5,Politik und Wirtschaft,Wirtschaft,Wirtschaftsordnung und Arbeit
+8,8.5,Geschichte,Wirtschaft,Wandel von Arbeit und Wirtschaft
+9,9.5,Physik,Technik im Dienst des Menschen,Technik und Innovation
+9,9.4,Arbeitslehre,Technische Systeme und Prozesse,Technische Systeme
+9,9.c,Informatik,Hardware und Rechnerarchitektur,Digitale Infrastruktur
+9,9.c,Informatik,Internet und HTML,Digitale Infrastruktur
+10,10.2,Politik und Wirtschaft,Individuum und Gesellschaft,Soziale Ungleichheit
+10,10.3,Ethik,Recht und Gerechtigkeit,Gerechtigkeitsvorstellungen
+10,10.2,Geschichte,Eigenes und Fremdes,Umgang mit dem Fremden
+10,10.2,Moderne Fremdsprachen,Öffentlich-gesellschaftliche Lebenswelten „Ich und die Gesellschaft“,Gesellschaft in anderen Ländern
+11,11.6,Erdkunde,Geographie auf regionaler Ebene,Stadt und Region
+11,11.2,Physik,Fortbewegung und Mobilität,Mobilität
+11,11.4,Geschichte,Epochenbezug Mittelalter,Städte als Triebkraft der Entwicklung
+11,11.4,Geschichte,Bewältigung und Nutzung von Räumen,Raumnutzung
+12,12.8,Politik und Wirtschaft,Wirtschaft,Konsumentenentscheidungen
+12,12.4,Chemie,Schatzkiste der Natur – Chemie in Alltag und Technik,Stoffe in Alltag und Technik
+12,12.5,Chemie,Magie des Kohlenstoffs – Organische Verbindungen,Kunststoffe und Rohstoffe
+12,12.8,Arbeitslehre,Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens,Verwendung von Einkommen
+13,13.3,Physik,Wettererscheinungen und Klima,Wetter und Klima
+13,13.1,Erdkunde,Umwelt-Gesellschaft-Beziehungen und globale Probleme,Globale Probleme
+13,13.3,Erdkunde,Natur/Umwelt,Klima als Naturfaktor
+13,13.3,Biologie,Stoffwechsel und Regelmechanismen,Kohlenstoffkreislauf
+14,14.2,Biologie,Wechselwirkungen in Ökosystemen,Gewässer als Ökosystem
+15,15.1,Biologie,Wechselwirkungen in Ökosystemen,Gefährdung von Ökosystemen
+15,15.5,Biologie,"Vielfalt, Veränderung und Abstammung von Lebewesen",Artenvielfalt und Artensterben
+15,15.1,Erdkunde,Natur/Umwelt,Naturräume
+15,15.5,Ethik,"Mensch, Natur und Technik",Verantwortung für Lebewesen und Natur
+15,15.1,Kunst,Wahrnehmung der Umwelt,Haltung zur Umwelt
+16,16.7,Politik und Wirtschaft,Demokratie,Demokratische Institutionen
+16,16.3,Politik und Wirtschaft,Recht und Rechtsprechung,Rechtsstaat
+16,16.7,Geschichte,Herrschaft,Legitimation von Herrschaft
+16,16.1,Geschichte,Epochenbezug Neueste Zeit,"Friedenssicherung, totalitäre Systeme, Shoa"
+16,16.3,Ethik,Recht und Gerechtigkeit,Recht und Menschenrechte
+16,,Evangelische Religion,Ethik,Verantwortliches Handeln
+17,17.16,Politik und Wirtschaft,Internationale Beziehungen und Globalisierung,Internationale Zusammenarbeit
+17,17.16,Moderne Fremdsprachen,Kulturelle Lebenswelten „Ich und die Welt“,Interkulturelle Verständigung
+17,,Ethik,"Religionen, Weltbilder und Kulturen",Dialog der Kulturen
+17,,Evangelische Religion,Religionen,Dialog der Religionen
+17,,Katholische Religion,Religionen,Dialog der Religionen

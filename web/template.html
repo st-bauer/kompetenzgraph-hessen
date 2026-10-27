@@ -138,6 +138,9 @@ ul.rel li small { display: block; color: var(--muted); font-weight: 400; font-si
 .lbl.bne { font-size: 12px; font-weight: 800; fill: var(--bne); }
 .nd text.nr { font: 800 8px var(--font); fill: #fff; text-anchor: middle; pointer-events: none; }
 .tiles.sf .tile small { font-size: .58rem; }
+details.uz { padding: 8px 10px; }
+details.uz summary { cursor: pointer; font-size: .8rem; color: var(--ink); }
+details.uz p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); }
 .nd { cursor: pointer; }
 .nd .core { fill-opacity: .9; }
 .nd.t-sp .core { fill-opacity: .75; }
@@ -443,6 +446,9 @@ function render() {
     nb.get(s.id).forEach(x => focus.add(x.id));
     if (s.t === "thema") nb.get(s.id).forEach(x => nb.get(x.id).forEach(y => { if (byId.get(y.id).t === "sp") focus.add(y.id); }));
   }
+  // Thema oder Fach: Nachhaltigkeitsziele über die eigenen Inhaltsfelder mit anzeigen
+  const ueber = s && (s.t === "thema" || s.t === "fach") ? new Set(nb.get(s.id).filter(x => byId.get(x.id).t === "if").map(x => x.id)) : null;
+  if (ueber && state.bne) ueber.forEach(id => nb.get(id).forEach(x => { if (x.l.k === "sdg") focus.add(x.id); }));
   const hits = state.q ? new Set(nodes.filter(n => vis.has(n.id) && match(n)).map(n => n.id)) : null;
   const off = n => (focus && !focus.has(n.id)) || (hits && !hits.has(n.id));
   nd.classed("hidden", n => !vis.has(n.id)).classed("dim", off).classed("sel", n => n.id === state.sel);
@@ -450,7 +456,8 @@ function render() {
     .classed("big", n => n.id === state.sel && n.t !== "fach")
     .style("display", n => (n.t === "sp" || n.t === "if") && vis.has(n.id) && ((focus && focus.has(n.id)) || (hits && hits.has(n.id))) ? "block" : null);
   const lvis = l => vis.has(l.source.id) && vis.has(l.target.id);
-  const lhot = l => s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp"));
+  const lhot = l => s && (l.source.id === s.id || l.target.id === s.id || (s.t === "thema" && focus.has(l.source.id) && focus.has(l.target.id) && l.k === "hat" && byId.get(l.target.id).t === "sp")
+    || (ueber && state.bne && l.k === "sdg" && ueber.has(l.target.id)));
   lk.classed("hidden", l => !lvis(l) || !lhot(l))
     .classed("hot", l => !!lhot(l))
     .classed("dim", l => (s && !lhot(l)) || (hits && !(hits.has(l.source.id) || hits.has(l.target.id))));
@@ -465,7 +472,11 @@ function render() {
   detail(vis);
   try { localStorage.setItem("kg-state", JSON.stringify({ sp: state.sp, th: state.th, bne: state.bne })); } catch (e) {}
 }
-function select(id) { state.sel = id; render(); }
+function select(id) {
+  const n = id && byId.get(id);
+  if (n && (n.t === "sdg" || n.t === "bne") && !state.bne) { state.bne = true; document.getElementById("tg-bne").setAttribute("aria-pressed", true); }
+  state.sel = id; render();
+}
 
 // --- Inspektor ---
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -475,6 +486,16 @@ const SFK = { hs: "HS", rs: "RS", gy: "GY" };
 const stufeKurz = s => { const v = [...new Set(s.sf.filter(k => state.sf.has(k)).map(k => s.stufen[k]))]; return v.length === 1 ? v[0] : s.st === "spaet" ? "zusätzlich bis zum Abschluss" : v.join(" / "); };
 const seitenTxt = seiten => Object.entries(seiten).map(([k, v]) => `${SF[k]} ${v}`).join(" · ");
 const pdfBtns = url => Object.entries(url || {}).map(([k, u]) => `<a class="btn${k === "gy" || Object.keys(url).length === 1 ? " primary" : ""}" href="${u}" target="_blank" rel="noopener">PDF ${SF[k]}</a>`).join("");
+const uzText = (sdg, nr) => (sdg.uz.find(u => u.nr === nr) || {}).text || "";
+function sdgUeber(ifIds) {
+  const m = new Map();
+  ifIds.forEach(id => nb.get(id).filter(x => x.l.k === "sdg").forEach(x => { if (!m.has(x.id)) m.set(x.id, []); m.get(x.id).push({ i: byId.get(id), l: x.l }); }));
+  if (!m.size) return "";
+  const rows = [...m.entries()].sort((a, b) => byId.get(a[0]).nr - byId.get(b[0]).nr)
+    .map(([sid, xs]) => relBtn(sid, xs.map(({ i, l }) => `${l.uz ? `<b>${l.uz}</b> · ` : ""}${esc(KURZ[i.f])}: ${esc(short(i.label, 46))}`).join("<br>")));
+  return `<div class="sec"><div class="eyebrow">Nachhaltigkeitsziele über die Inhaltsfelder <span class="tag warn" style="margin-left:6px">Vorschlag</span></div>
+    ${state.bne ? "" : `<p class="ref">„BNE und SDGs“ einschalten, um die Linien zu sehen.</p>`}<ul class="rel">${rows.join("")}</ul></div>`;
+}
 function detail(vis) {
   const el = document.getElementById("detail"), foot = document.getElementById("foot");
   const n = state.sel && byId.get(state.sel);
@@ -500,6 +521,7 @@ function detail(vis) {
       <div class="meta"><span>Sek I</span>${n.sf.map(k => `<span>${SF[k]}</span>`).join("")}<span>${ifs.length} Inhaltsfelder</span><span>${spc} Schwerpunkte</span></div>
       ${bel.length ? `<div class="sec"><div class="eyebrow">Belegte Querbezüge</div><ul class="rel">${bel.map(x => relBtn(x.id, `${esc(x.l.stich)} · ${esc(x.l.fund)}`)).join("")}</ul></div>` : ""}
       ${bne.length ? `<div class="sec"><div class="eyebrow">KC nennt Nachhaltigkeit</div>${bne.map(x => `<div class="card">${esc(x.l.stich)}<div class="ref">${esc(seitenTxt(x.l.seiten))}</div></div>`).join("")}</div>` : ""}
+      ${sdgUeber(ifs.map(i => i.id))}
       <div class="sec"><div class="eyebrow">Inhaltsfelder</div><ul class="rel">${ifs.map(i => relBtn(i.id, esc(seitenTxt(i.seiten)))).join("")}</ul></div>`;
     foot.innerHTML = grid(pdfBtns(n.url));
   } else if (n.t === "if") {
@@ -516,7 +538,7 @@ function detail(vis) {
       ${n.hin ? `<div class="sec"><div class="eyebrow">Hinweis</div><p>${esc(n.hin)}</p></div>` : ""}
       ${bne.length ? `<div class="sec"><div class="eyebrow">KC nennt Nachhaltigkeit</div>${bne.map(x => `<div class="card">${esc(x.l.stich)}<div class="ref">${esc(seitenTxt(x.l.seiten))}</div></div>`).join("")}</div>` : ""}
       ${th.length ? `<div class="sec"><div class="eyebrow">In Themenvorschlägen</div><ul class="rel">${th.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
-      ${sdg.length ? `<div class="sec"><div class="eyebrow">Nachhaltigkeitsziele <span class="tag warn" style="margin-left:6px">Vorschlag</span></div><ul class="rel">${sdg.map(x => relBtn(x.id, esc(x.l.stich))).join("")}</ul></div>` : ""}
+      ${sdg.length ? `<div class="sec"><div class="eyebrow">Nachhaltigkeitsziele <span class="tag warn" style="margin-left:6px">Vorschlag</span></div><ul class="rel">${sdg.map(x => relBtn(x.id, `${x.l.uz ? `Unterziel <b>${x.l.uz}</b> · ` : ""}${esc(x.l.stich)}`)).join("")}</ul></div>` : ""}
       ${sps.length ? `<div class="sec"><div class="eyebrow">Schwerpunkte</div><ul class="rel">${sps.map(s => relBtn(s.id, `${s.sf.filter(k => state.sf.has(k)).map(k => SFK[k]).join(", ")} · ${esc(stufeKurz(s))} · ${esc([...new Set(Object.values(s.seiten))].join(" / "))}`)).join("")}</ul></div>`
         : `<div class="sec"><div class="eyebrow">Schwerpunkte</div><p class="ref">${state.sp ? "Für dieses Inhaltsfeld und die gewählten Fassungen noch nicht erfasst." : "Ebene Schwerpunkte ist ausgeblendet."}</p></div>`}
       <div class="sec"><div class="eyebrow">Referenzkennungen</div><div class="ref">Knoten-ID: <b>${n.id}</b><br>Quelle: <b>KC ${esc(f.label)}, Sek I</b></div></div>`;
@@ -539,16 +561,21 @@ function detail(vis) {
     el.innerHTML = `<div class="tags"><span class="tag">SDG ${n.nr}</span><span class="tag warn">Zuordnung ist Vorschlag, fachlich zu prüfen</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="meta"><span>Agenda 2030</span><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
-      <div class="sec"><div class="eyebrow">Herkunft</div><p>Die hessischen Kerncurricula nennen die Nachhaltigkeitsziele nicht. Die Zuordnung beruht auf Stichworten aus den Inhaltsfeldern.</p></div>
-      <div class="sec"><div class="eyebrow">Mögliche Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)}`); }).join("") || `<p class="ref">Keine in der aktuellen Auswahl.</p>`}</ul></div>`;
-    foot.innerHTML = `<a class="btn" href="${DATA.bne.info}" target="_blank" rel="noopener">BNE beim Kultusministerium</a>`;
+      <div class="sec"><div class="eyebrow">Ziel ${n.nr} im Wortlaut</div><div class="card">${esc(n.ziel)}</div></div>
+      <div class="sec"><div class="eyebrow">Unterziele (Auswahl mit Schulbezug)</div>
+        ${n.uz.map(u => `<details class="card uz"><summary><b>${u.nr}</b> ${esc(u.text.length > 90 ? u.text.slice(0, 88) + " …" : u.text)}</summary><p>${esc(u.text)}</p></details>`).join("")}
+        <p class="ref">${esc(DATA.bne.sdg_quelle)}</p></div>
+      <div class="sec"><div class="eyebrow">Mögliche Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${x.l.uz ? `<b>${x.l.uz}</b> · ` : ""}${esc(KURZ[i.f])} · ${esc(x.l.stich)}`); }).join("") || `<p class="ref">Keine in der aktuellen Auswahl.</p>`}</ul></div>
+      <div class="sec"><div class="eyebrow">Herkunft</div><p>Die hessischen Kerncurricula nennen die Nachhaltigkeitsziele nicht. Die Zuordnung von Inhaltsfeldern und Unterzielen beruht auf Stichworten aus dem KC und ist ein Vorschlag.</p></div>`;
+    foot.innerHTML = grid(`<a class="btn primary" href="${DATA.bne.sdg_url}${n.nr}/" target="_blank" rel="noopener">Ziel ${n.nr} bei Destatis</a><a class="btn" href="${DATA.bne.info}" target="_blank" rel="noopener">BNE in Hessen</a>`);
   } else if (n.t === "bne") {
     const bel = nb.get(n.id).filter(x => vis.has(x.id));
     el.innerHTML = `<div class="tags"><span class="tag">Aufgabengebiet</span><span class="tag ok">✓ ${esc(DATA.bne.grundlage)}</span></div>
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="sec"><div class="eyebrow">Rechtsgrundlage</div><div class="card">${esc(DATA.bne.text)}</div><p class="ref">${esc(DATA.bne.quelle)}</p></div>
       <div class="sec"><div class="eyebrow">Stellen, an denen das KC Nachhaltigkeit nennt</div><ul class="rel">${bel.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${i.t === "if" ? esc(KURZ[i.f]) + " · " : ""}${esc(x.l.stich)} · ${esc(seitenTxt(x.l.seiten))}`); }).join("")}</ul></div>
-      <div class="sec"><div class="eyebrow">Nachhaltigkeitsziele</div><p>Die 17 Ziele der Agenda 2030 liegen im inneren Ring. Ihre Verbindungen zu Inhaltsfeldern sind Vorschläge.</p></div>`;
+      <div class="sec"><div class="eyebrow">Agenda 2030, Unterziel 4.7</div><div class="card">${esc(DATA.bne.uz47)}</div><p class="ref">${esc(DATA.bne.sdg_quelle)}</p></div>
+      <div class="sec"><div class="eyebrow">Nachhaltigkeitsziele</div><p>Die 17 Ziele liegen im Ring um diesen Knoten. Ihre Verbindungen zu Inhaltsfeldern und Unterzielen sind Vorschläge.</p></div>`;
     foot.innerHTML = grid(`<a class="btn primary" href="${DATA.bne.url}" target="_blank" rel="noopener">Schulgesetz (PDF)</a><a class="btn" href="${DATA.bne.info}" target="_blank" rel="noopener">BNE in Hessen</a>`);
   } else {
     const it = nb.get(n.id);
@@ -557,7 +584,8 @@ function detail(vis) {
       <h4 class="ititle">${esc(n.label)}</h4>
       <div class="meta"><span>${fs.size} Fächer</span><span>${it.length} Inhaltsfelder</span></div>
       <div class="sec"><div class="eyebrow">Herkunft</div><p>Gebündelt über gemeinsame Stichworte aus den Kerncurricula. Diese Verbindung steht so nicht im KC.</p></div>
-      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe || "Kap. 6, " + x.l.seite)}`); }).join("")}</ul></div>`;
+      <div class="sec"><div class="eyebrow">Anknüpfungspunkte</div><ul class="rel">${it.map(x => { const i = byId.get(x.id); return relBtn(x.id, `${esc(KURZ[i.f])} · ${esc(x.l.stich)} · ${esc(x.l.stufe || "Kap. 6, " + x.l.seite)}`); }).join("")}</ul></div>
+      ${sdgUeber(it.map(x => x.id))}`;
     foot.style.display = "none";
   }
   el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => select(b.dataset.go));

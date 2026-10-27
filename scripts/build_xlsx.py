@@ -66,8 +66,10 @@ sp_rows = [(f"SP-{i:03d}",) + r for i, r in enumerate(sp_rows, 1)]
 SDG = {r["nr"]: r["titel"] for r in lies("bne_sdg.csv")}
 bne_rows = [(r["fach"], r["inhaltsfeld"] or "(fachweiter Bildungsstandard)", r["seite_hs"], r["seite_rs"], r["seite_gy"], r["zitat"])
             for r in lies("bne_belege.csv")]
-sdg_rows = [(int(r["sdg"]), SDG[r["sdg"]], r["fach"], r["inhaltsfeld"], r["stichwort"], "Vorschlag, fachlich zu prüfen")
+UZT = {u["nr"]: u["text"] for u in lies("bne_unterziele.csv")}
+sdg_rows = [(int(r["sdg"]), SDG[r["sdg"]], r["unterziel"], r["fach"], r["inhaltsfeld"], r["stichwort"], "Vorschlag, fachlich zu prüfen")
             for r in lies("bne_vorschlaege.csv")]
+uz_rows = [(int(u["sdg"]), SDG[u["sdg"]], u["nr"], u["text"], u["quelle"]) for u in lies("bne_unterziele.csv")]
 ak_rows = [(r["thema"], r["fach"], r["inhaltsfeld"], r["stichwort"], r["stufe"] or r["seite"], "Vorschlag, fachlich zu prüfen")
            for r in lies("themen.csv")]
 
@@ -90,8 +92,11 @@ ws = wb.create_sheet("BNE Belege")
 sheet(ws, ["Fach", "Inhaltsfeld", "Seite HS", "Seite RS", "Seite GY", "Aussage im KC (gekürzt)"],
       bne_rows, [20, 44, 10, 10, 10, 90], fach_col=0)
 ws = wb.create_sheet("SDG-Vorschläge")
-sheet(ws, ["SDG", "Nachhaltigkeitsziel", "Fach", "Inhaltsfeld", "Stichwort", "Status"],
-      sdg_rows, [7, 34, 20, 48, 40, 26], fach_col=2)
+sheet(ws, ["SDG", "Nachhaltigkeitsziel", "Unterziel", "Fach", "Inhaltsfeld", "Stichwort", "Status"],
+      sdg_rows, [7, 30, 10, 20, 44, 36, 26], fach_col=3)
+ws = wb.create_sheet("SDG-Unterziele")
+sheet(ws, ["SDG", "Nachhaltigkeitsziel", "Unterziel", "Wortlaut (amtliche deutsche Fassung)", "Quelle"],
+      uz_rows, [7, 30, 10, 100, 40])
 ws = wb.create_sheet("Hinweise und Lücken")
 sheet(ws, ["Punkt", "Hinweis"], HIN, [20, 110])
 
@@ -114,7 +119,7 @@ for _, fach, _, _ in FAECHER:
     ov.cell(r, 2, f'=COUNTIF(Inhaltsfelder!B:B,A{r})')
     ov.cell(r, 3, f'=COUNTIF(Schwerpunkte!B:B,A{r})')
     ov.cell(r, 4, f'=COUNTIF(Anknüpfungspunkte!B:B,A{r})')
-    ov.cell(r, 5, f"=COUNTIF('SDG-Vorschläge'!C:C,A{r})")
+    ov.cell(r, 5, f"=COUNTIF('SDG-Vorschläge'!D:D,A{r})")
     for col in range(1, 6):
         ov.cell(r, col).font = BFONT
     for col in (6, 7, 8):
@@ -136,7 +141,8 @@ for name, desc in [
     ("Querbezüge belegt", "Fächerübergreifende Bezüge, die ausdrücklich im KC stehen"),
     ("Anknüpfungspunkte", "Themenvorschläge über gemeinsame Stichworte, zu prüfen"),
     ("BNE Belege", "Stellen, an denen das KC selbst Nachhaltigkeit nennt (BNE ist Aufgabengebiet nach § 6 Abs. 4 HSchG)"),
-    ("SDG-Vorschläge", "Zuordnung von Inhaltsfeldern zu den 17 Nachhaltigkeitszielen, zu prüfen"),
+    ("SDG-Vorschläge", "Zuordnung von Inhaltsfeldern zu den 17 Nachhaltigkeitszielen und ihren Unterzielen, zu prüfen"),
+    ("SDG-Unterziele", "Ausgewählte Unterziele mit Schulbezug im amtlichen deutschen Wortlaut"),
     ("Hinweise und Lücken", "Was fehlt oder abweicht"),
 ]:
     r += 1

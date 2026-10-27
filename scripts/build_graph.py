@@ -94,11 +94,12 @@ for r in lies("bne_belege.csv"):
     seiten = {sf: r["seite_" + sf] for sf in SF if r["seite_" + sf]}
     quelle = if_id[(r["fach"], r["inhaltsfeld"])] if r["inhaltsfeld"] else "F-" + KEY[r["fach"]]
     links.append({"s": quelle, "t": "BNE", "k": "bne", "stich": r["zitat"], "seiten": seiten})
+UZ = lies("bne_unterziele.csv")
 for r in lies("bne_sdg.csv"):
-    nodes.append({"id": "SDG-" + r["nr"], "t": "sdg", "f": "sdg", "nr": int(r["nr"]),
-                  "label": r["titel"], "farbe": r["farbe"]})
+    nodes.append({"id": "SDG-" + r["nr"], "t": "sdg", "f": "sdg", "nr": int(r["nr"]), "label": r["titel"], "farbe": r["farbe"],
+                  "ziel": r["ziel"], "uz": [{"nr": u["nr"], "text": u["text"]} for u in UZ if u["sdg"] == r["nr"]]})
 for r in lies("bne_vorschlaege.csv"):
-    links.append({"s": "SDG-" + r["sdg"], "t": if_id[(r["fach"], r["inhaltsfeld"])], "k": "sdg", "stich": r["stichwort"]})
+    links.append({"s": "SDG-" + r["sdg"], "t": if_id[(r["fach"], r["inhaltsfeld"])], "k": "sdg", "stich": r["stichwort"], "uz": r["unterziel"]})
 
 out = {
     "stand": "26.10.2026",
@@ -116,6 +117,9 @@ out = {
         "quelle": "Nichtamtliche Lesefassung des HSchG, Stand 01.08.2026",
         "url": "https://kultus.hessen.de/sites/kultus.hessen.de/files/2026-08/nichtamtliche_lesefassung_schulgesetz_stand_20260801_.pdf",
         "info": "https://kultus.hessen.de/unterricht/bildung-fuer-nachhaltige-entwicklung",
+        "sdg_quelle": UZ[0]["quelle"],
+        "sdg_url": "https://sdg-indikatoren.de/",
+        "uz47": next(u["text"] for u in UZ if u["nr"] == "4.7"),
     },
 }
 p = os.path.join(ROOT, "output", "data.json")

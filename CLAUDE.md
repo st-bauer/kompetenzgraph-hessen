@@ -12,7 +12,7 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 - 20 Themenvorschläge mit 138 Verknüpfungen über alle 17 Fächer (`themen.csv`, Vorschlag)
 - 33 belegte Querbezüge zwischen Fächern (`querbezuege.csv`, aus Kap. 3 bis 5); Kompetenzbereiche bisher nur Pilotfächer
 - Prüfliste für die Fachschaften: `output/Pruefliste_Fachschaften.xlsx` (Themen, SDG-Zuordnungen, neu erfasste Schwerpunkte, mit Auswahlliste zur Bewertung)
-- BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit 64 Zuordnungen (Vorschlag)
+- BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit amtlichem Zieltext und 63 schulrelevanten Unterzielen; 64 Zuordnungen zu Inhaltsfeldern, 60 davon mit Unterziel (Vorschlag). Themen und Fächer zeigen die Ziele ihrer Inhaltsfelder.
 - Webseite: `docs/index.html` (wird aus `web/template.html` gebaut, GitHub Pages liefert `docs/` aus)
 - Online: https://st-bauer.github.io/kompetenzgraph-hessen/ (Repo st-bauer/kompetenzgraph-hessen, öffentlich)
 - Tabelle: `output/Kerncurricula_Hessen_Sek1.xlsx`
@@ -25,9 +25,10 @@ data/themen.csv         Themenvorschläge: Thema, Fach, Inhaltsfeld, Stichwort a
 data/inhaltsfelder_sek1.csv  Inhaltsfelder aller Fächer, Seite je KC-Fassung (leer = nicht in dieser Fassung)
 data/schwerpunkte_sek1.csv   Schwerpunkte Haupt- und Realschule (eine Zeile je Fassung, Stufe im KC-Wortlaut)
 data/querbezuege.csv    belegte Querbezüge zwischen Fächern (Kanten im Graphen)
-data/bne_sdg.csv        17 SDGs mit offizieller Farbe
+data/bne_sdg.csv        17 SDGs mit offizieller Farbe und amtlichem Zieltext
+data/bne_unterziele.csv Auswahl schulrelevanter Unterziele im amtlichen deutschen Wortlaut (Quelle: Destatis, sdg-indikatoren.de)
 data/bne_belege.csv     Stellen, an denen das KC Nachhaltigkeit nennt (Beleg)
-data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern (Vorschlag)
+data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern mit Unterziel (Vorschlag)
 data/kerncurricula.py   Pilotdaten Gymnasium (Schwerpunkte, Kompetenzbereiche, Querbezüge, Hinweise)
 data/quellen_sek1.csv   Alle KC- und Leitfaden-PDFs Sek I mit URL (Stand 26.10.2026)
 scripts/build_xlsx.py   erzeugt die Excel-Tabelle
@@ -76,7 +77,7 @@ Vor dem öffentlichen Teilen klären: Nutzungsbedingungen des Hessischen Kultusm
 - Fächerübergreifende Verbindungen strikt trennen:
   - `QB` / Kantentyp `beleg`: steht ausdrücklich im KC (mit Fundstelle).
   - `themen.csv` / Kantentyp `vorschlag`: eigene Bündelung über gemeinsame Stichworte aus dem KC. Immer als „Vorschlag, fachlich zu prüfen“ kennzeichnen.
-- BNE: `bne_belege.csv` nur, wo das KC selbst Nachhaltigkeit nennt. SDG-Zuordnungen sind immer Vorschlag (die KC nennen keine SDGs).
+- BNE: `bne_belege.csv` nur, wo das KC selbst Nachhaltigkeit nennt. SDG- und Unterziel-Zuordnungen sind immer Vorschlag (die KC nennen keine SDGs). Ziel- und Unterzieltexte nur im amtlichen Wortlaut, nicht umformulieren.
 - Keine Vermutungen als Fakten darstellen. Unsicheres klar markieren (Spalte „Hinweis“).
 - Stufen exakt so übernehmen, wie das KC sie benennt. Sie sind je Fach verschieden:
   Gymnasium: Biologie „bis Ende 5/6“, Chemie „1. Lernjahr“, Physik „nach ca. der Hälfte des Stundenkontingents“, jeweils plus „bis Ende 9/10“. Erdkunde und PoWi sind im Gymnasium nicht gestuft.

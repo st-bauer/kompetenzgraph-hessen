@@ -28,8 +28,10 @@ sdg = {r["nr"]: r["titel"] for r in lies("bne_sdg.csv")}
 zeilen = {f: [] for f in faecher}
 for r in lies("themen.csv"):
     zeilen[r["fach"]].append(("Themenvorschlag", r["thema"], r["inhaltsfeld"], r["stichwort"], "", r["stufe"] or r["seite"]))
+uz = {u["nr"]: u["text"] for u in lies("bne_unterziele.csv")}
 for r in lies("bne_vorschlaege.csv"):
-    zeilen[r["fach"]].append(("SDG-Zuordnung", f"SDG {r['sdg']}: {sdg[r['sdg']]}", r["inhaltsfeld"], r["stichwort"], "", ""))
+    ziel = f"SDG {r['sdg']}: {sdg[r['sdg']]}" + (f"\nUnterziel {r['unterziel']}: {uz[r['unterziel']]}" if r["unterziel"] else "")
+    zeilen[r["fach"]].append(("SDG-Zuordnung", ziel, r["inhaltsfeld"], r["stichwort"], "", ""))
 # Schwerpunkte: gleiche Formulierung in mehreren Fassungen zusammenfassen
 sp = {}
 for r in lies("schwerpunkte_sek1.csv"):
@@ -51,7 +53,7 @@ text = [
     ("Worum es geht", Font(name=F, bold=True, size=11)),
     ("Jedes Blatt enthält für ein Fach die Einträge, die fachlich geprüft werden sollen:", Font(name=F, size=10)),
     ("• Themenvorschläge: eigene Bündelung über gemeinsame Stichworte. Sie stehen so nicht im Kerncurriculum.", Font(name=F, size=10)),
-    ("• SDG-Zuordnungen: Verbindung von Inhaltsfeldern zu den 17 Nachhaltigkeitszielen. Die Kerncurricula nennen keine SDGs.", Font(name=F, size=10)),
+    ("• SDG-Zuordnungen: Verbindung von Inhaltsfeldern zu den 17 Nachhaltigkeitszielen und einem Unterziel (amtlicher Wortlaut). Die Kerncurricula nennen keine SDGs.", Font(name=F, size=10)),
     ("• Schwerpunkte: aus dem Kerncurriculum ausgelesen (automatisch oder von Hand zusammengefasst). Bitte Wortlaut und Seitenangabe am Original prüfen.", Font(name=F, size=10)),
     ("", None),
     ("So geht es", Font(name=F, bold=True, size=11)),
@@ -73,7 +75,7 @@ for L in "BCDE":
     ov.column_dimensions[L].width = 18
 
 KOPF = ["Typ", "Thema / SDG / Stufe", "Inhaltsfeld", "Stichwort bzw. Schwerpunkt", "KC-Fassung", "Seite bzw. Stufe laut KC", "Bewertung", "Anmerkung", "Geprüft von", "Datum"]
-BREITE = [16, 30, 36, 60, 11, 30, 16, 40, 18, 12]
+BREITE = [16, 44, 36, 60, 11, 30, 16, 40, 18, 12]
 for fach in faecher:
     rows = zeilen[fach]
     name = {"Politik und Wirtschaft": "PoWi", "Moderne Fremdsprachen": "Fremdsprachen", "Evangelische Religion": "Ev. Religion", "Katholische Religion": "Kath. Religion"}.get(fach, fach)
