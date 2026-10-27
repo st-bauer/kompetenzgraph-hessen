@@ -83,16 +83,10 @@ for r in lies("themen.csv"):
     links.append({"s": th_id[r["thema"]], "t": if_id[(r["fach"], r["inhaltsfeld"])], "k": "vorschlag",
                   "stich": r["stichwort"], "stufe": r["stufe"], "seite": r["seite"]})
 
-# belegte Querbezüge zwischen Fächern
-beleg = [
-    ("bio", "che", "Einheitlich definierte Kompetenzbereiche der Naturwissenschaften", "Kap. 3"),
-    ("bio", "phy", "Einheitlich definierte Kompetenzbereiche; Basiskonzept Energie auch in Biologie", "Ph Kap. 3, Kap. 5 S. 18"),
-    ("che", "phy", "Einheitlich definierte Kompetenzbereiche; Basiskonzept Energie auch in Chemie", "Ph Kap. 3, Kap. 5 S. 18"),
-    ("phy", "erd", "Zusammenarbeit mit Erdkunde bietet sich an (System Erde und Weltraum)", "Ph Kap. 3, S. 12"),
-    ("erd", "pow", "Gemeinsames gesellschaftswissenschaftliches Aufgabenfeld, Lernbereich Gesellschaftslehre möglich", "Ek S. 12 f., PoWi S. 13 f."),
-]
-for a, c, txt, fund in beleg:
-    links.append({"s": "F-" + a, "t": "F-" + c, "k": "beleg", "stich": txt, "fund": fund})
+# belegte Querbezüge zwischen Fächern (stehen ausdrücklich im KC)
+QBN = lies("querbezuege.csv")
+for r in QBN:
+    links.append({"s": "F-" + KEY[r["von"]], "t": "F-" + KEY[r["nach"]], "k": "beleg", "stich": r["aussage"], "fund": r["fundstelle"]})
 
 # BNE: Aufgabengebiet nach § 6 Abs. 4 HSchG, Belege aus dem KC, SDG-Zuordnung als Vorschlag
 nodes.append({"id": "BNE", "t": "bne", "f": "bne", "label": "Bildung für nachhaltige Entwicklung"})
@@ -112,7 +106,7 @@ out = {
     "gruppen": [{"k": r["key"], "label": r["label"], "farbe": r["farbe"], "x": int(r["x"]), "y": int(r["y"])} for r in lies("aufgabenfelder.csv")],
     "schulformen": SF,
     "nodes": nodes, "links": links,
-    "querbezuege": [list(q) for q in b.QB],
+    "querbezuege": [list(q) for q in b.QB] + [[r["von"], r["nach"], r["aussage"], r["fundstelle"]] for r in QBN[5:]],
     "bne": {
         "grundlage": "§ 6 Abs. 4 Hessisches Schulgesetz",
         "text": "Besondere Bildungs- und Erziehungsaufgaben der Schulen werden in Aufgabengebieten erfasst. "

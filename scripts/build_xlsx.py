@@ -82,7 +82,7 @@ sheet(ws, ["Fach", "Kompetenzbereich", "Teilbereiche / Operatoren", "Seite", "Hi
       KB, [20, 34, 80, 8, 36], fach_col=0)
 ws = wb.create_sheet("Querbezüge belegt")
 sheet(ws, ["Fach (Quelle)", "Bezug zu", "Aussage im KC (sinngemäß)", "Fundstelle"],
-      QB, [22, 28, 90, 26])
+      QB + [(r["von"], r["nach"], r["aussage"], r["fundstelle"]) for r in lies("querbezuege.csv")[5:]], [22, 28, 90, 26])
 ws = wb.create_sheet("Anknüpfungspunkte")
 sheet(ws, ["Thema", "Fach", "Inhaltsfeld", "Stichwort aus dem KC", "Stufe laut KC bzw. Seite (Kap. 6)", "Status"],
       ak_rows, [26, 20, 40, 60, 30, 26], fach_col=1)

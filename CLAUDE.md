@@ -8,9 +8,10 @@ Optisches Vorbild: dunkle „Weltraum“-Ansicht mit leuchtenden Knoten, Filterl
 ## Aktueller Stand (26.10.2026)
 - 17 Fächer einer IGS 5 bis 10: Deutsch, Moderne Fremdsprachen, Kunst, Musik, Sport, Mathematik, Informatik, Physik, Chemie, Biologie, Erdkunde, Geschichte, PoWi, Arbeitslehre, Ethik, Ev. Religion, Kath. Religion
 - Inhaltsfelder (129) in allen drei KC-Fassungen (Hauptschule, Realschule, Gymnasium) mit Seitenangabe je Fassung; Filter „KC-Fassung“ auf der Seite
-- Schwerpunkte für die 5 Pilotfächer in allen drei Fassungen: Gymnasium 166 (Pilot), Haupt- und Realschule 304 Zeilen in `schwerpunkte_sek1.csv`; Erdkunde und PoWi nutzen Stichworte aus Kap. 6, das in allen Fassungen gleich lautet
+- Schwerpunkte für alle 17 Fächer (834 Knoten): Pilot Gymnasium 166 in `kerncurricula.py`, alles andere in `schwerpunkte_sek1.csv` (1.284 Zeilen, eine je Fassung). Spalte `hinweis` sagt, wie erfasst: leer = von Hand gegen PDF geprüft, „von Hand aus Kap. 6 zusammengefasst“ = mit Belegstelle automatisch der Fassung zugeordnet, „automatisch ausgelesen, am Original prüfen“ = Entwurf aus Tabellen/Aufzählungen
 - 20 Themenvorschläge mit 138 Verknüpfungen über alle 17 Fächer (`themen.csv`, Vorschlag)
-- Kompetenzbereiche und 13 belegte Querbezüge bisher nur Pilotfächer, Fassung Gymnasium
+- 33 belegte Querbezüge zwischen Fächern (`querbezuege.csv`, aus Kap. 3 bis 5); Kompetenzbereiche bisher nur Pilotfächer
+- Prüfliste für die Fachschaften: `output/Pruefliste_Fachschaften.xlsx` (Themen, SDG-Zuordnungen, neu erfasste Schwerpunkte, mit Auswahlliste zur Bewertung)
 - BNE als zuschaltbare Ebene: Grundlage § 6 Abs. 4 HSchG; 11 Belege, wo das KC selbst Nachhaltigkeit nennt; 17 SDGs mit 64 Zuordnungen (Vorschlag)
 - Webseite: `docs/index.html` (wird aus `web/template.html` gebaut, GitHub Pages liefert `docs/` aus)
 - Online: https://st-bauer.github.io/kompetenzgraph-hessen/ (Repo st-bauer/kompetenzgraph-hessen, öffentlich)
@@ -23,6 +24,7 @@ data/faecher.csv        Fächer mit Kurzname, Aufgabenfeld und Farbe
 data/themen.csv         Themenvorschläge: Thema, Fach, Inhaltsfeld, Stichwort aus dem KC, Stufe oder Seite (Kap. 6)
 data/inhaltsfelder_sek1.csv  Inhaltsfelder aller Fächer, Seite je KC-Fassung (leer = nicht in dieser Fassung)
 data/schwerpunkte_sek1.csv   Schwerpunkte Haupt- und Realschule (eine Zeile je Fassung, Stufe im KC-Wortlaut)
+data/querbezuege.csv    belegte Querbezüge zwischen Fächern (Kanten im Graphen)
 data/bne_sdg.csv        17 SDGs mit offizieller Farbe
 data/bne_belege.csv     Stellen, an denen das KC Nachhaltigkeit nennt (Beleg)
 data/bne_vorschlaege.csv  SDG-Zuordnung zu Inhaltsfeldern (Vorschlag)
@@ -33,6 +35,9 @@ scripts/build_graph.py  erzeugt output/data.json und docs/index.html
 scripts/fetch_pdfs.py   lädt PDFs aus quellen_sek1.csv und extrahiert Text (quellen/, nicht im Repo)
 scripts/kc_seiten.py    zeigt KC-Text mit Seitenzahl, Hilfe beim Erfassen
 scripts/schwerpunkte_auslesen.py  Entwurf aus vierspaltigen Schwerpunkt-Tabellen (Kap. 7.2/7.3), danach von Hand prüfen
+scripts/inhaltsfelder_auslesen.py Entwurf aus beschriebenen Inhaltsfeldern (Aufzählungen bzw. Satz „Im Mittelpunkt …“)
+scripts/tabelle_auslesen.py       Entwurf aus Spaltentabellen über Wortkoordinaten (Mathematik Kap. 7.3, Kath. Religion Kap. 8.3)
+scripts/build_pruefliste.py       erzeugt die Prüfliste für die Fachschaften
 web/template.html       Graph-Seite (d3 7.8.5 per CDN, Platzhalter /*__DATA__*/null)
 docs/                   veröffentlichte Seite für GitHub Pages (nicht von Hand bearbeiten)
 ```
@@ -42,6 +47,7 @@ docs/                   veröffentlichte Seite für GitHub Pages (nicht von Hand
 pip install openpyxl
 python3 scripts/build_xlsx.py
 python3 scripts/build_graph.py
+python3 scripts/build_pruefliste.py
 python3 scripts/fetch_pdfs.py --fach Biologie --schulform Realschule
 python3 scripts/fetch_pdfs.py --alle
 python3 scripts/kc_seiten.py biologie_realschule --kapitel
@@ -79,18 +85,18 @@ Vor dem öffentlichen Teilen klären: Nutzungsbedingungen des Hessischen Kultusm
 ## Bekannte Lücken
 - PoWi-PDF: rechter Rand der quer gesetzten Tabellen wurde beim Auslesen abgeschnitten. Stichworte am Original prüfen.
 - Abbildungen (Basiskonzept-Zuordnung Physik, Verzahnung Erdkunde/PoWi/Geschichte) fehlen, weil sie nur als Grafik vorliegen.
-- Schwerpunkte fehlen für die 12 Nicht-Pilotfächer. Jedes Fach ist anders aufgebaut (Tabellen nur in Bio, Ch, Ph; Geschichte mit Epochenbezügen, Deutsch nach Kompetenzbereichen usw.).
+- Automatisch ausgelesene Schwerpunkte (Mathematik, Kath. Religion, Informatik, Ethik, Kunst, Arbeitslehre, Geschichte-Epochen) sind ungeprüft; einzelne Punkte brechen am Seitenende ab.
+- Deutsch: Jahrgangsschwerpunkte stehen im KC nur als Hervorhebung im Druck und fehlen; erfasst ist Kap. 6 (Abschluss). Sport, Musik, Fremdsprachen, Ev. Religion ebenfalls nur Kap. 6.
 - Nicht aufgenommen: Latein, Griechisch, Chinesisch, Arabisch, alevitische, jüdische und islamische Religion.
 - Deutsch: Zuordnung der Inhaltsfelder zu Kompetenzbereichen nicht erfasst. Kunst: Zuordnung zu Kernbereichen nur als Grafik.
 - Primarstufe und Oberstufe noch nicht geprüft.
 
 ## Nächste Schritte
-1. Schwerpunkte für Geschichte und Arbeitslehre erfassen (gesellschaftswissenschaftliches Aufgabenfeld), danach weitere Fächer.
-2. SDG-Vorschläge fachlich prüfen lassen (Fachschaften, BNE-Beauftragte).
+1. Prüfliste an die Fachschaften geben, Rückmeldungen in die CSV-Dateien übernehmen.
+2. Jahrgangsschwerpunkte (Kap. 7.1/7.2) für Deutsch, Sport, Musik, Fremdsprachen, Ev. Religion ergänzen.
 3. Schulcurricula der JCS als zweite Ebene: Zuordnung von Unterrichtseinheiten zu Schwerpunkten und zu Jahrgängen.
 4. Ein reales TheA/THEO-Thema als Testfall durchspielen.
 5. Restliche Pilotdaten aus `kerncurricula.py` in CSV überführen (Inhaltsfelder und Themen sind schon umgestellt).
-6. Belegte Querbezüge aus Kap. 3/4 der übrigen KC auslesen (z. B. Geschichte → Erdkunde, PoWi).
 
 ## Schreibregeln für Texte und Oberfläche
 - Deutsch, natürlicher Ton.
