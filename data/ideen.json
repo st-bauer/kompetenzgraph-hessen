@@ -1,0 +1,761 @@
+[
+ {
+  "thema": "Ich renoviere mein Zimmer",
+  "such": "Zimmer renovieren streichen tapezieren einrichten wohnen Wohnung Kinderzimmer umgestalten",
+  "aspekte": [
+   {
+    "aspekt": "Grundriss, Maßstab und Fläche",
+    "stichworte": "Fläche Umfang Maßstab Figuren Koordinatensystem Grundriss",
+    "felder": [
+     "Mathematik|Ebene Figuren",
+     "Mathematik|Umgang mit Größen",
+     "Mathematik|Messvorgänge"
+    ]
+   },
+   {
+    "aspekt": "Material berechnen und Kosten planen",
+    "stichworte": "Volumen Körper Prozent Kosten Rechnen Dreisatz Zuordnungen",
+    "felder": [
+     "Mathematik|Körper",
+     "Mathematik|Operationen und ihre Eigenschaften",
+     "Mathematik|Darstellungen",
+     "Arbeitslehre|Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens"
+    ]
+   },
+   {
+    "aspekt": "Farben und Raumwirkung",
+    "stichworte": "Farbe Gestaltung Raum Wirkung Bild Material",
+    "felder": [
+     "Kunst|Medien, Techniken und Verfahren der Bildgestaltung",
+     "Kunst|Strategien kreativer und künstlerischer Prozesse der Bilderfindung",
+     "Kunst|Wahrnehmung der Umwelt"
+    ]
+   },
+   {
+    "aspekt": "Licht, Strom und Sicherheit",
+    "stichworte": "Licht Stromkreis Elektrizität Gefahren Energie",
+    "felder": [
+     "Physik|Elektrizität im Alltag",
+     "Physik|Erweiterung der Sinne",
+     "Physik|Energie in Umwelt und Technik"
+    ]
+   },
+   {
+    "aspekt": "Werkzeuge, Stoffe und Umwelt",
+    "stichworte": "Werkstoffe Stoffe Eignung Gefahrenpotenzial Kunststoffe Technik",
+    "felder": [
+     "Chemie|Welt der Stoffe – Identifikation und Ordnung von Stoffen",
+     "Arbeitslehre|Technische Systeme und Prozesse"
+    ]
+   },
+   {
+    "aspekt": "Mein Raum, meine Identität",
+    "stichworte": "Selbst Identität Familie Wohnen Persönlichkeit",
+    "felder": [
+     "Ethik|Selbst und Welt",
+     "Kunst|Kunst als Korrelat der Persönlichkeit",
+     "Moderne Fremdsprachen|Persönliche Lebenswelten „Ich und die Anderen“"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Wir planen ein Fest",
+  "such": "Fest Feier Party planen Schulfest feiern Buffet Einladung",
+  "aspekte": [
+   {
+    "aspekt": "Einkauf, Mengen und Kosten",
+    "stichworte": "Brüche Prozent Kosten Zuordnungen Rechnen",
+    "felder": [
+     "Mathematik|Zahlen",
+     "Mathematik|Operationen und ihre Eigenschaften",
+     "Mathematik|Darstellungen"
+    ]
+   },
+   {
+    "aspekt": "Essen, Ernährung und Unverträglichkeiten",
+    "stichworte": "Ernährung Stoffwechsel Verdauung",
+    "felder": [
+     "Biologie|Stoffwechsel und Regelmechanismen"
+    ]
+   },
+   {
+    "aspekt": "Feste in Religionen und Kulturen",
+    "stichworte": "Feste Religionen Rituale Kultur",
+    "felder": [
+     "Evangelische Religion|Religionen",
+     "Katholische Religion|Religionen",
+     "Ethik|Religionen, Weltbilder und Kulturen",
+     "Geschichte|Alltagskulturen"
+    ]
+   },
+   {
+    "aspekt": "Einladung, Plakat und Programm",
+    "stichworte": "Schreiben Text Medien Präsentation Gestaltung",
+    "felder": [
+     "Deutsch|Schreibformen",
+     "Deutsch|Text-/Medienformen",
+     "Kunst|Distributions- und Präsentationsformen für Bilder",
+     "Moderne Fremdsprachen|Persönliche Lebenswelten „Ich und die Anderen“"
+    ]
+   },
+   {
+    "aspekt": "Musik und Tanz",
+    "stichworte": "Musik Tanz Bewegung Rhythmus Gesang",
+    "felder": [
+     "Musik|Gesang und Instrumentalspiel",
+     "Musik|Bewegung und Gestaltungsmedien",
+     "Sport|Bewegung gymnastisch, rhythmisch und tänzerisch gestalten"
+    ]
+   },
+   {
+    "aspekt": "Licht und Technik",
+    "stichworte": "Stromkreis Elektrizität",
+    "felder": [
+     "Physik|Elektrizität im Alltag"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Wir legen einen Schulgarten an",
+  "such": "Schulgarten Garten Beet pflanzen Hochbeet Gemüse Insekten Bienen",
+  "aspekte": [
+   {
+    "aspekt": "Pflanzen, Tiere und Lebensräume",
+    "stichworte": "Pflanzen Ökosystem Nahrungskette Arten Lebensraum Blütenpflanzen",
+    "felder": [
+     "Biologie|Wechselwirkungen in Ökosystemen",
+     "Biologie|Fortpflanzung und Entwicklung",
+     "Biologie|Vielfalt, Veränderung und Abstammung von Lebewesen"
+    ]
+   },
+   {
+    "aspekt": "Boden, Wasser und Dünger",
+    "stichworte": "Boden Wasser Stoffe Luft",
+    "felder": [
+     "Chemie|Schatzkiste der Natur – Chemie in Alltag und Technik",
+     "Erdkunde|Natur/Umwelt"
+    ]
+   },
+   {
+    "aspekt": "Beete planen und vermessen",
+    "stichworte": "Fläche Maßstab Figuren Messen",
+    "felder": [
+     "Mathematik|Ebene Figuren",
+     "Mathematik|Messvorgänge"
+    ]
+   },
+   {
+    "aspekt": "Ernte, Verkauf und Ernährung",
+    "stichworte": "Ernährung Konsum Einkommen",
+    "felder": [
+     "Biologie|Stoffwechsel und Regelmechanismen",
+     "Arbeitslehre|Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens"
+    ]
+   },
+   {
+    "aspekt": "Verantwortung für die Schöpfung",
+    "stichworte": "Natur Verantwortung Schöpfung",
+    "felder": [
+     "Ethik|Mensch, Natur und Technik",
+     "Evangelische Religion|Mensch und Welt",
+     "Katholische Religion|Mensch und Welt"
+    ]
+   },
+   {
+    "aspekt": "Wetter und Jahreszeiten",
+    "stichworte": "Wetter Klima Temperatur",
+    "felder": [
+     "Physik|Wettererscheinungen und Klima"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Rund ums Fahrrad",
+  "such": "Fahrrad Rad fahren Radtour Mobilität Verkehr Schulweg",
+  "aspekte": [
+   {
+    "aspekt": "Geschwindigkeit, Kraft und Bewegung",
+    "stichworte": "Geschwindigkeit Kräfte Trägheit Bewegung",
+    "felder": [
+     "Physik|Fortbewegung und Mobilität",
+     "Physik|Technik im Dienst des Menschen"
+    ]
+   },
+   {
+    "aspekt": "Licht und Dynamo",
+    "stichworte": "Licht Stromkreis Energieumwandlung",
+    "felder": [
+     "Physik|Elektrizität im Alltag",
+     "Physik|Energie in Umwelt und Technik"
+    ]
+   },
+   {
+    "aspekt": "Strecken, Karten und Orientierung",
+    "stichworte": "Karte Maßstab Orientierung Weg",
+    "felder": [
+     "Erdkunde|Räumliches Orientierungswissen",
+     "Mathematik|Umgang mit Größen",
+     "Mathematik|Funktionen und Gleichungen"
+    ]
+   },
+   {
+    "aspekt": "Mobilität und Umwelt",
+    "stichworte": "Verkehr Umwelt Klima Stadt",
+    "felder": [
+     "Erdkunde|Mensch/Gesellschaft",
+     "Politik und Wirtschaft|Gesellschaft und Natur"
+    ]
+   },
+   {
+    "aspekt": "Fahren, Rollen, Gleiten",
+    "stichworte": "Wagnis Gleichgewicht Sicherheit",
+    "felder": [
+     "Sport|Fahren, Rollen, Gleiten"
+    ]
+   },
+   {
+    "aspekt": "Reparieren und Technik",
+    "stichworte": "Technik Werkzeug",
+    "felder": [
+     "Arbeitslehre|Technische Systeme und Prozesse"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Wir planen eine Klassenfahrt",
+  "such": "Klassenfahrt Ausflug Reise planen Fahrt Jugendherberge",
+  "aspekte": [
+   {
+    "aspekt": "Route, Karte und Ziel",
+    "stichworte": "Karte Orientierung Region Raum",
+    "felder": [
+     "Erdkunde|Räumliches Orientierungswissen",
+     "Erdkunde|Geographie auf regionaler Ebene"
+    ]
+   },
+   {
+    "aspekt": "Kosten und Zeitplan",
+    "stichworte": "Kosten Prozent Zeit Rechnen",
+    "felder": [
+     "Mathematik|Operationen und ihre Eigenschaften",
+     "Mathematik|Umgang mit Größen",
+     "Arbeitslehre|Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens"
+    ]
+   },
+   {
+    "aspekt": "Geschichte vor Ort",
+    "stichworte": "Mittelalter Städte Herrschaft Raum",
+    "felder": [
+     "Geschichte|Epochenbezug Mittelalter",
+     "Geschichte|Bewältigung und Nutzung von Räumen"
+    ]
+   },
+   {
+    "aspekt": "Gemeinschaft und Regeln",
+    "stichworte": "Regeln Gemeinschaft Verantwortung",
+    "felder": [
+     "Ethik|Gewissen und Verantwortung",
+     "Politik und Wirtschaft|Individuum und Gesellschaft"
+    ]
+   },
+   {
+    "aspekt": "Berichten und präsentieren",
+    "stichworte": "Bericht Präsentation Text Medien",
+    "felder": [
+     "Deutsch|Schreibformen",
+     "Deutsch|Rede- und Gesprächsformen"
+    ]
+   },
+   {
+    "aspekt": "Bewegung draußen",
+    "stichworte": "Laufen Wasser Spiele",
+    "felder": [
+     "Sport|Laufen, Springen, Werfen",
+     "Sport|Bewegen im Wasser",
+     "Sport|Spielen"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Wir gründen einen Schulkiosk",
+  "such": "Kiosk Schülerfirma Verkauf Pausenverkauf Laden Unternehmen Geschäft",
+  "aspekte": [
+   {
+    "aspekt": "Preise, Gewinn und Buchführung",
+    "stichworte": "Prozent Kosten Gewinn Daten Diagramm",
+    "felder": [
+     "Mathematik|Operationen und ihre Eigenschaften",
+     "Mathematik|Statistische Erhebungen und ihre Auswertung",
+     "Mathematik|Darstellungen"
+    ]
+   },
+   {
+    "aspekt": "Wirtschaften und Verbraucher",
+    "stichworte": "Wirtschaft Markt Konsum Verbraucher",
+    "felder": [
+     "Politik und Wirtschaft|Wirtschaft",
+     "Arbeitslehre|Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens"
+    ]
+   },
+   {
+    "aspekt": "Arbeit organisieren",
+    "stichworte": "Arbeit Organisation Beruf",
+    "felder": [
+     "Arbeitslehre|Organisation von Arbeit",
+     "Arbeitslehre|Berufswegeplanung"
+    ]
+   },
+   {
+    "aspekt": "Gesundes Angebot",
+    "stichworte": "Ernährung Gesundheit",
+    "felder": [
+     "Biologie|Stoffwechsel und Regelmechanismen",
+     "Arbeitslehre|Erhalt der psychischen und physischen Gesundheit"
+    ]
+   },
+   {
+    "aspekt": "Werbung und Plakate",
+    "stichworte": "Werbung Medien Gestaltung",
+    "felder": [
+     "Deutsch|Text-/Medienformen",
+     "Kunst|Distributions- und Präsentationsformen für Bilder"
+    ]
+   },
+   {
+    "aspekt": "Fair und nachhaltig",
+    "stichworte": "Nachhaltigkeit Konsum Recycling Gerechtigkeit",
+    "felder": [
+     "Politik und Wirtschaft|Gesellschaft und Natur",
+     "Chemie|Magie des Kohlenstoffs – Organische Verbindungen",
+     "Ethik|Recht und Gerechtigkeit"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Unser Ort früher und heute",
+  "such": "Ort Heimat Dorf Stadt Runkel Burg Ortsgeschichte früher heute Gemeinde Heimatort",
+  "aspekte": [
+   {
+    "aspekt": "Mittelalter, Burg und Stadt",
+    "stichworte": "Mittelalter Burg Herrschaft Städte",
+    "felder": [
+     "Geschichte|Epochenbezug Mittelalter",
+     "Geschichte|Herrschaft"
+    ]
+   },
+   {
+    "aspekt": "Leben früher",
+    "stichworte": "Alltag Wohnen Arbeit Ernährung",
+    "felder": [
+     "Geschichte|Alltagskulturen",
+     "Geschichte|Wirtschaft"
+    ]
+   },
+   {
+    "aspekt": "Raum, Karte und Landschaft",
+    "stichworte": "Karte Raum Region Landschaft",
+    "felder": [
+     "Erdkunde|Geographie auf regionaler Ebene",
+     "Erdkunde|Räumliches Orientierungswissen",
+     "Geschichte|Bewältigung und Nutzung von Räumen"
+    ]
+   },
+   {
+    "aspekt": "Gemeinde und Mitbestimmung",
+    "stichworte": "Gemeinde Demokratie Beteiligung",
+    "felder": [
+     "Politik und Wirtschaft|Demokratie"
+    ]
+   },
+   {
+    "aspekt": "Kirche vor Ort",
+    "stichworte": "Kirche Gemeinde",
+    "felder": [
+     "Evangelische Religion|Kirche",
+     "Katholische Religion|Kirche"
+    ]
+   },
+   {
+    "aspekt": "Interviews und Ortschronik",
+    "stichworte": "Gespräch Interview Bericht Text",
+    "felder": [
+     "Deutsch|Rede- und Gesprächsformen",
+     "Deutsch|Schreibformen"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Die Lahn: Leben am Fluss",
+  "such": "Lahn Fluss Wasser Ufer Hochwasser Gewässer Flusslandschaft",
+  "aspekte": [
+   {
+    "aspekt": "Wasser als Lebensraum",
+    "stichworte": "Ökosystem Gewässer Arten Nahrungskette",
+    "felder": [
+     "Biologie|Wechselwirkungen in Ökosystemen"
+    ]
+   },
+   {
+    "aspekt": "Wasserqualität untersuchen",
+    "stichworte": "Wasser Nachweis Stoffe Gemisch Trennverfahren",
+    "felder": [
+     "Chemie|Welt der Stoffe – Identifikation und Ordnung von Stoffen",
+     "Chemie|Der Mix macht's – Stoffgemische"
+    ]
+   },
+   {
+    "aspekt": "Fluss, Landschaft und Hochwasser",
+    "stichworte": "Fluss Wasser Natur Raum Klima",
+    "felder": [
+     "Erdkunde|Natur/Umwelt",
+     "Erdkunde|Umwelt-Gesellschaft-Beziehungen und globale Probleme",
+     "Physik|Wettererscheinungen und Klima"
+    ]
+   },
+   {
+    "aspekt": "Handel und Siedlung am Fluss",
+    "stichworte": "Städte Handel Mittelalter Raum",
+    "felder": [
+     "Geschichte|Epochenbezug Mittelalter",
+     "Geschichte|Bewältigung und Nutzung von Räumen"
+    ]
+   },
+   {
+    "aspekt": "Energie aus Wasser",
+    "stichworte": "Energie Energieversorgung regenerative",
+    "felder": [
+     "Physik|Zukunftssichere Energieversorgung"
+    ]
+   },
+   {
+    "aspekt": "Messen und darstellen",
+    "stichworte": "Daten Diagramm Messen",
+    "felder": [
+     "Mathematik|Statistische Erhebungen und ihre Auswertung",
+     "Mathematik|Messvorgänge"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Mein Smartphone",
+  "such": "Handy Smartphone Medien Internet Social Media digital Apps",
+  "aspekte": [
+   {
+    "aspekt": "Wie funktioniert das Gerät?",
+    "stichworte": "Hardware Computer Daten Elektrizität",
+    "felder": [
+     "Informatik|Hardware und Rechnerarchitektur",
+     "Physik|Elektrizität im Alltag"
+    ]
+   },
+   {
+    "aspekt": "Internet, Daten und Sicherheit",
+    "stichworte": "Internet Datenschutz Datensicherheit Verschlüsselung",
+    "felder": [
+     "Informatik|Internet und HTML",
+     "Informatik|Kryptologie"
+    ]
+   },
+   {
+    "aspekt": "Medien nutzen und bewerten",
+    "stichworte": "Medien Text Wirkung",
+    "felder": [
+     "Deutsch|Text-/Medienformen",
+     "Deutsch|Lese- und Rezeptionsstrategien"
+    ]
+   },
+   {
+    "aspekt": "Rohstoffe und Recycling",
+    "stichworte": "Metalle Rohstoffe Recycling",
+    "felder": [
+     "Chemie|Welt der Stoffe – Identifikation und Ordnung von Stoffen",
+     "Erdkunde|Umwelt-Gesellschaft-Beziehungen und globale Probleme"
+    ]
+   },
+   {
+    "aspekt": "Kommunikation und Verantwortung",
+    "stichworte": "Wahrheit Verantwortung Medien",
+    "felder": [
+     "Ethik|Wahrheit und Wirklichkeit",
+     "Ethik|Gewissen und Verantwortung",
+     "Politik und Wirtschaft|Demokratie"
+    ]
+   },
+   {
+    "aspekt": "Kosten und Verträge",
+    "stichworte": "Kosten Prozent Verbraucher",
+    "felder": [
+     "Mathematik|Operationen und ihre Eigenschaften",
+     "Politik und Wirtschaft|Wirtschaft"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Was ist in meinem Pausenbrot?",
+  "such": "Pausenbrot Frühstück Ernährung Essen Lebensmittel gesund Pause",
+  "aspekte": [
+   {
+    "aspekt": "Nährstoffe und Verdauung",
+    "stichworte": "Ernährung Verdauung Stoffwechsel",
+    "felder": [
+     "Biologie|Stoffwechsel und Regelmechanismen",
+     "Biologie|Funktionsteilung im Organismus"
+    ]
+   },
+   {
+    "aspekt": "Stoffe in Lebensmitteln",
+    "stichworte": "Nachweis Stoffe organische",
+    "felder": [
+     "Chemie|Welt der Stoffe – Identifikation und Ordnung von Stoffen",
+     "Chemie|Magie des Kohlenstoffs – Organische Verbindungen"
+    ]
+   },
+   {
+    "aspekt": "Woher kommt unser Essen?",
+    "stichworte": "Landwirtschaft Handel Globalisierung Ressourcen",
+    "felder": [
+     "Erdkunde|Umwelt-Gesellschaft-Beziehungen und globale Probleme",
+     "Politik und Wirtschaft|Internationale Beziehungen und Globalisierung"
+    ]
+   },
+   {
+    "aspekt": "Einkaufen, Preise und Verpackung",
+    "stichworte": "Konsum Kosten Recycling",
+    "felder": [
+     "Arbeitslehre|Ökonomisch geprägte Situationen und Strukturen des Zusammenlebens",
+     "Politik und Wirtschaft|Wirtschaft"
+    ]
+   },
+   {
+    "aspekt": "Essen in Kulturen und Religionen",
+    "stichworte": "Essen Religionen Kultur",
+    "felder": [
+     "Geschichte|Alltagskulturen",
+     "Ethik|Religionen, Weltbilder und Kulturen"
+    ]
+   },
+   {
+    "aspekt": "Bewegung und Fitness",
+    "stichworte": "Fitness Gesundheit Ausdauer",
+    "felder": [
+     "Sport|Den Körper trainieren, die Fitness verbessern",
+     "Arbeitslehre|Erhalt der psychischen und physischen Gesundheit"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Weniger Müll an unserer Schule",
+  "such": "Müll Abfall Recycling Plastik Mülltrennung Upcycling Verpackung",
+  "aspekte": [
+   {
+    "aspekt": "Stoffe trennen und wiederverwerten",
+    "stichworte": "Stoffgemische Trennverfahren Kunststoffe Recycling",
+    "felder": [
+     "Chemie|Der Mix macht's – Stoffgemische",
+     "Chemie|Magie des Kohlenstoffs – Organische Verbindungen"
+    ]
+   },
+   {
+    "aspekt": "Müll zählen und auswerten",
+    "stichworte": "Daten Statistik Diagramm",
+    "felder": [
+     "Mathematik|Statistische Erhebungen und ihre Auswertung",
+     "Mathematik|Darstellungen"
+    ]
+   },
+   {
+    "aspekt": "Müll und Umwelt weltweit",
+    "stichworte": "Umwelt Ressourcen globale Probleme",
+    "felder": [
+     "Erdkunde|Umwelt-Gesellschaft-Beziehungen und globale Probleme",
+     "Politik und Wirtschaft|Gesellschaft und Natur"
+    ]
+   },
+   {
+    "aspekt": "Ökosysteme in Gefahr",
+    "stichworte": "Gefährdung Ökosystem Eingriffe",
+    "felder": [
+     "Biologie|Wechselwirkungen in Ökosystemen"
+    ]
+   },
+   {
+    "aspekt": "Kunst aus Abfall",
+    "stichworte": "Material Gestaltung Techniken",
+    "felder": [
+     "Kunst|Medien, Techniken und Verfahren der Bildgestaltung"
+    ]
+   },
+   {
+    "aspekt": "Kampagne an der Schule",
+    "stichworte": "Medien Rede Appellieren",
+    "felder": [
+     "Deutsch|Rede- und Gesprächsformen",
+     "Deutsch|Text-/Medienformen"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Energie sparen in der Schule",
+  "such": "Energie sparen Strom Heizung Klimaschutz Energiedetektive Schulgebäude",
+  "aspekte": [
+   {
+    "aspekt": "Energieformen und Energieverbrauch",
+    "stichworte": "Energie Energieformen Energieerhaltung",
+    "felder": [
+     "Physik|Energie in Umwelt und Technik",
+     "Physik|Elektrizität im Alltag"
+    ]
+   },
+   {
+    "aspekt": "Wärme und Dämmung",
+    "stichworte": "Wärme Temperatur thermische",
+    "felder": [
+     "Physik|Wettererscheinungen und Klima"
+    ]
+   },
+   {
+    "aspekt": "Erneuerbare Energien",
+    "stichworte": "regenerative Energieversorgung",
+    "felder": [
+     "Physik|Zukunftssichere Energieversorgung"
+    ]
+   },
+   {
+    "aspekt": "Verbrauch messen und darstellen",
+    "stichworte": "Daten Diagramm Funktionen",
+    "felder": [
+     "Mathematik|Statistische Erhebungen und ihre Auswertung",
+     "Mathematik|Funktionen und Gleichungen"
+    ]
+   },
+   {
+    "aspekt": "Klima und Verantwortung",
+    "stichworte": "Klima Verantwortung Nachhaltigkeit",
+    "felder": [
+     "Erdkunde|Umwelt-Gesellschaft-Beziehungen und globale Probleme",
+     "Ethik|Mensch, Natur und Technik",
+     "Politik und Wirtschaft|Gesellschaft und Natur"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Wir führen ein Theaterstück auf",
+  "such": "Theater Musical Aufführung Bühne Schauspiel Rolle Szene",
+  "aspekte": [
+   {
+    "aspekt": "Text und Szene",
+    "stichworte": "Szene Drama Rolle Text",
+    "felder": [
+     "Deutsch|Text-/Medienformen",
+     "Deutsch|Lesarten und Rezeptionskonventionen",
+     "Deutsch|Rede- und Gesprächsstrategien"
+    ]
+   },
+   {
+    "aspekt": "Musik und Klang",
+    "stichworte": "Musik Klang Gesang Instrument",
+    "felder": [
+     "Musik|Gesang und Instrumentalspiel",
+     "Musik|Klang",
+     "Musik|Ausdruck und Wirkung"
+    ]
+   },
+   {
+    "aspekt": "Bühnenbild und Kostüm",
+    "stichworte": "Gestaltung Material Bild",
+    "felder": [
+     "Kunst|Medien, Techniken und Verfahren der Bildgestaltung",
+     "Kunst|Strategien kreativer und künstlerischer Prozesse der Bilderfindung"
+    ]
+   },
+   {
+    "aspekt": "Bewegung und Ausdruck",
+    "stichworte": "Ausdruck Tanz Körper",
+    "felder": [
+     "Sport|Bewegung gymnastisch, rhythmisch und tänzerisch gestalten"
+    ]
+   },
+   {
+    "aspekt": "Licht und Ton",
+    "stichworte": "Licht Schall Stromkreis",
+    "felder": [
+     "Physik|Erweiterung der Sinne",
+     "Physik|Elektrizität im Alltag"
+    ]
+   },
+   {
+    "aspekt": "Ein Stück in der Fremdsprache",
+    "stichworte": "Kultur Sprache",
+    "felder": [
+     "Moderne Fremdsprachen|Kulturelle Lebenswelten „Ich und die Welt“"
+    ]
+   }
+  ]
+ },
+ {
+  "thema": "Familiengeschichten: Woher wir kommen",
+  "such": "Familie Herkunft Migration Familiengeschichte Wurzeln Heimat Einwanderung",
+  "aspekte": [
+   {
+    "aspekt": "Eigenes und Fremdes",
+    "stichworte": "Identität Fremdes Herkunft",
+    "felder": [
+     "Geschichte|Eigenes und Fremdes",
+     "Ethik|Selbst und Welt"
+    ]
+   },
+   {
+    "aspekt": "Migration heute",
+    "stichworte": "Migration Integration Globalisierung",
+    "felder": [
+     "Politik und Wirtschaft|Internationale Beziehungen und Globalisierung",
+     "Erdkunde|Mensch/Gesellschaft"
+    ]
+   },
+   {
+    "aspekt": "Geschichte im 20. Jahrhundert",
+    "stichworte": "Neuordnungen 1945 1989 Nationalsozialismus",
+    "felder": [
+     "Geschichte|Epochenbezug Neueste Zeit"
+    ]
+   },
+   {
+    "aspekt": "Sprachen und Kulturen",
+    "stichworte": "Kultur Sprache",
+    "felder": [
+     "Moderne Fremdsprachen|Kulturelle Lebenswelten „Ich und die Welt“",
+     "Moderne Fremdsprachen|Persönliche Lebenswelten „Ich und die Anderen“"
+    ]
+   },
+   {
+    "aspekt": "Glaube und Weltdeutung",
+    "stichworte": "Religionen Dialog",
+    "felder": [
+     "Evangelische Religion|Religionen",
+     "Katholische Religion|Religionen",
+     "Ethik|Religionen, Weltbilder und Kulturen"
+    ]
+   },
+   {
+    "aspekt": "Erzählen und Interviews",
+    "stichworte": "Erzählen Gespräch Schreiben",
+    "felder": [
+     "Deutsch|Schreibformen",
+     "Deutsch|Rede- und Gesprächsformen"
+    ]
+   }
+  ]
+ }
+]

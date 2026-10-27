@@ -152,6 +152,11 @@ details.uz { padding: 8px 10px; }
 .w-row input { accent-color: var(--mint); margin-top: 3px; flex: none; }
 .w-row small { display: block; color: var(--muted); font-weight: 400; font-size: .72rem; margin-top: 2px; }
 .werk-knoepfe { display: flex; flex-wrap: wrap; gap: 6px; }
+.w-ideen { display: flex; gap: 6px; }
+.w-ideen input { flex: 1; min-width: 0; }
+.w-vorlagen summary { cursor: pointer; }
+.w-vorlagen .chips { margin-top: 6px; }
+.w-aspekt { border-left: 3px solid var(--mint); padding-left: 9px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
 .werk-knoepfe .btn { flex: 1 1 auto; text-align: center; }
 ul.rel li button.w-weg { width: auto; margin-top: 4px; font-size: .72rem; color: var(--muted); padding: 4px 8px; }
 .lk.werk { stroke: var(--mint); stroke-opacity: .85; stroke-width: 1.4; stroke-dasharray: 5 3; }
@@ -625,11 +630,17 @@ const WERK_KEY = "kg-werkstatt";
 const JG = { "56": "5/6", "78": "7/8", "910": "9/10" };
 const keyOf = n => n.t === "if" ? `${n.f}|${n.label}` : `${n.f}|${n.feld}|${n.label}`;
 const idOfKey = new Map(nodes.filter(n => n.t === "if" || n.t === "sp").map(n => [keyOf(n), n.id]));
-const werk = { offen: false, titel: "", stichworte: "", jg: "56", auswahl: new Set(), entwuerfe: [], treffer: [] };
-const entwurf = () => ({ titel: werk.titel, stichworte: werk.stichworte, jg: werk.jg, auswahl: [...werk.auswahl].map(id => keyOf(byId.get(id))) });
-const laden = e => { werk.titel = e.titel || ""; werk.stichworte = e.stichworte || ""; werk.jg = e.jg || "56"; werk.auswahl = new Set((e.auswahl || []).map(k => idOfKey.get(k)).filter(Boolean)); };
-try { const w = JSON.parse(localStorage.getItem(WERK_KEY) || "null"); if (w) { laden(w); werk.entwuerfe = w.entwuerfe || []; } } catch (e) {}
-function werkSichern() { try { localStorage.setItem(WERK_KEY, JSON.stringify({ ...entwurf(), entwuerfe: werk.entwuerfe })); } catch (e) {} }
+const werk = { offen: false, satz: "", titel: "", stichworte: "", jg: "56", teile: false, auswahl: new Set(), entwuerfe: [], treffer: [], aspekte: [] };
+const entwurf = () => ({ satz: werk.satz, titel: werk.titel, stichworte: werk.stichworte, jg: werk.jg, auswahl: [...werk.auswahl].map(id => keyOf(byId.get(id))),
+  aspekte: werk.aspekte.map(a => ({ aspekt: a.aspekt, begruendung: a.begruendung, quelle: a.quelle, eintraege: [...a.ifs, ...a.sps].map(id => keyOf(byId.get(id))) })) });
+const laden = e => {
+  werk.satz = e.satz || ""; werk.titel = e.titel || ""; werk.stichworte = e.stichworte || ""; werk.jg = e.jg || "56";
+  werk.auswahl = new Set((e.auswahl || []).map(k => idOfKey.get(k)).filter(Boolean));
+  werk.aspekte = (e.aspekte || []).map(a => { const ids = (a.eintraege || []).map(k => idOfKey.get(k)).filter(Boolean);
+    return { aspekt: a.aspekt || "", begruendung: a.begruendung || "", quelle: a.quelle || "", ifs: ids.filter(id => byId.get(id).t === "if"), sps: ids.filter(id => byId.get(id).t === "sp") }; });
+};
+try { const w = JSON.parse(localStorage.getItem(WERK_KEY) || "null"); if (w) { laden(w); werk.entwuerfe = w.entwuerfe || []; werk.teile = !!w.teile; } } catch (e) {}
+function werkSichern() { try { localStorage.setItem(WERK_KEY, JSON.stringify({ ...entwurf(), teile: werk.teile, entwuerfe: werk.entwuerfe })); } catch (e) {} }
 
 // Passt ein Schwerpunkt zum gewählten Jahrgang? Fächer ohne Zwischenstufe gelten bis zum Abschluss.
 function jgPasst(sp, alle) {
@@ -640,12 +651,32 @@ function jgPasst(sp, alle) {
 }
 const ifVon = n => n.t === "if" ? n : byId.get(nb.get(n.id).find(x => byId.get(x.id).t === "if").id);
 
+// Tolerante Suche: Groß- und Kleinschreibung, Umlaute und einfache Endungen spielen keine Rolle
+const falt = w => w.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
+const ENDUNGEN = ["ern", "en", "er", "es", "e", "n", "s"];
+const stammVon = w => { w = falt(w); for (const e of ENDUNGEN) if (w.endsWith(e) && w.length - e.length >= 4) return w.slice(0, -e.length); return w; };
+const wortCache = new Map();
+const woerter = txt => {
+  if (!wortCache.has(txt)) wortCache.set(txt, (txt.toLowerCase().match(/[a-zäöüß0-9]+/g) || []).map(o => ({ o, f: falt(o) })));
+  return wortCache.get(txt);
+};
+
 function werkSuche() {
-  const terme = werk.stichworte.toLowerCase().split(/[,;\n]+/).map(t => t.trim()).filter(t => t.length >= 3)
-    .map(t => ({ wort: t, rx: new RegExp("(^|[^a-zäöüß])" + (t.length > 6 ? t.slice(0, -2) : t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) }));
+  const terme = [...new Set(werk.stichworte.toLowerCase().split(/[,;\n]+/).map(t => t.trim()).filter(t => t.length >= 3))]
+    .map(t => ({ wort: t, stamm: t.split(/\s+/).map(stammVon).join(" ") }));
   werk.treffer = [];
   if (!terme.length) return;
-  const has = txt => terme.filter(t => t.rx.test(txt.toLowerCase())).map(t => t.wort); // nur am Wortanfang, sonst findet „Handel“ auch „aushandeln“
+  // liefert die im Text gefundenen Wörter (Originalschreibung), damit Fehltreffer sichtbar sind
+  const has = txt => {
+    const ws = woerter(txt), fund = [];
+    terme.forEach(t => {
+      const teile = t.stamm.split(" ");
+      if (teile.length > 1) { if (falt(txt.toLowerCase()).includes(t.stamm)) fund.push(t.wort); return; } // mehrere Wörter: als Wendung suchen
+      const w = ws.find(x => werk.teile ? x.f.includes(t.stamm) : x.f.startsWith(t.stamm));
+      if (w) fund.push(w.o);
+    });
+    return fund;
+  };
   nodes.filter(n => n.t === "if" && inSf(n) && state.faecher.has(n.f)).forEach(n => {
     const gruende = []; let score = 0; const worte = new Set();
     const a = has(n.label + " " + (n.bk || "")); if (a.length) { score += 3 * a.length; gruende.push("Titel"); }
@@ -665,17 +696,35 @@ function werkPanel(el, foot) {
   if (!el.querySelector("#werk-form")) {
     el.innerHTML = `<div class="tags"><span class="tag">Themenwerkstatt</span><span class="tag warn">Entwurf, fachlich zu prüfen</span></div>
       <div id="werk-form" class="werk">
+        <label class="field-label" for="w-satz">Thema in einem Satz</label>
+        <div class="w-ideen"><input id="w-satz" placeholder="z. B. Ich renoviere mein Zimmer"><button class="btn primary" id="w-ideen-btn">Ideen finden</button></div>
+        <p class="ref" id="w-ideen-status"></p>
+        <details class="w-vorlagen"><summary class="ref">Vorlagen ansehen (${DATA.ideen.length})</summary><div class="chips">${DATA.ideen.map((t, i) => `<button class="chip" data-vorlage="${i}">${esc(t.thema)}</button>`).join("")}</div></details>
         <label class="field-label" for="w-titel">Titel des Themas</label>
         <input id="w-titel" placeholder="z. B. Die Lahn">
-        <label class="field-label" for="w-stich">Stichworte, durch Komma getrennt</label>
+        <label class="field-label" for="w-stich">Zusätzlich nach Stichworten suchen (durch Komma getrennt)</label>
         <textarea id="w-stich" rows="2" placeholder="z. B. Fluss, Wasser, Hochwasser, Burg, Handel"></textarea>
         <div class="field-label">Jahrgang</div>
         <div class="tiles" id="w-jg">${Object.entries(JG).map(([k, v]) => `<button class="tile" data-jg="${k}">${v}<small>Jahrgang</small></button>`).join("")}</div>
-        <p class="ref">Gesucht wird am Wortanfang: „Wasser“ findet „Wasserkreislauf“, aber nicht „Trinkwasser“. Zusammengesetzte Wörter bei Bedarf als eigenes Stichwort eingeben. Ein Klick im Graphen auf ein Inhaltsfeld oder einen Schwerpunkt nimmt ihn auf oder entfernt ihn.</p>
+        <label class="w-row"><input type="checkbox" id="w-teile"><span>Auch Wortteile finden<small>z. B. „Trinkwasser“ bei „Wasser“. Findet mehr, aber auch Unpassendes wie „aushandeln“ bei „Handel“.</small></span></label>
+        <p class="ref">Groß- und Kleinschreibung, Umlaute und einfache Endungen spielen keine Rolle: „Wald“ findet auch „Wälder“. Bei jedem Treffer steht das gefundene Wort, so lassen sich Fehltreffer erkennen. Ein Klick im Graphen auf ein Inhaltsfeld oder einen Schwerpunkt nimmt ihn auf oder entfernt ihn.</p>
       </div>
-      <div id="w-abdeckung"></div><div id="w-treffer"></div><div id="w-entwuerfe"></div>`;
+      <div id="w-aspekte"></div><div id="w-abdeckung"></div><div id="w-treffer"></div><div id="w-entwuerfe"></div>`;
     const ti = el.querySelector("#w-titel"), st = el.querySelector("#w-stich");
     ti.value = werk.titel; st.value = werk.stichworte;
+    const sa = el.querySelector("#w-satz"), ib = el.querySelector("#w-ideen-btn");
+    sa.value = werk.satz;
+    sa.oninput = () => { werk.satz = sa.value; werkSichern(); };
+    sa.onkeydown = ev => { if (ev.key === "Enter") ib.click(); };
+    ib.onclick = () => ideenFinden(ib);
+    el.querySelectorAll("[data-vorlage]").forEach(b => b.onclick = () => {
+      const t = DATA.ideen[+b.dataset.vorlage];
+      werk.satz = sa.value = t.thema; if (!werk.titel) werk.titel = ti.value = t.thema;
+      vorlageAnwenden(t);
+    });
+    ideenHinweis();
+    const tl = el.querySelector("#w-teile"); tl.checked = werk.teile;
+    tl.onchange = () => { werk.teile = tl.checked; werkSichern(); werkSuche(); render(); };
     let timer;
     ti.oninput = () => { werk.titel = ti.value; werkSichern(); zeichneWerk(); };
     st.oninput = () => { werk.stichworte = st.value; werkSichern(); clearTimeout(timer); timer = setTimeout(() => { werkSuche(); render(); }, 250); };
@@ -721,6 +770,11 @@ function werkFuellen() {
     ${fGew.size ? `<p class="ref">Ohne Anteil: ${fehlt.map(f => esc(f.kurz)).join(", ") || "keins"}</p>` : ""}
     ${sdgs.size ? `<p class="ref">Berührte Nachhaltigkeitsziele (Vorschlag): ${[...sdgs.values()].sort((a, b) => a.nr - b.nr).map(s => `SDG ${s.nr}`).join(", ")}</p>` : ""}</div>`;
   const box = (id, txt, extra) => `<label class="w-row"><input type="checkbox" data-w="${id}" ${werk.auswahl.has(id) ? "checked" : ""}><span>${txt}${extra ? `<small>${extra}</small>` : ""}</span></label>`;
+  el.querySelector("#w-aspekte").innerHTML = werk.aspekte.length ? `<div class="sec"><div class="eyebrow">Ideen zum Thema <span class="tag warn" style="margin-left:6px">Vorschlag</span></div>
+    <p class="ref">Quelle: ${esc(werk.aspekte[0].quelle)}. Alles Angekreuzte gehört zum Entwurf. Bitte fachlich prüfen.</p>
+    ${werk.aspekte.map(a => `<div class="w-aspekt"><div class="w-kopf">${esc(a.aspekt)}</div>${a.begruendung ? `<p class="ref">${esc(a.begruendung)}</p>` : ""}
+      ${a.ifs.map(id => { const n = byId.get(id); return `<div class="w-feld">${box(id, `<span class="dot" style="--c: var(--${n.f})"></span>${esc(KURZ[n.f])}: ${esc(n.label)}`, esc(seitenTxt(n.seiten)))}</div>`; }).join("")}
+      ${a.sps.map(id => { const n = byId.get(id); return `<div class="w-feld w-sp">${box(id, esc(n.label), `${esc(KURZ[n.f])} · ${esc(stufeKurz(n))} · ${esc([...new Set(Object.values(n.seiten))].join(" / "))}`)}</div>`; }).join("")}</div>`).join("")}</div>` : "";
   const gruppen = new Map();
   werk.treffer.forEach(t => { if (!gruppen.has(t.n.f)) gruppen.set(t.n.f, []); gruppen.get(t.n.f).push(t); });
   const imTreffer = new Set(werk.treffer.flatMap(t => [t.n.id, ...t.sps.map(s => s.id)]));
@@ -728,13 +782,101 @@ function werkFuellen() {
   el.querySelector("#w-treffer").innerHTML = (werk.stichworte.trim() ? `<div class="sec"><div class="eyebrow">Treffer in den Kerncurricula (${werk.treffer.length} Inhaltsfelder)</div>
     ${werk.treffer.length ? "" : `<p class="ref">Keine Treffer. Andere oder allgemeinere Stichworte versuchen.</p>`}
     ${[...gruppen.entries()].map(([f, ts]) => `<div class="w-fach"><div class="w-kopf"><span class="dot" style="--c: var(--${f})"></span>${esc(FACH[f])}</div>
-      ${ts.map(t => `<div class="w-feld">${box(t.n.id, esc(t.n.label), `${esc(t.gruende.join(", "))} · „${esc(t.worte.join("“, „"))}“ · ${esc(seitenTxt(t.n.seiten))}`)}
+      ${ts.map(t => `<div class="w-feld">${box(t.n.id, esc(t.n.label), `${esc(t.gruende.join(", "))} · gefunden: „${esc(t.worte.join("“, „"))}“ · ${esc(seitenTxt(t.n.seiten))}`)}
         ${t.sps.map(s => `<div class="w-sp">${box(s.id, esc(s.label), `${s.sf.filter(k => state.sf.has(k)).map(k => SFK[k]).join(", ")} · ${esc(stufeKurz(s))} · ${esc([...new Set(Object.values(s.seiten))].join(" / "))}`)}</div>`).join("")}</div>`).join("")}</div>`).join("")}</div>` : "")
     + (weitere.length ? `<div class="sec"><div class="eyebrow">Weitere ausgewählte Stellen</div>${weitere.map(n => `<div class="w-feld">${box(n.id, esc(n.label), esc(KURZ[n.f]) + (n.t === "sp" ? " · Schwerpunkt" : " · Inhaltsfeld"))}</div>`).join("")}</div>` : "");
   el.querySelectorAll("[data-w]").forEach(c => c.onchange = () => { werkUmschalten(c.dataset.w); });
   el.querySelector("#w-entwuerfe").innerHTML = werk.entwuerfe.length ? `<div class="sec"><div class="eyebrow">Gespeicherte Entwürfe (nur in diesem Browser)</div><ul class="rel">${werk.entwuerfe.map((e, i) => `<li><button data-laden="${i}">${esc(e.titel || "Ohne Titel")}<small>Jg. ${JG[e.jg] || "?"} · ${(e.auswahl || []).length} Stellen${e.stand ? " · " + esc(e.stand) : ""}</small></button><button class="w-weg" data-weg="${i}" aria-label="Entwurf löschen">Löschen</button></li>`).join("")}</ul></div>` : "";
   el.querySelectorAll("[data-laden]").forEach(b => b.onclick = () => { laden(werk.entwuerfe[+b.dataset.laden]); werkSichern(); el.innerHTML = ""; werkSuche(); render(); });
   el.querySelectorAll("[data-weg]").forEach(b => b.onclick = () => { if (confirm("Diesen Entwurf aus dem Browser löschen?")) { werk.entwuerfe.splice(+b.dataset.weg, 1); werkSichern(); werkFuellen(); } });
+}
+// Ideen aus einem Thema: mit Claude (claude.ai-Fassung) oder aus den Vorlagen
+let sampleFn = null, ideenCtl = null;
+if (typeof window.claude !== "undefined" && window.claude.use) window.claude.use("sample").then(f => { sampleFn = f; ideenHinweis(); }).catch(() => {});
+const SAMPLE_AUS = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"];
+function ideenStatus(t) { const e = document.getElementById("w-ideen-status"); if (e) e.textContent = t; }
+function ideenHinweis() {
+  ideenStatus(sampleFn ? "Claude schlägt Aspekte vor und wählt dabei nur aus den Einträgen der hessischen Kerncurricula."
+    : "Ohne Claude sucht die Werkstatt eine passende Vorlage. In der claude.ai-Fassung schlägt Claude Aspekte zu jedem Thema vor.");
+}
+const FUELL = new Set("ich wir du ihr mein meine meinen meinem unser unsere unseren unserem eine einen einem einer ein der die das den dem des und oder mit für von zum zur auf aus bei nach über unter vor wie was wer wo planen machen gestalten bauen erstellen neue neuen neues klasse klassen schule schulen jahrgang".split(" "));
+const stammListe = txt => (txt.toLowerCase().match(/[a-zäöüß0-9]+/g) || []).filter(w => w.length >= 3 && !FUELL.has(w)).map(stammVon);
+const passt = (txt, staemme) => woerter(txt).some(x => staemme.some(st => x.f.startsWith(st)));
+function aspekteUebernehmen(aspekte, quelle) {
+  werk.aspekte.forEach(a => [...a.ifs, ...a.sps].forEach(id => werk.auswahl.delete(id))); // alte Vorschläge ersetzen, Handauswahl bleibt
+  werk.aspekte = aspekte.map(a => ({ ...a, quelle }));
+  werk.aspekte.forEach(a => [...a.ifs, ...a.sps].forEach(id => werk.auswahl.add(id)));
+  werkSichern(); render();
+}
+function vorlageAnwenden(t) {
+  const aspekte = t.aspekte.map(a => {
+    const ifs = a.felder.filter(id => { const n = byId.get(id); return inSf(n) && state.faecher.has(n.f); });
+    const st = stammListe(a.stichworte);
+    const sps = ifs.flatMap(id => {
+      const kinder = nb.get(id).map(x => byId.get(x.id)).filter(s => s.t === "sp" && inSf(s));
+      return kinder.filter(s => jgPasst(s, kinder) && passt(s.label, st)).slice(0, 3).map(s => s.id);
+    });
+    return { aspekt: a.aspekt, begruendung: "", ifs, sps };
+  }).filter(a => a.ifs.length);
+  ideenStatus(`Vorlage „${t.thema}“ übernommen, angepasst an Jahrgang ${JG[werk.jg]}.`);
+  aspekteUebernehmen(aspekte, `Vorlage „${t.thema}“ aus der Ideenliste`);
+}
+function vorlageSuchen(satz) {
+  const st = stammListe(satz).filter(x => x.length >= 4);
+  const wertung = DATA.ideen.map(t => ({ t, n: st.filter(x => woerter(t.thema + " " + t.such).some(w => !FUELL.has(w.o) && (w.f.startsWith(x) || (stammVon(w.o).length >= 4 && (x.startsWith(stammVon(w.o)) || x.endsWith(stammVon(w.o))))))).length }));
+  const best = wertung.sort((a, b) => b.n - a.n)[0];
+  if (best && best.n > 0) return vorlageAnwenden(best.t);
+  aspekteUebernehmen([], "");
+  ideenStatus("Keine Vorlage passt zu diesem Thema. Wählen Sie eine Vorlage oder suchen Sie unten nach Stichworten.");
+  const d = document.querySelector(".w-vorlagen"); if (d) d.open = true;
+}
+async function ideenClaude(satz) {
+  const kennung = new Map(), zeilen = []; let i = 0, j = 0;
+  nodes.filter(n => n.t === "if" && inSf(n) && state.faecher.has(n.f)).forEach(n => {
+    const ik = "I" + (++i); kennung.set(ik, n.id); zeilen.push(`${ik} | ${FACH[n.f]} | ${n.label}`);
+    const kinder = nb.get(n.id).map(x => byId.get(x.id)).filter(s => s.t === "sp" && inSf(s));
+    kinder.filter(s => jgPasst(s, kinder)).forEach(s => { const sk = "S" + (++j); kennung.set(sk, s.id); zeilen.push(`  ${sk} ${s.label}`); });
+  });
+  const prompt = `Du unterstützt Lehrerinnen und Lehrer einer hessischen Gesamtschule (Sekundarstufe I) bei der Planung eines fächerübergreifenden Projektthemas.
+Thema: „${satz}“
+Jahrgang: ${JG[werk.jg]}
+
+Unten stehen die Inhaltsfelder (Kennung I…) und Schwerpunkte (Kennung S…) aus den hessischen Kerncurricula, die für diesen Jahrgang gelten. Die Schwerpunkte stehen eingerückt unter ihrem Inhaltsfeld.
+
+Aufgabe: Zerlege das Thema in 4 bis 8 konkrete Aspekte, die Schülerinnen und Schüler bei diesem Thema bearbeiten würden (zum Beispiel „Fläche und Maßstab berechnen“ oder „Farben und Raumwirkung“). Ordne jedem Aspekt die passenden Einträge aus der Liste zu: das Inhaltsfeld und, wo es passt, konkrete Schwerpunkte. Nimm nur Einträge, die fachlich wirklich passen, höchstens 8 je Aspekt, und verteile die Aspekte möglichst auf mehrere Fächer. Verwende ausschließlich Kennungen aus der Liste und erfinde keine Inhalte.
+
+Antworte nur mit JSON in genau dieser Form:
+{"aspekte":[{"aspekt":"kurzer Titel","begruendung":"ein Satz, warum der Aspekt zum Thema gehört","eintraege":["I12","S340"]}]}
+
+Liste:
+${zeilen.join("\n")}`;
+  ideenCtl = new AbortController();
+  ideenStatus("Claude denkt nach … Das dauert meist 20 bis 60 Sekunden.");
+  const d = await sampleFn.json(prompt, { modelTier: "default", signal: ideenCtl.signal });
+  const aspekte = (d && Array.isArray(d.aspekte) ? d.aspekte : []).map(a => {
+    const ids = [...new Set((Array.isArray(a.eintraege) ? a.eintraege : []).map(k => kennung.get(String(k).trim())).filter(Boolean))];
+    return { aspekt: String(a.aspekt || "Aspekt").slice(0, 90), begruendung: String(a.begruendung || "").slice(0, 300),
+      ifs: ids.filter(id => byId.get(id).t === "if"), sps: ids.filter(id => byId.get(id).t === "sp") };
+  }).filter(a => a.ifs.length || a.sps.length);
+  if (!aspekte.length) { ideenStatus("Claude hat keine passenden Einträge gefunden. Formulieren Sie das Thema anders oder nutzen Sie eine Vorlage."); return; }
+  ideenStatus(`Claude hat ${aspekte.length} Aspekte vorgeschlagen. Bitte prüfen.`);
+  aspekteUebernehmen(aspekte, "Vorschlag von Claude");
+}
+async function ideenFinden(knopf) {
+  if (ideenCtl) { ideenCtl.abort(); return; }               // zweiter Klick bricht ab
+  const satz = werk.satz.trim();
+  if (!satz) { ideenStatus("Bitte zuerst ein Thema eingeben."); return; }
+  if (!werk.titel) { werk.titel = satz; const ti = document.getElementById("w-titel"); if (ti) ti.value = satz; }
+  if (sampleFn) {
+    knopf.textContent = "Abbrechen";
+    try { await ideenClaude(satz); return; }
+    catch (e) {
+      if (e && e.code === "cancelled") { ideenStatus("Abgebrochen."); return; }
+      if (e && SAMPLE_AUS.includes(e.code)) sampleFn = null;
+      ideenStatus(e && e.code === "rate_limited" ? "Claude ist gerade ausgelastet. Später noch einmal versuchen. Bis dahin eine Vorlage:" : "Claude war nicht erreichbar. Die Werkstatt nutzt die Vorlagen.");
+    } finally { ideenCtl = null; knopf.textContent = "Ideen finden"; }
+  }
+  vorlageSuchen(satz);
 }
 function werkUmschalten(id) { werk.auswahl.has(id) ? werk.auswahl.delete(id) : werk.auswahl.add(id); werkSichern(); render(); }
 
@@ -744,6 +886,14 @@ function werkText() {
   const zeilen = [`# ${werk.titel || "Neues Thema"}`, "", `Entwurf aus der Themenwerkstatt des Kompetenzgraphen Hessen, Stand ${new Date().toLocaleDateString("de-DE")}.`,
     `Jahrgang ${JG[werk.jg]} · KC-Fassungen: ${[...state.sf].map(k => SF[k]).join(", ")}`, werk.stichworte ? `Stichworte: ${werk.stichworte}` : "", "",
     "Die Zuordnung ist ein Entwurf und fachlich zu prüfen. Verbindlich ist der Wortlaut im Kerncurriculum (Seitenangaben).", ""];
+  if (werk.aspekte.length) {
+    zeilen.push("## Aspekte", "", `Quelle: ${werk.aspekte[0].quelle}`, "");
+    werk.aspekte.forEach(a => {
+      const teile = [...a.ifs, ...a.sps].filter(id => werk.auswahl.has(id)).map(id => { const n = byId.get(id); return `${KURZ[n.f]}: ${n.label}`; });
+      zeilen.push(`- **${a.aspekt}**${a.begruendung ? `: ${a.begruendung}` : ""}`, ...teile.map(t => `  - ${t}`));
+    });
+    zeilen.push("", "## Fundstellen nach Fach", "");
+  }
   DATA.faecher.filter(f => ifs.some(i => i.f === f.k)).forEach(f => {
     zeilen.push(`## ${f.label}`, "");
     ifs.filter(i => i.f === f.k).forEach(i => {
@@ -760,7 +910,11 @@ function werkText() {
   return zeilen.filter((z, i, a) => !(z === "" && a[i - 1] === "")).join("\n");
 }
 const dateiname = () => "Thema_" + (werk.titel || "Entwurf").replace(/[^\wäöüÄÖÜß-]+/g, "_").slice(0, 40);
+// In der claude.ai-Fassung blockiert der Rahmen Download-Links, dort speichert die Fähigkeit "downloads"
+let speicherFn = null;
+if (typeof window.claude !== "undefined" && window.claude.use) window.claude.use("downloads").then(f => { speicherFn = f; }).catch(() => {});
 function herunterladen(name, inhalt, typ) {
+  if (speicherFn) { speicherFn.save({ filename: name, data: inhalt }).catch(() => {}); return; }
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([inhalt], { type: typ + ";charset=utf-8" }));
   a.download = name; document.body.appendChild(a); a.click(); a.remove();

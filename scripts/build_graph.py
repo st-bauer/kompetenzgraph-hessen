@@ -105,8 +105,16 @@ for r in lies("bne_sdg.csv"):
 for r in lies("bne_vorschlaege.csv"):
     links.append({"s": "SDG-" + r["sdg"], "t": if_id[(r["fach"], r["inhaltsfeld"])], "k": "sdg", "stich": r["stichwort"], "uz": r["unterziel"]})
 
+# Vorlagen der Themenwerkstatt (scripts/build_ideen.py): Inhaltsfelder als Knoten-IDs
+ip = os.path.join(ROOT, "data", "ideen.json")
+IDEEN = json.load(open(ip, encoding="utf-8")) if os.path.exists(ip) else []
+for t in IDEEN:
+    for a in t["aspekte"]:
+        a["felder"] = [if_id[tuple(f.split("|", 1))] for f in a["felder"]]
+
 out = {
     "stand": "26.10.2026",
+    "ideen": IDEEN,
     "faecher": [{"k": k, "label": f, "kurz": kurz, "farbe": c, "gruppe": GRUPPE[k]} for k, f, kurz, c in FAECHER],
     "gruppen": [{"k": r["key"], "label": r["label"], "farbe": r["farbe"], "x": int(r["x"]), "y": int(r["y"])} for r in lies("aufgabenfelder.csv")],
     "schulformen": SF,
